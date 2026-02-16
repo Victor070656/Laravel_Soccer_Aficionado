@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\FootballMatch;
 use App\Models\Post;
-use App\Models\Club;
 use App\Models\Poll;
+use App\Services\FootballApiService;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
+    public function __construct(
+        protected FootballApiService $api,
+    ) {
+    }
+
     public function __invoke(Request $request)
     {
         $user = $request->user();
@@ -20,14 +24,11 @@ class DashboardController extends Controller
             ->take(20)
             ->get();
 
-        $liveMatches = FootballMatch::with(['homeClub', 'awayClub', 'competition'])
-            ->live()
-            ->get();
+        $liveMatches = collect($this->api->getLiveFixtures())
+            ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
 
-        $upcomingMatches = FootballMatch::with(['homeClub', 'awayClub', 'competition'])
-            ->upcoming()
-            ->take(5)
-            ->get();
+        $upcomingMatches = collect($this->api->getUpcomingFixtures(5))
+            ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
 
         $activePolls = Poll::with('options')
             ->active()

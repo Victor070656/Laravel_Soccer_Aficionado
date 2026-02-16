@@ -13,18 +13,32 @@
             </div>
             <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
                 @foreach($liveMatches as $match)
-                <a href="{{ route('matches.show', $match) }}" class="block rounded-lg bg-white dark:bg-zinc-800 p-3 shadow-sm hover:shadow-md transition">
-                    <div class="text-xs text-zinc-500 dark:text-zinc-400 mb-1">{{ $match->competition->name }}</div>
+                <a href="{{ route('matches.show', $match->id) }}" class="block rounded-lg bg-white dark:bg-zinc-800 p-3 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+                        @if($match->league['logo'] ?? null)
+                        <img src="{{ $match->league['logo'] }}" alt="" class="h-3 w-3 object-contain">
+                        @endif
+                        {{ $match->league['name'] }}
+                    </div>
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
-                            <span class="font-semibold text-sm">{{ $match->homeClub->short_name ?? $match->homeClub->name }}</span>
+                            @if($match->home_team['logo'] ?? null)
+                            <img src="{{ $match->home_team['logo'] }}" alt="" class="h-5 w-5 object-contain">
+                            @endif
+                            <span class="font-semibold text-sm">{{ $match->home_team['name'] }}</span>
                         </div>
                         <span class="font-bold text-lg text-green-600 dark:text-green-400">{{ $match->score_display }}</span>
                         <div class="flex items-center gap-2">
-                            <span class="font-semibold text-sm">{{ $match->awayClub->short_name ?? $match->awayClub->name }}</span>
+                            <span class="font-semibold text-sm">{{ $match->away_team['name'] }}</span>
+                            @if($match->away_team['logo'] ?? null)
+                            <img src="{{ $match->away_team['logo'] }}" alt="" class="h-5 w-5 object-contain">
+                            @endif
                         </div>
                     </div>
-                    <div class="text-center text-xs text-red-500 mt-1">{{ ucfirst(str_replace('_', ' ', $match->status)) }}</div>
+                    <div class="text-center text-xs text-red-500 mt-1">
+                        {{ ucfirst(str_replace('_', ' ', $match->status)) }}
+                        @if($match->elapsed) · {{ $match->elapsed }}' @endif
+                    </div>
                 </a>
                 @endforeach
             </div>
@@ -103,12 +117,27 @@
                 <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 p-4">
                     <h3 class="font-bold text-sm text-zinc-900 dark:text-white mb-3">Upcoming Matches</h3>
                     @forelse($upcomingMatches as $match)
-                    <a href="{{ route('matches.show', $match) }}" class="block py-2 border-b border-zinc-100 dark:border-zinc-700 last:border-0 hover:bg-zinc-50 dark:hover:bg-zinc-700/50 -mx-2 px-2 rounded transition">
-                        <div class="text-xs text-zinc-400">{{ $match->kick_off->format('M d, H:i') }} · {{ $match->competition->name }}</div>
+                    <a href="{{ route('matches.show', $match->id) }}" class="block py-2 border-b border-zinc-100 dark:border-zinc-700 last:border-0 hover:bg-zinc-50 dark:hover:bg-zinc-700/50 -mx-2 px-2 rounded transition">
+                        <div class="flex items-center gap-1 text-xs text-zinc-400">
+                            @if($match->league['logo'] ?? null)
+                            <img src="{{ $match->league['logo'] }}" alt="" class="h-3 w-3 object-contain">
+                            @endif
+                            {{ \Carbon\Carbon::parse($match->date)->format('M d, H:i') }} · {{ $match->league['name'] }}
+                        </div>
                         <div class="flex justify-between items-center mt-1 text-sm font-medium text-zinc-800 dark:text-zinc-200">
-                            <span>{{ $match->homeClub->short_name ?? $match->homeClub->name }}</span>
+                            <div class="flex items-center gap-1">
+                                @if($match->home_team['logo'] ?? null)
+                                <img src="{{ $match->home_team['logo'] }}" alt="" class="h-4 w-4 object-contain">
+                                @endif
+                                <span>{{ $match->home_team['name'] }}</span>
+                            </div>
                             <span class="text-xs text-zinc-400">vs</span>
-                            <span>{{ $match->awayClub->short_name ?? $match->awayClub->name }}</span>
+                            <div class="flex items-center gap-1">
+                                <span>{{ $match->away_team['name'] }}</span>
+                                @if($match->away_team['logo'] ?? null)
+                                <img src="{{ $match->away_team['logo'] }}" alt="" class="h-4 w-4 object-contain">
+                                @endif
+                            </div>
                         </div>
                     </a>
                     @empty

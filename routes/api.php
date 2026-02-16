@@ -18,7 +18,7 @@ Route::prefix('v1')->group(function () {
     // Public data
     Route::get('/matches', [MatchApiController::class, 'index']);
     Route::get('/matches/live', [MatchApiController::class, 'live']);
-    Route::get('/matches/{match}', [MatchApiController::class, 'show']);
+    Route::get('/matches/{id}', [MatchApiController::class, 'show'])->where('id', '[0-9]+');
 
     Route::get('/posts', [PostApiController::class, 'index']);
     Route::get('/posts/{post}', [PostApiController::class, 'show']);

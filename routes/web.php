@@ -27,7 +27,7 @@ Route::get('/', function () {
 // Public browsing
 Route::get('/matches', [MatchController::class, 'index'])->name('matches.index');
 Route::get('/matches/live', [MatchController::class, 'live'])->name('matches.live');
-Route::get('/matches/{match}', [MatchController::class, 'show'])->name('matches.show');
+Route::get('/matches/{id}', [MatchController::class, 'show'])->name('matches.show')->where('id', '[0-9]+');
 
 Route::get('/clubs', [ClubController::class, 'index'])->name('clubs.index');
 Route::get('/clubs/{club:slug}', [ClubController::class, 'show'])->name('clubs.show');
