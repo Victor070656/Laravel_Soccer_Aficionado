@@ -7,48 +7,64 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Service to fetch live football data from API-Football (api-sports.io).
+ * Service to fetch live football data from TheSportsDB (thesportsdb.com).
  *
- * Free tier: 100 requests / day.
- * Docs: https://www.api-football.com/documentation-v3
+ * Free tier: 30 requests / minute, current season data.
+ * Docs: https://www.thesportsdb.com/documentation
  *
  * All responses are cached to minimise API usage.
  * When the API key is missing or a request fails, the service returns
  * graceful empty arrays so the controllers / views never break.
+ *
+ * The public interface and normalised formats are kept compatible with
+ * the rest of the application – controllers and views do not need changes.
  */
 class FootballApiService
 {
     protected string $baseUrl;
-    protected ?string $apiKey;
+    protected string $apiKey;
     protected array $cacheTtl;
     protected array $leagues;
-    protected int $season;
+    protected string $season;
+
+    /**
+     * TheSportsDB league IDs mapped from our config league IDs.
+     * Config uses API-Football IDs for backward compat; we map them here.
+     */
+    protected const LEAGUE_MAP = [
+        // API-Football ID => TheSportsDB ID
+        39 => 4328, // English Premier League
+        140 => 4335, // Spanish La Liga
+        135 => 4332, // Italian Serie A
+        78 => 4331, // German Bundesliga
+        61 => 4334, // French Ligue 1
+    ];
 
     public function __construct()
     {
         $config = config('services.football_api');
 
-        $this->baseUrl = rtrim($config['base_url'] ?? 'https://v3.football.api-sports.io', '/');
-        $this->apiKey = $config['key'] ?? null;
+        $this->apiKey = $config['key'] ?? '123'; // TheSportsDB free key
+        $this->baseUrl = rtrim($config['base_url'] ?? 'https://www.thesportsdb.com/api/v1/json', '/');
         $this->cacheTtl = $config['cache_ttl'] ?? [];
         $this->leagues = $config['leagues'] ?? [39, 140, 135, 78, 61];
-        $this->season = $config['season'] ?? (int) date('Y');
+        $this->season = $config['season'] ?? '2025-2026';
     }
 
     // ── Core HTTP ──────────────────────────────────────────
 
     /**
-     * Whether the service is configured (has an API key).
+     * Whether the service is configured and ready.
      */
     public function isConfigured(): bool
     {
-        return !empty($this->apiKey);
+        return true; // TheSportsDB free key '123' always works
     }
 
     /**
-     * Get the configured season year (e.g. 2025).
+     * Get the configured season string (e.g. "2025-2026").
      */
-    public function getSeason(): int
+    public function getSeason(): string
     {
         return $this->season;
     }
@@ -58,49 +74,36 @@ class FootballApiService
      */
     public function seasonDisplay(): string
     {
-        $next = $this->season + 1;
-        return $this->season . '/' . substr((string) $next, -2);
+        $parts = explode('-', $this->season);
+        if (count($parts) === 2) {
+            return $parts[0] . '/' . substr($parts[1], -2);
+        }
+        return $this->season;
     }
 
     /**
-     * Make an authenticated GET request to the API.
+     * Make a GET request to TheSportsDB API.
      */
     protected function get(string $endpoint, array $params = []): ?array
     {
-        if (!$this->isConfigured()) {
-            return null;
-        }
+        $url = "{$this->baseUrl}/{$this->apiKey}/{$endpoint}";
 
         try {
-            $response = Http::withHeaders([
-                'x-apisports-key' => $this->apiKey,
-            ])
-                ->timeout(10)
-                ->get("{$this->baseUrl}/{$endpoint}", $params);
+            $response = Http::timeout(10)->get($url, $params);
 
             if ($response->successful()) {
-                $body = $response->json();
-
-                if (isset($body['errors']) && !empty($body['errors'])) {
-                    Log::warning('Football API error', [
-                        'endpoint' => $endpoint,
-                        'params' => $params,
-                        'errors' => $body['errors'],
-                    ]);
-                    return null;
-                }
-
-                return $body;
+                return $response->json();
             }
 
-            Log::warning('Football API HTTP error', [
+            Log::warning('TheSportsDB API HTTP error', [
                 'endpoint' => $endpoint,
+                'params' => $params,
                 'status' => $response->status(),
             ]);
 
             return null;
         } catch (\Throwable $e) {
-            Log::error('Football API exception', [
+            Log::error('TheSportsDB API exception', [
                 'endpoint' => $endpoint,
                 'message' => $e->getMessage(),
             ]);
@@ -110,89 +113,85 @@ class FootballApiService
     }
 
     /**
-     * Cached wrapper around get().
+     * Resolve TheSportsDB league ID from our config league ID.
      */
-    protected function cached(string $cacheKey, int $ttl, string $endpoint, array $params = []): array
+    protected function resolveLeagueId(int $configId): int
     {
-        return Cache::remember($cacheKey, $ttl, function () use ($endpoint, $params) {
-            $response = $this->get($endpoint, $params);
-
-            return $response['response'] ?? [];
-        });
+        return self::LEAGUE_MAP[$configId] ?? $configId;
     }
 
-    // ── Public Methods ─────────────────────────────────────
+    // ── Fixtures / Events ──────────────────────────────────
 
     /**
      * Get fixtures for a specific date (or today).
-     * Returns all league fixtures for the configured leagues.
      */
     public function getFixturesByDate(?string $date = null, ?int $leagueId = null, ?string $status = null): array
     {
         $date = $date ?? now()->format('Y-m-d');
-
-        $params = [
-            'date' => $date,
-            'season' => $this->season,
-            'timezone' => config('app.timezone', 'UTC'),
-        ];
-
-        if ($leagueId) {
-            $params['league'] = $leagueId;
-        }
-
-        $cacheKey = 'football_api:fixtures:date:' . md5(json_encode($params));
+        $cacheKey = "tsdb:fixtures:date:{$date}:" . ($leagueId ?? 'all') . ':' . ($status ?? 'all');
         $ttl = $this->cacheTtl['fixtures'] ?? 900;
 
-        $fixtures = $this->cached($cacheKey, $ttl, 'fixtures', $params);
+        return Cache::remember($cacheKey, $ttl, function () use ($date, $leagueId, $status) {
+            $data = $this->get('eventsday.php', ['d' => $date, 's' => 'Soccer']);
+            $events = $data['events'] ?? [];
 
-        // If no specific league, filter to configured leagues only
-        if (!$leagueId) {
-            $fixtures = array_filter($fixtures, function ($fixture) {
-                return in_array($fixture['league']['id'] ?? 0, $this->leagues);
-            });
-            $fixtures = array_values($fixtures);
-        }
+            if (!$events) {
+                return [];
+            }
 
-        // Filter by status if given
-        if ($status) {
-            $fixtures = $this->filterByStatus($fixtures, $status);
-        }
+            // Filter to configured leagues
+            $tsdbLeagues = array_map(fn($id) => $this->resolveLeagueId($id), $this->leagues);
 
-        return $fixtures;
+            if ($leagueId) {
+                $tsdbId = $this->resolveLeagueId($leagueId);
+                $events = array_filter($events, fn($e) => ($e['idLeague'] ?? '') == $tsdbId);
+            } else {
+                $events = array_filter($events, fn($e) => in_array((int) ($e['idLeague'] ?? 0), $tsdbLeagues));
+            }
+
+            $events = array_values($events);
+
+            // Convert to our standard fixture format
+            $fixtures = array_map(fn($e) => self::tsdbEventToFixture($e), $events);
+
+            // Filter by status
+            if ($status) {
+                $fixtures = $this->filterByStatus($fixtures, $status);
+            }
+
+            return $fixtures;
+        });
     }
 
     /**
      * Get upcoming fixtures across configured leagues.
-     * Uses the "next" parameter for efficient querying.
      */
     public function getUpcomingFixtures(int $limit = 20, ?int $leagueId = null): array
     {
-        $params = [
-            'season' => $this->season,
-            'timezone' => config('app.timezone', 'UTC'),
-            'status' => 'NS-TBD',  // Not Started & TBD
-        ];
-
+        $targetLeagues = $leagueId ? [$leagueId] : $this->leagues;
         $allFixtures = [];
 
-        $targetLeagues = $leagueId ? [$leagueId] : $this->leagues;
-
         foreach ($targetLeagues as $league) {
-            $params['league'] = $league;
-            $params['next'] = $leagueId ? $limit : ceil($limit / count($targetLeagues));
-
-            $cacheKey = 'football_api:upcoming:' . md5(json_encode($params));
+            $tsdbId = $this->resolveLeagueId($league);
+            $cacheKey = "tsdb:upcoming:{$tsdbId}";
             $ttl = $this->cacheTtl['fixtures'] ?? 900;
 
-            $fixtures = $this->cached($cacheKey, $ttl, 'fixtures', $params);
-            $allFixtures = array_merge($allFixtures, $fixtures);
+            $events = Cache::remember($cacheKey, $ttl, function () use ($tsdbId) {
+                $data = $this->get('eventsnextleague.php', ['id' => $tsdbId]);
+                return $data['events'] ?? [];
+            });
+
+            if (is_array($events)) {
+                $allFixtures = array_merge($allFixtures, $events);
+            }
         }
 
-        // Sort by kick-off ascending
-        usort($allFixtures, fn($a, $b) => strtotime($a['fixture']['date'] ?? '0') - strtotime($b['fixture']['date'] ?? '0'));
+        // Sort by date ascending
+        usort($allFixtures, fn($a, $b) => strtotime($a['strTimestamp'] ?? $a['dateEvent'] ?? '0') - strtotime($b['strTimestamp'] ?? $b['dateEvent'] ?? '0'));
 
-        return array_slice($allFixtures, 0, $limit);
+        $allFixtures = array_slice($allFixtures, 0, $limit);
+
+        return array_map(fn($e) => self::tsdbEventToFixture($e), $allFixtures);
     }
 
     /**
@@ -200,104 +199,111 @@ class FootballApiService
      */
     public function getFinishedFixtures(int $limit = 20, ?int $leagueId = null): array
     {
-        $params = [
-            'season' => $this->season,
-            'timezone' => config('app.timezone', 'UTC'),
-            'status' => 'FT-AET-PEN',  // Full Time, After Extra Time, Penalties
-        ];
-
+        $targetLeagues = $leagueId ? [$leagueId] : $this->leagues;
         $allFixtures = [];
 
-        $targetLeagues = $leagueId ? [$leagueId] : $this->leagues;
-
         foreach ($targetLeagues as $league) {
-            $params['league'] = $league;
-            $params['last'] = $leagueId ? $limit : ceil($limit / count($targetLeagues));
-
-            $cacheKey = 'football_api:finished:' . md5(json_encode($params));
+            $tsdbId = $this->resolveLeagueId($league);
+            $cacheKey = "tsdb:finished:{$tsdbId}";
             $ttl = $this->cacheTtl['fixtures'] ?? 900;
 
-            $fixtures = $this->cached($cacheKey, $ttl, 'fixtures', $params);
-            $allFixtures = array_merge($allFixtures, $fixtures);
+            $events = Cache::remember($cacheKey, $ttl, function () use ($tsdbId) {
+                $data = $this->get('eventspastleague.php', ['id' => $tsdbId]);
+                return $data['events'] ?? [];
+            });
+
+            if (is_array($events)) {
+                $allFixtures = array_merge($allFixtures, $events);
+            }
         }
 
-        // Sort by kick-off descending (most recent first)
-        usort($allFixtures, fn($a, $b) => strtotime($b['fixture']['date'] ?? '0') - strtotime($a['fixture']['date'] ?? '0'));
+        // Sort by date descending (most recent first)
+        usort($allFixtures, fn($a, $b) => strtotime($b['strTimestamp'] ?? $b['dateEvent'] ?? '0') - strtotime($a['strTimestamp'] ?? $a['dateEvent'] ?? '0'));
 
-        return array_slice($allFixtures, 0, $limit);
+        $allFixtures = array_slice($allFixtures, 0, $limit);
+
+        return array_map(fn($e) => self::tsdbEventToFixture($e), $allFixtures);
     }
 
     /**
      * Get all currently live fixtures.
+     * (Free tier doesn't have livescores; we check today's events for in-progress.)
      */
     public function getLiveFixtures(): array
     {
-        if (!$this->isConfigured()) {
-            return [];
-        }
-
-        $cacheKey = 'football_api:live';
+        $cacheKey = 'tsdb:live';
         $ttl = $this->cacheTtl['live'] ?? 60;
 
-        $fixtures = $this->cached($cacheKey, $ttl, 'fixtures', ['live' => 'all']);
+        return Cache::remember($cacheKey, $ttl, function () {
+            $today = now()->format('Y-m-d');
+            $data = $this->get('eventsday.php', ['d' => $today, 's' => 'Soccer']);
+            $events = $data['events'] ?? [];
 
-        // Filter to configured leagues only
-        $fixtures = array_filter($fixtures, function ($fixture) {
-            return in_array($fixture['league']['id'] ?? 0, $this->leagues);
+            if (!$events) {
+                return [];
+            }
+
+            $tsdbLeagues = array_map(fn($id) => $this->resolveLeagueId($id), $this->leagues);
+
+            // Filter to our leagues and currently live status
+            $events = array_filter($events, function ($e) use ($tsdbLeagues) {
+                $inLeague = in_array((int) ($e['idLeague'] ?? 0), $tsdbLeagues);
+                $status = strtolower($e['strStatus'] ?? '');
+                $isLive = in_array($status, ['1h', '2h', 'ht', 'et', 'live', 'in progress']);
+                return $inLeague && $isLive;
+            });
+
+            return array_map(fn($e) => self::tsdbEventToFixture($e), array_values($events));
         });
-
-        return array_values($fixtures);
     }
 
     /**
-     * Get a single fixture by its API-Football fixture ID.
+     * Get a single fixture by its TheSportsDB event ID.
      */
     public function getFixture(int $fixtureId): ?array
     {
-        $cacheKey = "football_api:fixture:{$fixtureId}";
+        $cacheKey = "tsdb:fixture:{$fixtureId}";
         $ttl = $this->cacheTtl['fixture'] ?? 300;
 
-        $fixtures = $this->cached($cacheKey, $ttl, 'fixtures', ['id' => $fixtureId]);
-
-        return $fixtures[0] ?? null;
+        return Cache::remember($cacheKey, $ttl, function () use ($fixtureId) {
+            $data = $this->get('lookupevent.php', ['id' => $fixtureId]);
+            $events = $data['events'] ?? [];
+            if (empty($events)) {
+                return null;
+            }
+            return self::tsdbEventToFixture($events[0]);
+        });
     }
 
     /**
-     * Get events (goals, cards, subs) for a fixture.
+     * Get events (goals, cards, etc.) for a fixture.
+     * TheSportsDB free tier doesn't have detailed events – return empty.
      */
     public function getFixtureEvents(int $fixtureId): array
     {
-        $cacheKey = "football_api:events:{$fixtureId}";
-        $ttl = $this->cacheTtl['events'] ?? 120;
-
-        return $this->cached($cacheKey, $ttl, 'fixtures/events', ['fixture' => $fixtureId]);
+        return []; // Not available on free tier
     }
 
     /**
      * Get lineups for a fixture.
+     * TheSportsDB free tier doesn't have lineups – return empty.
      */
     public function getFixtureLineups(int $fixtureId): array
     {
-        $cacheKey = "football_api:lineups:{$fixtureId}";
-        $ttl = $this->cacheTtl['lineups'] ?? 600;
-
-        return $this->cached($cacheKey, $ttl, 'fixtures/lineups', ['fixture' => $fixtureId]);
+        return []; // Not available on free tier
     }
 
     /**
      * Get match statistics for a fixture.
+     * TheSportsDB free tier doesn't have match stats – return empty.
      */
     public function getFixtureStatistics(int $fixtureId): array
     {
-        $cacheKey = "football_api:statistics:{$fixtureId}";
-        $ttl = $this->cacheTtl['statistics'] ?? 300;
-
-        return $this->cached($cacheKey, $ttl, 'fixtures/statistics', ['fixture' => $fixtureId]);
+        return []; // Not available on free tier
     }
 
     /**
-     * Get all fixtures for all configured leagues (paginated-style).
-     * Accepts filters: status, league, date, page.
+     * Get all fixtures with filtering and pagination.
      */
     public function getAllFixtures(array $filters = []): array
     {
@@ -307,24 +313,21 @@ class FootballApiService
         $page = max(1, (int) ($filters['page'] ?? 1));
         $perPage = 20;
 
-        // If a specific date is provided, use date endpoint
         if ($date) {
             $fixtures = $this->getFixturesByDate($date, $leagueId, $status);
-
             return $this->paginateArray($fixtures, $page, $perPage);
         }
 
-        // Otherwise, compose from live + upcoming + finished
         $allFixtures = [];
 
-        // Always include live at the top
-        $live = $this->getLiveFixtures();
-        if ($leagueId) {
-            $live = array_filter($live, fn($f) => ($f['league']['id'] ?? 0) === $leagueId);
-            $live = array_values($live);
-        }
-
+        // Live
         if (!$status || $status === 'live') {
+            $live = $this->getLiveFixtures();
+            if ($leagueId) {
+                $tsdbId = $this->resolveLeagueId($leagueId);
+                $live = array_filter($live, fn($f) => ($f['league']['id'] ?? 0) == $tsdbId);
+                $live = array_values($live);
+            }
             $allFixtures = array_merge($allFixtures, $live);
         }
 
@@ -338,38 +341,32 @@ class FootballApiService
             $allFixtures = array_merge($allFixtures, $finished);
         }
 
-        if ($status && !in_array($status, ['live', 'scheduled', 'finished'])) {
-            // For other statuses, try date-based with today
-            $todayFixtures = $this->getFixturesByDate(now()->format('Y-m-d'), $leagueId, $status);
-            $allFixtures = array_merge($allFixtures, $todayFixtures);
-        }
-
         return $this->paginateArray($allFixtures, $page, $perPage);
     }
 
     /**
-     * Get the configured league IDs and names for filters.
+     * Get the configured league names for filters (compact list).
      */
     public function getLeagues(): array
     {
-        $cacheKey = 'football_api:leagues:' . $this->season;
+        $cacheKey = 'tsdb:leagues:' . $this->season;
         $ttl = $this->cacheTtl['leagues'] ?? 86400;
 
         return Cache::remember($cacheKey, $ttl, function () {
             $leagues = [];
 
-            foreach ($this->leagues as $leagueId) {
-                $response = $this->get('leagues', ['id' => $leagueId]);
-                if ($response && !empty($response['response'])) {
-                    $league = $response['response'][0]['league'] ?? null;
-                    if ($league) {
-                        $leagues[] = [
-                            'id' => $league['id'],
-                            'name' => $league['name'],
-                            'country' => $response['response'][0]['country']['name'] ?? null,
-                            'logo' => $league['logo'] ?? null,
-                        ];
-                    }
+            foreach ($this->leagues as $configId) {
+                $tsdbId = $this->resolveLeagueId($configId);
+                $data = $this->get('lookupleague.php', ['id' => $tsdbId]);
+                $league = $data['leagues'][0] ?? null;
+
+                if ($league) {
+                    $leagues[] = [
+                        'id' => (int) $league['idLeague'],
+                        'name' => $league['strLeague'] ?? 'Unknown',
+                        'country' => $league['strCountry'] ?? null,
+                        'logo' => $league['strBadge'] ?? null,
+                    ];
                 }
             }
 
@@ -380,36 +377,40 @@ class FootballApiService
     // ── Leagues / Competitions ─────────────────────────────
 
     /**
-     * Get full details for all configured leagues (for the competitions listing).
+     * Get full details for all configured leagues (competitions listing).
      */
     public function getLeaguesFull(): array
     {
-        $cacheKey = 'football_api:leagues_full:' . $this->season;
+        $cacheKey = 'tsdb:leagues_full:' . $this->season;
         $ttl = $this->cacheTtl['leagues'] ?? 86400;
 
         return Cache::remember($cacheKey, $ttl, function () {
             $leagues = [];
 
-            foreach ($this->leagues as $leagueId) {
-                $response = $this->get('leagues', ['id' => $leagueId, 'season' => $this->season]);
-                if ($response && !empty($response['response'])) {
-                    $entry = $response['response'][0];
-                    $league = $entry['league'] ?? [];
-                    $country = $entry['country'] ?? [];
-                    $seasons = $entry['seasons'] ?? [];
-                    $currentSeason = collect($seasons)->firstWhere('current', true) ?? ($seasons[0] ?? []);
+            foreach ($this->leagues as $configId) {
+                $tsdbId = $this->resolveLeagueId($configId);
+                $data = $this->get('lookupleague.php', ['id' => $tsdbId]);
+                $league = $data['leagues'][0] ?? null;
+
+                if ($league) {
+                    $currentSeason = $league['strCurrentSeason'] ?? $this->season;
 
                     $leagues[] = [
-                        'id' => $league['id'] ?? 0,
-                        'name' => $league['name'] ?? 'Unknown',
-                        'type' => $league['type'] ?? 'league',
-                        'logo' => $league['logo'] ?? null,
-                        'country' => $country['name'] ?? null,
-                        'country_code' => $country['code'] ?? null,
-                        'country_flag' => $country['flag'] ?? null,
-                        'season' => $currentSeason['year'] ?? $this->season,
-                        'season_start' => $currentSeason['start'] ?? null,
-                        'season_end' => $currentSeason['end'] ?? null,
+                        'id' => (int) $league['idLeague'],
+                        'name' => $league['strLeague'] ?? 'Unknown',
+                        'type' => strtolower($league['strLeagueAlternate'] ?? '') ?: 'league',
+                        'logo' => $league['strBadge'] ?? null,
+                        'country' => $league['strCountry'] ?? null,
+                        'country_code' => null,
+                        'country_flag' => $league['strCountry']
+                            ? 'https://flagsapi.com/' . self::countryToIso($league['strCountry']) . '/flat/32.png'
+                            : null,
+                        'season' => $currentSeason,
+                        'season_start' => null,
+                        'season_end' => null,
+                        'banner' => $league['strBanner'] ?? null,
+                        'fanart' => $league['strFanart1'] ?? null,
+                        'description' => $league['strDescriptionEN'] ?? null,
                     ];
                 }
             }
@@ -419,82 +420,87 @@ class FootballApiService
     }
 
     /**
-     * Get a single league/competition by ID.
+     * Get a single league/competition by its TheSportsDB ID.
      */
     public function getLeague(int $leagueId): ?array
     {
-        $cacheKey = "football_api:league:{$leagueId}:{$this->season}";
+        $cacheKey = "tsdb:league:{$leagueId}:{$this->season}";
         $ttl = $this->cacheTtl['leagues'] ?? 86400;
 
         return Cache::remember($cacheKey, $ttl, function () use ($leagueId) {
-            $response = $this->get('leagues', ['id' => $leagueId, 'season' => $this->season]);
-            if ($response && !empty($response['response'])) {
-                $entry = $response['response'][0];
-                $league = $entry['league'] ?? [];
-                $country = $entry['country'] ?? [];
-                $seasons = $entry['seasons'] ?? [];
-                $currentSeason = collect($seasons)->firstWhere('current', true) ?? ($seasons[0] ?? []);
+            $data = $this->get('lookupleague.php', ['id' => $leagueId]);
+            $league = $data['leagues'][0] ?? null;
 
-                return [
-                    'id' => $league['id'] ?? 0,
-                    'name' => $league['name'] ?? 'Unknown',
-                    'type' => $league['type'] ?? 'league',
-                    'logo' => $league['logo'] ?? null,
-                    'country' => $country['name'] ?? null,
-                    'country_code' => $country['code'] ?? null,
-                    'country_flag' => $country['flag'] ?? null,
-                    'season' => $currentSeason['year'] ?? $this->season,
-                    'season_start' => $currentSeason['start'] ?? null,
-                    'season_end' => $currentSeason['end'] ?? null,
-                ];
+            if (!$league) {
+                return null;
             }
 
-            return null;
+            $currentSeason = $league['strCurrentSeason'] ?? $this->season;
+
+            return [
+                'id' => (int) $league['idLeague'],
+                'name' => $league['strLeague'] ?? 'Unknown',
+                'type' => strtolower($league['strLeagueAlternate'] ?? '') ?: 'league',
+                'logo' => $league['strBadge'] ?? null,
+                'country' => $league['strCountry'] ?? null,
+                'country_code' => null,
+                'country_flag' => $league['strCountry']
+                    ? 'https://flagsapi.com/' . self::countryToIso($league['strCountry']) . '/flat/32.png'
+                    : null,
+                'season' => $currentSeason,
+                'season_start' => null,
+                'season_end' => null,
+                'description' => $league['strDescriptionEN'] ?? null,
+            ];
         });
     }
 
     /**
      * Get standings for a league/season.
      */
-    public function getStandings(int $leagueId, ?int $season = null): array
+    public function getStandings(int $leagueId, ?string $season = null): array
     {
         $season = $season ?? $this->season;
-        $cacheKey = "football_api:standings:{$leagueId}:{$season}";
+        $cacheKey = "tsdb:standings:{$leagueId}:{$season}";
         $ttl = $this->cacheTtl['standings'] ?? 3600;
 
         return Cache::remember($cacheKey, $ttl, function () use ($leagueId, $season) {
-            $response = $this->get('standings', ['league' => $leagueId, 'season' => $season]);
-            if (!$response || empty($response['response'])) {
+            $data = $this->get('lookuptable.php', ['l' => $leagueId, 's' => $season]);
+            $table = $data['table'] ?? [];
+
+            if (empty($table)) {
                 return [];
             }
 
-            $standings = $response['response'][0]['league']['standings'] ?? [];
-            // standings is an array of groups; flatten for single-group leagues
-            if (!empty($standings) && isset($standings[0]) && is_array($standings[0])) {
-                // For single-group leagues, use the first group
-                // For multi-group (e.g., Champions League), return all groups
-                return $standings;
-            }
-
-            return [];
+            // Return as array of one group (matching old API-Football format)
+            return [$table];
         });
     }
 
     // ── Teams / Clubs ──────────────────────────────────────
 
     /**
-     * Get all teams for a specific league in the current season.
+     * Get all teams for a specific league.
      */
-    public function getTeamsByLeague(int $leagueId, ?int $season = null): array
+    public function getTeamsByLeague(int $leagueId, ?string $season = null): array
     {
-        $season = $season ?? $this->season;
-        $cacheKey = "football_api:teams:league:{$leagueId}:{$season}";
+        $cacheKey = "tsdb:teams:league:{$leagueId}";
         $ttl = $this->cacheTtl['teams'] ?? 86400;
 
-        return $this->cached($cacheKey, $ttl, 'teams', [
-            'league' => $leagueId,
-            'season' => $season,
-        ]);
+        return Cache::remember($cacheKey, $ttl, function () use ($leagueId) {
+            // Resolve the league name for TheSportsDB search_all_teams
+            $leagueData = $this->get('lookupleague.php', ['id' => $leagueId]);
+            $leagueName = $leagueData['leagues'][0]['strLeague'] ?? null;
+
+            if (!$leagueName) {
+                return [];
+            }
+
+            $data = $this->get('search_all_teams.php', ['l' => $leagueName]);
+            $teams = $data['teams'] ?? [];
+
+            return array_map(fn($t) => self::tsdbTeamToRaw($t), $teams);
+        });
     }
 
     /**
@@ -504,8 +510,9 @@ class FootballApiService
     {
         $allTeams = [];
 
-        foreach ($this->leagues as $leagueId) {
-            $teams = $this->getTeamsByLeague($leagueId);
+        foreach ($this->leagues as $configId) {
+            $tsdbId = $this->resolveLeagueId($configId);
+            $teams = $this->getTeamsByLeague($tsdbId);
             foreach ($teams as $team) {
                 $allTeams[$team['team']['id']] = $team; // deduplicate by id
             }
@@ -539,20 +546,22 @@ class FootballApiService
     }
 
     /**
-     * Get a single team by its API-Football team ID.
+     * Get a single team by its TheSportsDB team ID.
      */
     public function getTeam(int $teamId): ?array
     {
-        $cacheKey = "football_api:team:{$teamId}";
+        $cacheKey = "tsdb:team:{$teamId}";
         $ttl = $this->cacheTtl['teams'] ?? 86400;
 
         return Cache::remember($cacheKey, $ttl, function () use ($teamId) {
-            $response = $this->get('teams', ['id' => $teamId]);
-            if ($response && !empty($response['response'])) {
-                return $response['response'][0] ?? null;
+            $data = $this->get('lookupteam.php', ['id' => $teamId]);
+            $teams = $data['teams'] ?? [];
+
+            if (empty($teams)) {
+                return null;
             }
 
-            return null;
+            return self::tsdbTeamToRaw($teams[0]);
         });
     }
 
@@ -561,16 +570,18 @@ class FootballApiService
      */
     public function getTeamSquad(int $teamId): array
     {
-        $cacheKey = "football_api:squad:{$teamId}";
+        $cacheKey = "tsdb:squad:{$teamId}";
         $ttl = $this->cacheTtl['teams'] ?? 86400;
 
         return Cache::remember($cacheKey, $ttl, function () use ($teamId) {
-            $response = $this->get('players/squads', ['team' => $teamId]);
-            if ($response && !empty($response['response'])) {
-                return $response['response'][0]['players'] ?? [];
+            $data = $this->get('lookup_all_players.php', ['id' => $teamId]);
+            $players = $data['player'] ?? [];
+
+            if (empty($players)) {
+                return [];
             }
 
-            return [];
+            return array_map(fn($p) => self::tsdbPlayerToRaw($p), $players);
         });
     }
 
@@ -579,142 +590,140 @@ class FootballApiService
      */
     public function getTeamFixtures(int $teamId, ?string $status = null, int $limit = 10): array
     {
-        $params = [
-            'team' => $teamId,
-            'season' => $this->season,
-            'timezone' => config('app.timezone', 'UTC'),
-        ];
-
         if ($status === 'finished') {
-            $params['status'] = 'FT-AET-PEN';
-            $params['last'] = $limit;
+            $cacheKey = "tsdb:team_past:{$teamId}";
+            $ttl = $this->cacheTtl['fixtures'] ?? 900;
+
+            $events = Cache::remember($cacheKey, $ttl, function () use ($teamId) {
+                $data = $this->get('eventslast.php', ['id' => $teamId]);
+                return $data['results'] ?? [];
+            });
         } elseif ($status === 'upcoming') {
-            $params['status'] = 'NS-TBD';
-            $params['next'] = $limit;
+            $cacheKey = "tsdb:team_next:{$teamId}";
+            $ttl = $this->cacheTtl['fixtures'] ?? 900;
+
+            $events = Cache::remember($cacheKey, $ttl, function () use ($teamId) {
+                $data = $this->get('eventsnext.php', ['id' => $teamId]);
+                return $data['events'] ?? [];
+            });
+        } else {
+            return [];
         }
 
-        $cacheKey = 'football_api:team_fixtures:' . md5(json_encode($params));
-        $ttl = $this->cacheTtl['fixtures'] ?? 900;
+        if (empty($events)) {
+            return [];
+        }
 
-        return $this->cached($cacheKey, $ttl, 'fixtures', $params);
+        $events = array_slice($events, 0, $limit);
+        return array_map(fn($e) => self::tsdbEventToFixture($e), $events);
     }
 
     /**
      * Get team statistics for a given league/season.
+     * TheSportsDB free tier doesn't have team stats – return null.
      */
-    public function getTeamStatistics(int $teamId, int $leagueId, ?int $season = null): ?array
+    public function getTeamStatistics(int $teamId, int $leagueId, ?string $season = null): ?array
     {
-        $season = $season ?? $this->season;
-        $cacheKey = "football_api:team_stats:{$teamId}:{$leagueId}:{$season}";
-        $ttl = $this->cacheTtl['standings'] ?? 3600;
-
-        return Cache::remember($cacheKey, $ttl, function () use ($teamId, $leagueId, $season) {
-            $response = $this->get('teams/statistics', [
-                'team' => $teamId,
-                'league' => $leagueId,
-                'season' => $season,
-            ]);
-
-            return $response['response'] ?? null;
-        });
+        return null; // Not available on free tier
     }
 
     // ── Data Normalisation ────────────────────────────────
 
     /**
-     * Normalise an API-Football fixture into a consistent format
-     * that our Blade views can consume.
+     * Convert a TheSportsDB event into the standard fixture format
+     * that our controllers and views expect.
      */
-    public static function normaliseFixture(array $raw): array
+    public static function tsdbEventToFixture(array $e): array
     {
-        $fixture = $raw['fixture'] ?? [];
-        $league = $raw['league'] ?? [];
-        $teams = $raw['teams'] ?? [];
-        $goals = $raw['goals'] ?? [];
-        $score = $raw['score'] ?? [];
-
-        $statusShort = $fixture['status']['short'] ?? 'NS';
+        $statusRaw = strtolower(trim($e['strStatus'] ?? 'Not Started'));
+        $statusShort = self::tsdbStatusToShort($statusRaw);
         $status = self::mapStatus($statusShort);
 
+        $homeScore = $e['intHomeScore'] ?? null;
+        $awayScore = $e['intAwayScore'] ?? null;
+
+        // If scores are empty strings, treat as null
+        if ($homeScore === '' || $homeScore === null) {
+            $homeScore = null;
+        } else {
+            $homeScore = (int) $homeScore;
+        }
+        if ($awayScore === '' || $awayScore === null) {
+            $awayScore = null;
+        } else {
+            $awayScore = (int) $awayScore;
+        }
+
+        $isPlayed = $homeScore !== null;
+        $scoreDisplay = $isPlayed ? "{$homeScore} - {$awayScore}" : 'vs';
+
+        $dateStr = ($e['strTimestamp'] ?? null)
+            ?: (($e['dateEvent'] ?? '') . 'T' . ($e['strTime'] ?? '00:00:00'));
+
         return [
-            'id' => $fixture['id'] ?? 0,
-            'referee' => $fixture['referee'] ?? null,
-            'date' => $fixture['date'] ?? null,
-            'timestamp' => $fixture['timestamp'] ?? null,
-            'venue' => ($fixture['venue']['name'] ?? null)
-                ? ($fixture['venue']['name'] . ($fixture['venue']['city'] ? ', ' . $fixture['venue']['city'] : ''))
-                : null,
+            'id' => (int) ($e['idEvent'] ?? 0),
+            'referee' => null,
+            'date' => $dateStr,
+            'timestamp' => strtotime($dateStr) ?: null,
+            'venue' => $e['strVenue'] ?? null,
             'status' => $status,
             'status_short' => $statusShort,
-            'status_long' => $fixture['status']['long'] ?? 'Not Started',
-            'elapsed' => $fixture['status']['elapsed'] ?? null,
+            'status_long' => $e['strStatus'] ?? 'Not Started',
+            'elapsed' => null,
             'league' => [
-                'id' => $league['id'] ?? 0,
-                'name' => $league['name'] ?? 'Unknown',
-                'country' => $league['country'] ?? null,
-                'logo' => $league['logo'] ?? null,
-                'round' => $league['round'] ?? null,
+                'id' => (int) ($e['idLeague'] ?? 0),
+                'name' => $e['strLeague'] ?? 'Unknown',
+                'country' => $e['strCountry'] ?? null,
+                'logo' => $e['strLeagueBadge'] ?? null,
+                'round' => isset($e['intRound']) ? "Round {$e['intRound']}" : null,
             ],
             'home_team' => [
-                'id' => $teams['home']['id'] ?? 0,
-                'name' => $teams['home']['name'] ?? 'TBD',
-                'logo' => $teams['home']['logo'] ?? null,
-                'winner' => $teams['home']['winner'] ?? null,
+                'id' => (int) ($e['idHomeTeam'] ?? 0),
+                'name' => $e['strHomeTeam'] ?? 'TBD',
+                'logo' => $e['strHomeTeamBadge'] ?? null,
+                'winner' => $isPlayed
+                    ? ($homeScore > $awayScore ? true : ($homeScore < $awayScore ? false : null))
+                    : null,
             ],
             'away_team' => [
-                'id' => $teams['away']['id'] ?? 0,
-                'name' => $teams['away']['name'] ?? 'TBD',
-                'logo' => $teams['away']['logo'] ?? null,
-                'winner' => $teams['away']['winner'] ?? null,
+                'id' => (int) ($e['idAwayTeam'] ?? 0),
+                'name' => $e['strAwayTeam'] ?? 'TBD',
+                'logo' => $e['strAwayTeamBadge'] ?? null,
+                'winner' => $isPlayed
+                    ? ($awayScore > $homeScore ? true : ($awayScore < $homeScore ? false : null))
+                    : null,
             ],
-            'home_score' => $goals['home'] ?? null,
-            'away_score' => $goals['away'] ?? null,
-            'ht_score' => [
-                'home' => $score['halftime']['home'] ?? null,
-                'away' => $score['halftime']['away'] ?? null,
-            ],
-            'ft_score' => [
-                'home' => $score['fulltime']['home'] ?? null,
-                'away' => $score['fulltime']['away'] ?? null,
-            ],
-            'et_score' => [
-                'home' => $score['extratime']['home'] ?? null,
-                'away' => $score['extratime']['away'] ?? null,
-            ],
-            'penalty_score' => [
-                'home' => $score['penalty']['home'] ?? null,
-                'away' => $score['penalty']['away'] ?? null,
-            ],
-            'score_display' => self::buildScoreDisplay($statusShort, $goals),
+            'home_score' => $homeScore,
+            'away_score' => $awayScore,
+            'ht_score' => ['home' => null, 'away' => null],
+            'ft_score' => ['home' => $homeScore, 'away' => $awayScore],
+            'et_score' => ['home' => null, 'away' => null],
+            'penalty_score' => ['home' => null, 'away' => null],
+            'score_display' => $scoreDisplay,
+            'poster' => $e['strPoster'] ?? null,
+            'thumb' => $e['strThumb'] ?? null,
+            'video' => $e['strVideo'] ?? null,
         ];
     }
 
     /**
-     * Normalise an event from the fixtures/events endpoint.
+     * Normalise a fixture (compatibility alias used by controllers).
+     */
+    public static function normaliseFixture(array $raw): array
+    {
+        // If already converted (has home_team key), pass through
+        if (isset($raw['home_team']) && isset($raw['away_team'])) {
+            return $raw;
+        }
+        return self::tsdbEventToFixture($raw);
+    }
+
+    /**
+     * Normalise an event from fixture events endpoint.
      */
     public static function normaliseEvent(array $raw): array
     {
-        return [
-            'time' => ($raw['time']['elapsed'] ?? 0) . ($raw['time']['extra'] ? '+' . $raw['time']['extra'] : '') . "'",
-            'elapsed' => $raw['time']['elapsed'] ?? 0,
-            'extra_time' => $raw['time']['extra'] ?? null,
-            'team' => [
-                'id' => $raw['team']['id'] ?? 0,
-                'name' => $raw['team']['name'] ?? '',
-                'logo' => $raw['team']['logo'] ?? null,
-            ],
-            'player' => [
-                'id' => $raw['player']['id'] ?? null,
-                'name' => $raw['player']['name'] ?? 'Unknown',
-            ],
-            'assist' => [
-                'id' => $raw['assist']['id'] ?? null,
-                'name' => $raw['assist']['name'] ?? null,
-            ],
-            'type' => strtolower($raw['type'] ?? 'goal'),
-            'detail' => $raw['detail'] ?? '',
-            'icon' => self::eventIcon($raw['type'] ?? '', $raw['detail'] ?? ''),
-        ];
+        return $raw; // Not available on free tier – pass-through
     }
 
     /**
@@ -722,36 +731,12 @@ class FootballApiService
      */
     public static function normaliseLineup(array $raw): array
     {
-        return [
-            'team' => [
-                'id' => $raw['team']['id'] ?? 0,
-                'name' => $raw['team']['name'] ?? '',
-                'logo' => $raw['team']['logo'] ?? null,
-            ],
-            'formation' => $raw['formation'] ?? null,
-            'start_xi' => array_map(fn($p) => [
-                'id' => $p['player']['id'] ?? 0,
-                'name' => $p['player']['name'] ?? '',
-                'number' => $p['player']['number'] ?? null,
-                'pos' => $p['player']['pos'] ?? null,
-                'grid' => $p['player']['grid'] ?? null,
-            ], $raw['startXI'] ?? []),
-            'substitutes' => array_map(fn($p) => [
-                'id' => $p['player']['id'] ?? 0,
-                'name' => $p['player']['name'] ?? '',
-                'number' => $p['player']['number'] ?? null,
-                'pos' => $p['player']['pos'] ?? null,
-            ], $raw['substitutes'] ?? []),
-            'coach' => [
-                'id' => $raw['coach']['id'] ?? null,
-                'name' => $raw['coach']['name'] ?? null,
-                'photo' => $raw['coach']['photo'] ?? null,
-            ],
-        ];
+        return $raw; // Not available on free tier – pass-through
     }
 
     /**
-     * Normalise a team from the /teams endpoint.
+     * Normalise a team from the teams data.
+     * Accepts raw TheSportsDB team wrapper format.
      */
     public static function normaliseTeam(array $raw): array
     {
@@ -778,53 +763,119 @@ class FootballApiService
     }
 
     /**
-     * Normalise a standing row from the /standings endpoint.
+     * Normalise a standing row from the standings data.
+     * Accepts TheSportsDB table row format.
      */
     public static function normaliseStandingRow(array $raw): array
     {
-        $team = $raw['team'] ?? [];
-        $all = $raw['all'] ?? [];
-
         return [
-            'rank' => $raw['rank'] ?? 0,
+            'rank' => (int) ($raw['intRank'] ?? 0),
             'team' => [
-                'id' => $team['id'] ?? 0,
-                'name' => $team['name'] ?? 'Unknown',
-                'logo' => $team['logo'] ?? null,
+                'id' => (int) ($raw['idTeam'] ?? 0),
+                'name' => $raw['strTeam'] ?? 'Unknown',
+                'logo' => $raw['strBadge'] ?? null,
             ],
-            'points' => $raw['points'] ?? 0,
-            'goals_diff' => $raw['goalsDiff'] ?? 0,
-            'played' => $all['played'] ?? 0,
-            'won' => $all['win'] ?? 0,
-            'drawn' => $all['draw'] ?? 0,
-            'lost' => $all['lose'] ?? 0,
-            'goals_for' => $all['goals']['for'] ?? 0,
-            'goals_against' => $all['goals']['against'] ?? 0,
-            'form' => $raw['form'] ?? '',
-            'description' => $raw['description'] ?? null,
-            'status' => $raw['status'] ?? null,
+            'points' => (int) ($raw['intPoints'] ?? 0),
+            'goals_diff' => (int) ($raw['intGoalDifference'] ?? 0),
+            'played' => (int) ($raw['intPlayed'] ?? 0),
+            'won' => (int) ($raw['intWin'] ?? 0),
+            'drawn' => (int) ($raw['intDraw'] ?? 0),
+            'lost' => (int) ($raw['intLoss'] ?? 0),
+            'goals_for' => (int) ($raw['intGoalsFor'] ?? 0),
+            'goals_against' => (int) ($raw['intGoalsAgainst'] ?? 0),
+            'form' => $raw['strForm'] ?? '',
+            'description' => $raw['strDescription'] ?? null,
+            'status' => null,
         ];
     }
 
     /**
-     * Normalise a squad player from /players/squads.
+     * Normalise a squad player from the players data.
      */
     public static function normaliseSquadPlayer(array $raw): array
     {
+        return $raw; // Already in our format from tsdbPlayerToRaw
+    }
+
+    // ── Raw format converters ──────────────────────────────
+
+    /**
+     * Convert a TheSportsDB team object into the raw wrapper format
+     * that our normaliseTeam() expects.
+     */
+    protected static function tsdbTeamToRaw(array $t): array
+    {
         return [
-            'id' => $raw['id'] ?? 0,
-            'name' => $raw['name'] ?? 'Unknown',
-            'age' => $raw['age'] ?? null,
-            'number' => $raw['number'] ?? null,
-            'position' => $raw['position'] ?? null,
-            'photo' => $raw['photo'] ?? null,
+            'team' => [
+                'id' => (int) ($t['idTeam'] ?? 0),
+                'name' => $t['strTeam'] ?? 'Unknown',
+                'code' => $t['strTeamShort'] ?? null,
+                'country' => $t['strCountry'] ?? null,
+                'founded' => $t['intFormedYear'] ?? null,
+                'national' => false,
+                'logo' => $t['strBadge'] ?? null,
+            ],
+            'venue' => [
+                'id' => null,
+                'name' => $t['strStadium'] ?? null,
+                'city' => $t['strStadiumLocation'] ?? null,
+                'capacity' => isset($t['intStadiumCapacity']) ? (int) $t['intStadiumCapacity'] : null,
+                'surface' => null,
+                'image' => $t['strStadiumThumb'] ?? null,
+            ],
+        ];
+    }
+
+    /**
+     * Convert a TheSportsDB player object into our normalised format.
+     */
+    protected static function tsdbPlayerToRaw(array $p): array
+    {
+        // TheSportsDB uses "Forward", our views use "Attacker"
+        $position = $p['strPosition'] ?? null;
+        if ($position === 'Forward') {
+            $position = 'Attacker';
+        }
+
+        return [
+            'id' => (int) ($p['idPlayer'] ?? 0),
+            'name' => $p['strPlayer'] ?? 'Unknown',
+            'age' => isset($p['dateBorn']) && $p['dateBorn']
+                ? (int) now()->diffInYears(\Carbon\Carbon::parse($p['dateBorn']))
+                : null,
+            'number' => $p['strNumber'] ?? null,
+            'position' => $position,
+            'photo' => $p['strCutout'] ?? $p['strThumb'] ?? $p['strRender'] ?? null,
         ];
     }
 
     // ── Helpers ────────────────────────────────────────────
 
     /**
-     * Map API-Football status codes to our internal status names.
+     * Map TheSportsDB status string to a short code.
+     */
+    protected static function tsdbStatusToShort(string $status): string
+    {
+        return match (true) {
+            str_contains($status, 'not started'), $status === 'ns', $status === '' => 'NS',
+            str_contains($status, '1st half'), $status === '1h' => '1H',
+            str_contains($status, '2nd half'), $status === '2h' => '2H',
+            str_contains($status, 'half time'), $status === 'ht' => 'HT',
+            str_contains($status, 'extra time'), $status === 'et' => 'ET',
+            str_contains($status, 'finished'), str_contains($status, 'match finished'), $status === 'ft' => 'FT',
+            str_contains($status, 'after extra'), $status === 'aet' => 'AET',
+            str_contains($status, 'penalties'), str_contains($status, 'after pen'), $status === 'pen' => 'PEN',
+            str_contains($status, 'postponed') => 'PST',
+            str_contains($status, 'cancelled'), str_contains($status, 'canceled') => 'CANC',
+            str_contains($status, 'suspended') => 'SUSP',
+            str_contains($status, 'abandoned') => 'ABD',
+            str_contains($status, 'live'), str_contains($status, 'in progress') => 'LIVE',
+            default => 'NS',
+        };
+    }
+
+    /**
+     * Map status short codes to our internal status names.
      */
     protected static function mapStatus(string $short): string
     {
@@ -844,16 +895,6 @@ class FootballApiService
             'LIVE' => 'live',
             default => 'unknown',
         };
-    }
-
-    protected static function buildScoreDisplay(string $statusShort, array $goals): string
-    {
-        $isPlayed = !in_array($statusShort, ['TBD', 'NS', 'PST', 'CANC']);
-        if (!$isPlayed || $goals['home'] === null) {
-            return 'vs';
-        }
-
-        return ($goals['home'] ?? 0) . ' - ' . ($goals['away'] ?? 0);
     }
 
     protected static function eventIcon(string $type, string $detail): string
@@ -878,7 +919,7 @@ class FootballApiService
     protected function filterByStatus(array $fixtures, string $status): array
     {
         $filtered = array_filter($fixtures, function ($fixture) use ($status) {
-            $fixtureStatus = self::mapStatus($fixture['fixture']['status']['short'] ?? 'NS');
+            $fixtureStatus = $fixture['status'] ?? 'unknown';
 
             return match ($status) {
                 'live' => in_array($fixtureStatus, ['live', 'half_time']),
@@ -906,5 +947,28 @@ class FootballApiService
             'last_page' => max(1, (int) ceil($total / $perPage)),
             'has_more' => ($offset + $perPage) < $total,
         ];
+    }
+
+    /**
+     * Map common country names to ISO 3166-1 alpha-2 codes for flag URLs.
+     */
+    protected static function countryToIso(string $country): string
+    {
+        $map = [
+            'England' => 'GB',
+            'Spain' => 'ES',
+            'Italy' => 'IT',
+            'Germany' => 'DE',
+            'France' => 'FR',
+            'Portugal' => 'PT',
+            'Netherlands' => 'NL',
+            'Belgium' => 'BE',
+            'Scotland' => 'GB',
+            'Turkey' => 'TR',
+            'Brazil' => 'BR',
+            'Argentina' => 'AR',
+        ];
+
+        return $map[$country] ?? 'UN';
     }
 }

@@ -36,8 +36,8 @@ return [
     ],
 
     'football_api' => [
-        'key' => env('FOOTBALL_API_KEY'),
-        'base_url' => env('FOOTBALL_API_URL', 'https://v3.football.api-sports.io'),
+        'key' => env('FOOTBALL_API_KEY', '123'),
+        'base_url' => env('FOOTBALL_API_URL', 'https://www.thesportsdb.com/api/v1/json'),
         'cache_ttl' => [
             'live' => (int) env('FOOTBALL_API_CACHE_LIVE', 60),          // 1 minute for live
             'fixtures' => (int) env('FOOTBALL_API_CACHE_FIXTURES', 900), // 15 minutes for fixture lists
@@ -49,11 +49,10 @@ return [
             'leagues' => (int) env('FOOTBALL_API_CACHE_LEAGUES', 86400), // 24 hours for league data
             'standings' => (int) env('FOOTBALL_API_CACHE_STANDINGS', 3600), // 1 hour for standings
         ],
-        // Top league IDs on API-Football
+        // Config league IDs are mapped to TheSportsDB IDs inside FootballApiService
         'leagues' => array_map('intval', explode(',', env('FOOTBALL_API_LEAGUES', '39,140,135,78,61'))),
-        // Season year – Free tier supports 2022-2024. Set explicitly via .env
-        // For paid plans, auto-detect: before July = prev year, otherwise current year
-        'season' => (int) env('FOOTBALL_API_SEASON', (int) date('n') < 7 ? (int) date('Y') - 1 : (int) date('Y')),
+        // Season string e.g. '2025-2026' for TheSportsDB
+        'season' => env('FOOTBALL_API_SEASON', '2025-2026'),
     ],
 
 ];

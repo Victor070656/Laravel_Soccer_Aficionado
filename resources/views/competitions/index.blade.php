@@ -32,7 +32,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="text-xs text-zinc-400">Season: {{ $competition->season }}/{{ substr((string)($competition->season + 1), -2) }}</div>
+                <div class="text-xs text-zinc-400">Season: {{ $competition->season }}</div>
                 @if($competition->season_start && $competition->season_end)
                 <div class="text-xs text-zinc-400 mt-0.5">{{ $competition->season_start }} → {{ $competition->season_end }}</div>
                 @endif
