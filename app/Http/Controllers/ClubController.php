@@ -2,62 +2,70 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Club;
+use App\Services\FootballApiService;
 use Illuminate\Http\Request;
 
 class ClubController extends Controller
 {
+    public function __construct(
+        protected FootballApiService $api,
+    ) {
+    }
+
     public function index(Request $request)
     {
-        $query = Club::where('is_active', true);
+        $allTeams = $this->api->getAllTeams(
+            search: $request->input('search'),
+            country: $request->input('country'),
+        );
 
-        if ($request->filled('country')) {
-            $query->where('country', $request->country);
-        }
+        $teams = collect($allTeams)
+            ->map(fn(array $raw) => (object) FootballApiService::normaliseTeam($raw));
 
-        if ($request->filled('search')) {
-            $query->where('name', 'like', "%{$request->search}%");
-        }
+        // Simple pagination
+        $page = max(1, (int) $request->input('page', 1));
+        $perPage = 24;
+        $total = $teams->count();
+        $paginatedTeams = $teams->slice(($page - 1) * $perPage, $perPage)->values();
 
-        $clubs = $query->withCount('fans')->orderBy('name')->paginate(24);
+        $leagues = collect($this->api->getLeagues())->map(fn(array $l) => (object) $l);
 
-        return view('clubs.index', compact('clubs'));
+        return view('clubs.index', [
+            'clubs' => $paginatedTeams,
+            'leagues' => $leagues,
+            'pagination' => [
+                'current_page' => $page,
+                'per_page' => $perPage,
+                'total' => $total,
+                'last_page' => max(1, (int) ceil($total / $perPage)),
+                'has_more' => ($page * $perPage) < $total,
+            ],
+            'apiConfigured' => $this->api->isConfigured(),
+        ]);
     }
 
-    public function show(Club $club)
+    public function show(int $id)
     {
-        $club->load(['players' => fn($q) => $q->where('is_active', true)->orderBy('position')]);
-        $club->loadCount('fans');
+        $raw = $this->api->getTeam($id);
 
-        $recentMatches = $club->getAllMatches()
-            ->with(['homeClub', 'awayClub', 'competition'])
-            ->finished()
-            ->take(5)
-            ->get();
-
-        $upcomingMatches = $club->getAllMatches()
-            ->with(['homeClub', 'awayClub', 'competition'])
-            ->upcoming()
-            ->take(5)
-            ->get();
-
-        $communities = $club->communities()->where('is_active', true)->withCount('members')->get();
-
-        return view('clubs.show', compact('club', 'recentMatches', 'upcomingMatches', 'communities'));
-    }
-
-    public function toggleFavorite(Request $request, Club $club)
-    {
-        $user = $request->user();
-
-        if ($user->favoriteClubs()->where('club_id', $club->id)->exists()) {
-            $user->favoriteClubs()->detach($club->id);
-            $message = 'Club removed from favorites.';
-        } else {
-            $user->favoriteClubs()->attach($club->id);
-            $message = 'Club added to favorites!';
+        if (!$raw) {
+            abort(404, 'Club not found.');
         }
 
-        return back()->with('success', $message);
+        $club = (object) FootballApiService::normaliseTeam($raw);
+
+        // Squad
+        $squad = collect($this->api->getTeamSquad($id))
+            ->map(fn(array $p) => (object) FootballApiService::normaliseSquadPlayer($p));
+
+        // Recent results
+        $recentMatches = collect($this->api->getTeamFixtures($id, 'finished', 5))
+            ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
+
+        // Upcoming matches
+        $upcomingMatches = collect($this->api->getTeamFixtures($id, 'upcoming', 5))
+            ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
+
+        return view('clubs.show', compact('club', 'squad', 'recentMatches', 'upcomingMatches'));
     }
 }

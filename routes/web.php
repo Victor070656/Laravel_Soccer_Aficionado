@@ -30,10 +30,10 @@ Route::get('/matches/live', [MatchController::class, 'live'])->name('matches.liv
 Route::get('/matches/{id}', [MatchController::class, 'show'])->name('matches.show')->where('id', '[0-9]+');
 
 Route::get('/clubs', [ClubController::class, 'index'])->name('clubs.index');
-Route::get('/clubs/{club:slug}', [ClubController::class, 'show'])->name('clubs.show');
+Route::get('/clubs/{id}', [ClubController::class, 'show'])->name('clubs.show')->where('id', '[0-9]+');
 
 Route::get('/competitions', [CompetitionController::class, 'index'])->name('competitions.index');
-Route::get('/competitions/{competition:slug}', [CompetitionController::class, 'show'])->name('competitions.show');
+Route::get('/competitions/{id}', [CompetitionController::class, 'show'])->name('competitions.show')->where('id', '[0-9]+');
 
 Route::get('/users/{user:username}', [ProfileController::class, 'show'])->name('profiles.show');
 
@@ -68,7 +68,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Social
     Route::post('/users/{user}/follow', [ProfileController::class, 'follow'])->name('users.follow');
-    Route::post('/clubs/{club}/favorite', [ClubController::class, 'toggleFavorite'])->name('clubs.favorite');
 
     // Notifications
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');

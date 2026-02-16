@@ -46,6 +46,23 @@ class FootballApiService
     }
 
     /**
+     * Get the configured season year (e.g. 2025).
+     */
+    public function getSeason(): int
+    {
+        return $this->season;
+    }
+
+    /**
+     * Display-friendly season string (e.g. "2025/26").
+     */
+    public function seasonDisplay(): string
+    {
+        $next = $this->season + 1;
+        return $this->season . '/' . substr((string) $next, -2);
+    }
+
+    /**
      * Make an authenticated GET request to the API.
      */
     protected function get(string $endpoint, array $params = []): ?array
@@ -335,8 +352,8 @@ class FootballApiService
      */
     public function getLeagues(): array
     {
-        $cacheKey = 'football_api:leagues';
-        $ttl = 86400; // 24 hours
+        $cacheKey = 'football_api:leagues:' . $this->season;
+        $ttl = $this->cacheTtl['leagues'] ?? 86400;
 
         return Cache::remember($cacheKey, $ttl, function () {
             $leagues = [];
@@ -357,6 +374,248 @@ class FootballApiService
             }
 
             return $leagues;
+        });
+    }
+
+    // ── Leagues / Competitions ─────────────────────────────
+
+    /**
+     * Get full details for all configured leagues (for the competitions listing).
+     */
+    public function getLeaguesFull(): array
+    {
+        $cacheKey = 'football_api:leagues_full:' . $this->season;
+        $ttl = $this->cacheTtl['leagues'] ?? 86400;
+
+        return Cache::remember($cacheKey, $ttl, function () {
+            $leagues = [];
+
+            foreach ($this->leagues as $leagueId) {
+                $response = $this->get('leagues', ['id' => $leagueId, 'season' => $this->season]);
+                if ($response && !empty($response['response'])) {
+                    $entry = $response['response'][0];
+                    $league = $entry['league'] ?? [];
+                    $country = $entry['country'] ?? [];
+                    $seasons = $entry['seasons'] ?? [];
+                    $currentSeason = collect($seasons)->firstWhere('current', true) ?? ($seasons[0] ?? []);
+
+                    $leagues[] = [
+                        'id' => $league['id'] ?? 0,
+                        'name' => $league['name'] ?? 'Unknown',
+                        'type' => $league['type'] ?? 'league',
+                        'logo' => $league['logo'] ?? null,
+                        'country' => $country['name'] ?? null,
+                        'country_code' => $country['code'] ?? null,
+                        'country_flag' => $country['flag'] ?? null,
+                        'season' => $currentSeason['year'] ?? $this->season,
+                        'season_start' => $currentSeason['start'] ?? null,
+                        'season_end' => $currentSeason['end'] ?? null,
+                    ];
+                }
+            }
+
+            return $leagues;
+        });
+    }
+
+    /**
+     * Get a single league/competition by ID.
+     */
+    public function getLeague(int $leagueId): ?array
+    {
+        $cacheKey = "football_api:league:{$leagueId}:{$this->season}";
+        $ttl = $this->cacheTtl['leagues'] ?? 86400;
+
+        return Cache::remember($cacheKey, $ttl, function () use ($leagueId) {
+            $response = $this->get('leagues', ['id' => $leagueId, 'season' => $this->season]);
+            if ($response && !empty($response['response'])) {
+                $entry = $response['response'][0];
+                $league = $entry['league'] ?? [];
+                $country = $entry['country'] ?? [];
+                $seasons = $entry['seasons'] ?? [];
+                $currentSeason = collect($seasons)->firstWhere('current', true) ?? ($seasons[0] ?? []);
+
+                return [
+                    'id' => $league['id'] ?? 0,
+                    'name' => $league['name'] ?? 'Unknown',
+                    'type' => $league['type'] ?? 'league',
+                    'logo' => $league['logo'] ?? null,
+                    'country' => $country['name'] ?? null,
+                    'country_code' => $country['code'] ?? null,
+                    'country_flag' => $country['flag'] ?? null,
+                    'season' => $currentSeason['year'] ?? $this->season,
+                    'season_start' => $currentSeason['start'] ?? null,
+                    'season_end' => $currentSeason['end'] ?? null,
+                ];
+            }
+
+            return null;
+        });
+    }
+
+    /**
+     * Get standings for a league/season.
+     */
+    public function getStandings(int $leagueId, ?int $season = null): array
+    {
+        $season = $season ?? $this->season;
+        $cacheKey = "football_api:standings:{$leagueId}:{$season}";
+        $ttl = $this->cacheTtl['standings'] ?? 3600;
+
+        return Cache::remember($cacheKey, $ttl, function () use ($leagueId, $season) {
+            $response = $this->get('standings', ['league' => $leagueId, 'season' => $season]);
+            if (!$response || empty($response['response'])) {
+                return [];
+            }
+
+            $standings = $response['response'][0]['league']['standings'] ?? [];
+            // standings is an array of groups; flatten for single-group leagues
+            if (!empty($standings) && isset($standings[0]) && is_array($standings[0])) {
+                // For single-group leagues, use the first group
+                // For multi-group (e.g., Champions League), return all groups
+                return $standings;
+            }
+
+            return [];
+        });
+    }
+
+    // ── Teams / Clubs ──────────────────────────────────────
+
+    /**
+     * Get all teams for a specific league in the current season.
+     */
+    public function getTeamsByLeague(int $leagueId, ?int $season = null): array
+    {
+        $season = $season ?? $this->season;
+        $cacheKey = "football_api:teams:league:{$leagueId}:{$season}";
+        $ttl = $this->cacheTtl['teams'] ?? 86400;
+
+        return $this->cached($cacheKey, $ttl, 'teams', [
+            'league' => $leagueId,
+            'season' => $season,
+        ]);
+    }
+
+    /**
+     * Get all teams across all configured leagues.
+     */
+    public function getAllTeams(?string $search = null, ?string $country = null): array
+    {
+        $allTeams = [];
+
+        foreach ($this->leagues as $leagueId) {
+            $teams = $this->getTeamsByLeague($leagueId);
+            foreach ($teams as $team) {
+                $allTeams[$team['team']['id']] = $team; // deduplicate by id
+            }
+        }
+
+        $allTeams = array_values($allTeams);
+
+        // Apply search filter
+        if ($search) {
+            $search = strtolower($search);
+            $allTeams = array_filter($allTeams, function ($t) use ($search) {
+                return str_contains(strtolower($t['team']['name'] ?? ''), $search)
+                    || str_contains(strtolower($t['team']['code'] ?? ''), $search);
+            });
+            $allTeams = array_values($allTeams);
+        }
+
+        // Apply country filter
+        if ($country) {
+            $country = strtolower($country);
+            $allTeams = array_filter($allTeams, function ($t) use ($country) {
+                return str_contains(strtolower($t['team']['country'] ?? ''), $country);
+            });
+            $allTeams = array_values($allTeams);
+        }
+
+        // Sort by name
+        usort($allTeams, fn($a, $b) => strcasecmp($a['team']['name'] ?? '', $b['team']['name'] ?? ''));
+
+        return $allTeams;
+    }
+
+    /**
+     * Get a single team by its API-Football team ID.
+     */
+    public function getTeam(int $teamId): ?array
+    {
+        $cacheKey = "football_api:team:{$teamId}";
+        $ttl = $this->cacheTtl['teams'] ?? 86400;
+
+        return Cache::remember($cacheKey, $ttl, function () use ($teamId) {
+            $response = $this->get('teams', ['id' => $teamId]);
+            if ($response && !empty($response['response'])) {
+                return $response['response'][0] ?? null;
+            }
+
+            return null;
+        });
+    }
+
+    /**
+     * Get the full squad (players) for a team.
+     */
+    public function getTeamSquad(int $teamId): array
+    {
+        $cacheKey = "football_api:squad:{$teamId}";
+        $ttl = $this->cacheTtl['teams'] ?? 86400;
+
+        return Cache::remember($cacheKey, $ttl, function () use ($teamId) {
+            $response = $this->get('players/squads', ['team' => $teamId]);
+            if ($response && !empty($response['response'])) {
+                return $response['response'][0]['players'] ?? [];
+            }
+
+            return [];
+        });
+    }
+
+    /**
+     * Get fixtures for a specific team.
+     */
+    public function getTeamFixtures(int $teamId, ?string $status = null, int $limit = 10): array
+    {
+        $params = [
+            'team' => $teamId,
+            'season' => $this->season,
+            'timezone' => config('app.timezone', 'UTC'),
+        ];
+
+        if ($status === 'finished') {
+            $params['status'] = 'FT-AET-PEN';
+            $params['last'] = $limit;
+        } elseif ($status === 'upcoming') {
+            $params['status'] = 'NS-TBD';
+            $params['next'] = $limit;
+        }
+
+        $cacheKey = 'football_api:team_fixtures:' . md5(json_encode($params));
+        $ttl = $this->cacheTtl['fixtures'] ?? 900;
+
+        return $this->cached($cacheKey, $ttl, 'fixtures', $params);
+    }
+
+    /**
+     * Get team statistics for a given league/season.
+     */
+    public function getTeamStatistics(int $teamId, int $leagueId, ?int $season = null): ?array
+    {
+        $season = $season ?? $this->season;
+        $cacheKey = "football_api:team_stats:{$teamId}:{$leagueId}:{$season}";
+        $ttl = $this->cacheTtl['standings'] ?? 3600;
+
+        return Cache::remember($cacheKey, $ttl, function () use ($teamId, $leagueId, $season) {
+            $response = $this->get('teams/statistics', [
+                'team' => $teamId,
+                'league' => $leagueId,
+                'season' => $season,
+            ]);
+
+            return $response['response'] ?? null;
         });
     }
 
@@ -488,6 +747,77 @@ class FootballApiService
                 'name' => $raw['coach']['name'] ?? null,
                 'photo' => $raw['coach']['photo'] ?? null,
             ],
+        ];
+    }
+
+    /**
+     * Normalise a team from the /teams endpoint.
+     */
+    public static function normaliseTeam(array $raw): array
+    {
+        $team = $raw['team'] ?? [];
+        $venue = $raw['venue'] ?? [];
+
+        return [
+            'id' => $team['id'] ?? 0,
+            'name' => $team['name'] ?? 'Unknown',
+            'code' => $team['code'] ?? null,
+            'country' => $team['country'] ?? null,
+            'founded' => $team['founded'] ?? null,
+            'national' => $team['national'] ?? false,
+            'logo' => $team['logo'] ?? null,
+            'venue' => [
+                'id' => $venue['id'] ?? null,
+                'name' => $venue['name'] ?? null,
+                'city' => $venue['city'] ?? null,
+                'capacity' => $venue['capacity'] ?? null,
+                'surface' => $venue['surface'] ?? null,
+                'image' => $venue['image'] ?? null,
+            ],
+        ];
+    }
+
+    /**
+     * Normalise a standing row from the /standings endpoint.
+     */
+    public static function normaliseStandingRow(array $raw): array
+    {
+        $team = $raw['team'] ?? [];
+        $all = $raw['all'] ?? [];
+
+        return [
+            'rank' => $raw['rank'] ?? 0,
+            'team' => [
+                'id' => $team['id'] ?? 0,
+                'name' => $team['name'] ?? 'Unknown',
+                'logo' => $team['logo'] ?? null,
+            ],
+            'points' => $raw['points'] ?? 0,
+            'goals_diff' => $raw['goalsDiff'] ?? 0,
+            'played' => $all['played'] ?? 0,
+            'won' => $all['win'] ?? 0,
+            'drawn' => $all['draw'] ?? 0,
+            'lost' => $all['lose'] ?? 0,
+            'goals_for' => $all['goals']['for'] ?? 0,
+            'goals_against' => $all['goals']['against'] ?? 0,
+            'form' => $raw['form'] ?? '',
+            'description' => $raw['description'] ?? null,
+            'status' => $raw['status'] ?? null,
+        ];
+    }
+
+    /**
+     * Normalise a squad player from /players/squads.
+     */
+    public static function normaliseSquadPlayer(array $raw): array
+    {
+        return [
+            'id' => $raw['id'] ?? 0,
+            'name' => $raw['name'] ?? 'Unknown',
+            'age' => $raw['age'] ?? null,
+            'number' => $raw['number'] ?? null,
+            'position' => $raw['position'] ?? null,
+            'photo' => $raw['photo'] ?? null,
         ];
     }
 

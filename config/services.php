@@ -45,10 +45,15 @@ return [
             'events' => (int) env('FOOTBALL_API_CACHE_EVENTS', 120),     // 2 minutes for events
             'lineups' => (int) env('FOOTBALL_API_CACHE_LINEUPS', 600),   // 10 minutes for lineups
             'statistics' => (int) env('FOOTBALL_API_CACHE_STATS', 300),  // 5 minutes for statistics
+            'teams' => (int) env('FOOTBALL_API_CACHE_TEAMS', 86400),     // 24 hours for team data
+            'leagues' => (int) env('FOOTBALL_API_CACHE_LEAGUES', 86400), // 24 hours for league data
+            'standings' => (int) env('FOOTBALL_API_CACHE_STANDINGS', 3600), // 1 hour for standings
         ],
         // Top league IDs on API-Football
         'leagues' => array_map('intval', explode(',', env('FOOTBALL_API_LEAGUES', '39,140,135,78,61'))),
-        'season' => (int) env('FOOTBALL_API_SEASON', date('Y')),
+        // Season year – Free tier supports 2022-2024. Set explicitly via .env
+        // For paid plans, auto-detect: before July = prev year, otherwise current year
+        'season' => (int) env('FOOTBALL_API_SEASON', (int) date('n') < 7 ? (int) date('Y') - 1 : (int) date('Y')),
     ],
 
 ];
