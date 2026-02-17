@@ -26,8 +26,8 @@ new class extends Component {
 }; ?>
 
 <section class="mt-10 space-y-6">
-    <div class="relative mb-5">
-        <flux:heading>{{ __('Delete account') }}</flux:heading>
+    <div class="relative mb-5 p-5 rounded-2xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/20">
+        <flux:heading class="!text-red-600 dark:!text-red-400">⚠️ {{ __('Delete account') }}</flux:heading>
         <flux:subheading>{{ __('Delete your account and all of its resources') }}</flux:subheading>
     </div>
 

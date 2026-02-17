@@ -43,16 +43,20 @@
             <flux:checkbox name="remember" :label="__('Remember me')" :checked="old('remember')" />
 
             <div class="flex items-center justify-end">
-                <flux:button variant="primary" type="submit" class="w-full" data-test="login-button">
+                <flux:button variant="primary" type="submit" class="w-full !bg-gradient-to-r !from-green-600 !to-emerald-600 hover:!from-green-500 hover:!to-emerald-500 !shadow-lg !shadow-green-500/25" data-test="login-button">
                     {{ __('Log in') }}
                 </flux:button>
             </div>
         </form>
 
         @if (Route::has('register'))
+            <div class="relative my-2">
+                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-zinc-200 dark:border-zinc-700"></div></div>
+                <div class="relative flex justify-center text-xs"><span class="bg-white dark:bg-zinc-950 px-4 text-zinc-500">or</span></div>
+            </div>
             <div class="space-x-1 text-sm text-center rtl:space-x-reverse text-zinc-600 dark:text-zinc-400">
                 <span>{{ __('Don\'t have an account?') }}</span>
-                <flux:link :href="route('register')" wire:navigate>{{ __('Sign up') }}</flux:link>
+                <flux:link :href="route('register')" wire:navigate class="!text-green-600 hover:!text-green-500 font-semibold">{{ __('Sign up') }}</flux:link>
             </div>
         @endif
     </div>

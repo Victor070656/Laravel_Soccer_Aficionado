@@ -1,9 +1,15 @@
 <x-layouts::app :title="'Edit Match'">
     <div class="max-w-2xl mx-auto space-y-6">
-        <a href="{{ route('admin.matches.index') }}" class="text-sm text-green-600 hover:text-green-700">← Back to Matches</a>
-        <h1 class="text-2xl font-bold text-zinc-900 dark:text-white">Edit: {{ $match->homeClub->name }} vs {{ $match->awayClub->name }}</h1>
+        <a href="{{ route('admin.matches.index') }}" class="inline-flex items-center gap-1 text-sm text-green-500 hover:text-green-400 font-medium transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Back to Matches
+        </a>
+        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 p-6">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/4"></div>
+            <h1 class="text-2xl font-bold text-white relative">✏️ {{ $match->homeClub->name }} vs {{ $match->awayClub->name }}</h1>
+        </div>
 
-        <form action="{{ route('admin.matches.update', $match) }}" method="POST" class="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 p-6 space-y-4">
+        <form action="{{ route('admin.matches.update', $match) }}" method="POST" class="rounded-2xl border border-zinc-200 dark:border-zinc-700/50 bg-white dark:bg-zinc-800/50 backdrop-blur-sm p-6 space-y-4 shadow-xl shadow-black/5">
             @csrf @method('PUT')
             <div class="grid grid-cols-2 gap-4">
                 <div>
@@ -65,7 +71,7 @@
                 </div>
             </div>
             <div class="flex justify-end pt-4">
-                <button type="submit" class="rounded-lg bg-green-600 px-6 py-2 text-sm text-white hover:bg-green-700">Update Match</button>
+                <button type="submit" class="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-2.5 text-sm font-semibold text-white hover:from-blue-500 hover:to-indigo-500 shadow-lg shadow-blue-500/25 transition-all duration-300">Update Match</button>
             </div>
         </form>
     </div>
