@@ -2,7 +2,7 @@
     <div class="max-w-7xl mx-auto space-y-8 p-2 sm:p-4">
         {{-- Header --}}
         <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-green-700 via-emerald-600 to-teal-600 p-6 sm:p-8 text-white shadow-xl">
-            <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1200&q=50'); background-size: cover; background-position: center;"></div>
+            <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=600&q=30'); background-size: cover; background-position: center;"></div>
             <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
             <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
@@ -73,7 +73,7 @@
                 <div class="flex items-center justify-between mb-3">
                     <div class="flex items-center gap-2">
                         @if($match->league['logo'] ?? null)
-                        <img src="{{ $match->league['logo'] }}" alt="" class="h-5 w-5 object-contain">
+                        <img loading="lazy" decoding="async" src="{{ $match->league['logo'] }}" alt="" class="h-5 w-5 object-contain">
                         @endif
                         <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400">{{ $match->league['name'] }} · {{ \Carbon\Carbon::parse($match->date)->format('M d, Y H:i') }}</span>
                     </div>
@@ -96,7 +96,7 @@
                 <div class="flex items-center justify-between">
                     <div class="flex-1 flex items-center gap-3">
                         @if($match->home_team['logo'] ?? null)
-                        <img src="{{ $match->home_team['logo'] }}" alt="" class="h-10 w-10 object-contain group-hover:scale-110 transition-transform">
+                        <img loading="lazy" decoding="async" src="{{ $match->home_team['logo'] }}" alt="" class="h-10 w-10 object-contain group-hover:scale-110 transition-transform">
                         @else
                         <div class="h-10 w-10 rounded-full bg-zinc-100 dark:bg-zinc-700 flex items-center justify-center text-lg">⚽</div>
                         @endif
@@ -108,7 +108,7 @@
                     <div class="flex-1 flex items-center justify-end gap-3">
                         <div class="font-bold text-zinc-900 dark:text-white text-right group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">{{ $match->away_team['name'] }}</div>
                         @if($match->away_team['logo'] ?? null)
-                        <img src="{{ $match->away_team['logo'] }}" alt="" class="h-10 w-10 object-contain group-hover:scale-110 transition-transform">
+                        <img loading="lazy" decoding="async" src="{{ $match->away_team['logo'] }}" alt="" class="h-10 w-10 object-contain group-hover:scale-110 transition-transform">
                         @else
                         <div class="h-10 w-10 rounded-full bg-zinc-100 dark:bg-zinc-700 flex items-center justify-center text-lg">⚽</div>
                         @endif

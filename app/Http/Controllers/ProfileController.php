@@ -21,7 +21,8 @@ class ProfileController extends Controller
         $user->load(['favoriteClubs', 'badges', 'communities']);
 
         $posts = $user->posts()
-            ->with('community')
+            ->with(['community', 'user'])
+            ->withCount(['likes', 'comments'])
             ->approved()
             ->latest()
             ->paginate(20);

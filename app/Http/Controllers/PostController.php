@@ -22,6 +22,7 @@ class PostController extends Controller
     public function index(Request $request)
     {
         $posts = Post::with(['user', 'community'])
+            ->withCount(['likes', 'comments', 'shares'])
             ->approved()
             ->latest()
             ->paginate(20);
@@ -95,6 +96,7 @@ class PostController extends Controller
         $post->likes()->create(['user_id' => $user->id]);
         $post->increment('likes_count');
 
+        $post->loadMissing('user');
         $this->gamification->awardPoints($post->user, 'like_received', $post);
         $this->notifications->notifyLike($user, $post);
 

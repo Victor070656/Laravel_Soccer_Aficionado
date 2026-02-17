@@ -2,7 +2,7 @@
     <div class="max-w-7xl mx-auto space-y-8 p-2 sm:p-4">
         {{-- Header --}}
         <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-amber-600 via-yellow-600 to-orange-600 p-6 sm:p-8 text-white shadow-xl">
-            <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&q=50'); background-size: cover; background-position: center;"></div>
+            <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600&q=30'); background-size: cover; background-position: center;"></div>
             <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
             <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/3 -translate-x-1/4"></div>
             <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -37,7 +37,7 @@
                     <div class="flex items-center gap-3 mb-3">
                         @if($competition->logo)
                         <div class="w-12 h-12 rounded-xl bg-zinc-50 dark:bg-zinc-700/50 flex items-center justify-center p-1.5 group-hover:scale-110 transition-transform duration-300">
-                            <img src="{{ $competition->logo }}" alt="{{ $competition->name }}" class="w-8 h-8 object-contain">
+                            <img loading="lazy" decoding="async" src="{{ $competition->logo }}" alt="{{ $competition->name }}" class="w-8 h-8 object-contain">
                         </div>
                         @else
                         <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-yellow-100 dark:from-amber-900/30 dark:to-yellow-900/30 flex items-center justify-center text-amber-600 dark:text-amber-400 font-bold text-sm group-hover:scale-110 transition-transform duration-300">
@@ -48,7 +48,7 @@
                             <div class="font-bold text-zinc-900 dark:text-white group-hover:text-amber-600 transition text-sm">{{ $competition->name }}</div>
                             <div class="flex items-center gap-1.5 text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">
                                 @if($competition->country_flag ?? null)
-                                <img src="{{ $competition->country_flag }}" alt="" class="h-3 w-4 object-contain">
+                                <img loading="lazy" decoding="async" src="{{ $competition->country_flag }}" alt="" class="h-3 w-4 object-contain">
                                 @endif
                                 {{ ucfirst($competition->type) }} · {{ $competition->country ?? 'International' }}
                             </div>

@@ -2,7 +2,7 @@
     <div class="max-w-7xl mx-auto space-y-8 p-2 sm:p-4">
         {{-- Header --}}
         <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-emerald-700 via-green-600 to-teal-600 p-6 sm:p-8 text-white shadow-xl">
-            <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=1200&q=50'); background-size: cover; background-position: center;"></div>
+            <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=600&q=30'); background-size: cover; background-position: center;"></div>
             <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
             <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/3 -translate-x-1/4"></div>
             <div class="relative z-10">
@@ -52,7 +52,7 @@
                     <div class="flex items-center gap-3 mb-3">
                         @if($club->logo)
                         <div class="w-14 h-14 rounded-xl bg-zinc-50 dark:bg-zinc-700/50 flex items-center justify-center p-1.5 group-hover:scale-110 transition-transform duration-300">
-                            <img src="{{ $club->logo }}" alt="{{ $club->name }}" class="w-10 h-10 object-contain">
+                            <img loading="lazy" decoding="async" src="{{ $club->logo }}" alt="{{ $club->name }}" class="w-10 h-10 object-contain">
                         </div>
                         @else
                         <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 flex items-center justify-center text-lg font-bold text-green-600 group-hover:scale-110 transition-transform duration-300">

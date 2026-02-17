@@ -17,7 +17,7 @@ class CommunityController extends Controller
 
     public function index(Request $request)
     {
-        $query = Community::where('is_active', true)->withCount('members');
+        $query = Community::with('club')->where('is_active', true)->withCount('members');
 
         if ($request->filled('search')) {
             $query->where('name', 'like', "%{$request->search}%");
@@ -37,6 +37,7 @@ class CommunityController extends Controller
 
         $posts = $community->posts()
             ->with(['user'])
+            ->withCount(['likes', 'comments'])
             ->approved()
             ->latest()
             ->paginate(20);

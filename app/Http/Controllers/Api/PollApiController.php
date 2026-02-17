@@ -10,7 +10,7 @@ class PollApiController extends BaseApiController
 {
     public function index()
     {
-        $polls = Poll::with(['options', 'user'])
+        $polls = Poll::with(['options', 'user', 'match.homeClub', 'match.awayClub'])
             ->active()
             ->latest()
             ->paginate(20);
@@ -20,7 +20,7 @@ class PollApiController extends BaseApiController
 
     public function show(Poll $poll)
     {
-        $poll->load(['options' => fn($q) => $q->orderByDesc('votes_count'), 'user', 'match']);
+        $poll->load(['options' => fn($q) => $q->orderByDesc('votes_count'), 'user', 'match.homeClub', 'match.awayClub']);
 
         return $this->success($poll);
     }

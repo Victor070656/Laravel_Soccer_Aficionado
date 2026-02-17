@@ -8,7 +8,7 @@
             </div>
             @else
             <div class="h-48 sm:h-56 bg-gradient-to-r from-green-700 via-emerald-600 to-teal-600">
-                <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=1200&q=50'); background-size: cover; background-position: center;"></div>
+                <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=600&q=30'); background-size: cover; background-position: center;"></div>
                 <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
                 <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/3 -translate-x-1/4"></div>
             </div>
@@ -19,7 +19,7 @@
                 <div class="flex items-end gap-4">
                     <div class="flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white/95 dark:bg-zinc-800/95 backdrop-blur-sm flex items-center justify-center p-2 shadow-xl border border-white/20">
                         @if($club->logo)
-                        <img src="{{ $club->logo }}" alt="{{ $club->name }}" class="w-14 h-14 sm:w-16 sm:h-16 object-contain">
+                        <img loading="lazy" decoding="async" src="{{ $club->logo }}" alt="{{ $club->name }}" class="w-14 h-14 sm:w-16 sm:h-16 object-contain">
                         @else
                         <span class="text-2xl font-bold text-green-600">{{ strtoupper(substr($club->code ?? $club->name, 0, 3)) }}</span>
                         @endif
@@ -94,7 +94,7 @@
                                         @endif
                                         <div class="flex items-center gap-2">
                                             @if($player->photo)
-                                            <img src="{{ $player->photo }}" alt="" class="w-8 h-8 rounded-full object-cover ring-2 ring-zinc-100 dark:ring-zinc-700">
+                                            <img loading="lazy" decoding="async" src="{{ $player->photo }}" alt="" class="w-8 h-8 rounded-full object-cover ring-2 ring-zinc-100 dark:ring-zinc-700">
                                             @endif
                                             <span class="text-sm font-medium text-zinc-800 dark:text-zinc-200">{{ $player->name }}</span>
                                         </div>
@@ -133,7 +133,7 @@
                             <div class="flex justify-between items-center text-sm">
                                 <div class="flex items-center gap-1.5 flex-1 min-w-0">
                                     @if($match->home_team['logo'] ?? null)
-                                    <img src="{{ $match->home_team['logo'] }}" alt="" class="h-4 w-4 object-contain flex-shrink-0">
+                                    <img loading="lazy" decoding="async" src="{{ $match->home_team['logo'] }}" alt="" class="h-4 w-4 object-contain flex-shrink-0">
                                     @endif
                                     <span class="font-medium text-zinc-800 dark:text-zinc-200 truncate">{{ $match->home_team['name'] }}</span>
                                 </div>
@@ -141,7 +141,7 @@
                                 <div class="flex items-center gap-1.5 flex-1 min-w-0 justify-end">
                                     <span class="font-medium text-zinc-800 dark:text-zinc-200 truncate">{{ $match->away_team['name'] }}</span>
                                     @if($match->away_team['logo'] ?? null)
-                                    <img src="{{ $match->away_team['logo'] }}" alt="" class="h-4 w-4 object-contain flex-shrink-0">
+                                    <img loading="lazy" decoding="async" src="{{ $match->away_team['logo'] }}" alt="" class="h-4 w-4 object-contain flex-shrink-0">
                                     @endif
                                 </div>
                             </div>
@@ -167,7 +167,7 @@
                             <div class="flex justify-between items-center text-sm font-medium text-zinc-800 dark:text-zinc-200 mt-1">
                                 <div class="flex items-center gap-1.5">
                                     @if($match->home_team['logo'] ?? null)
-                                    <img src="{{ $match->home_team['logo'] }}" alt="" class="h-4 w-4 object-contain">
+                                    <img loading="lazy" decoding="async" src="{{ $match->home_team['logo'] }}" alt="" class="h-4 w-4 object-contain">
                                     @endif
                                     <span>{{ $match->home_team['name'] }}</span>
                                 </div>
@@ -175,7 +175,7 @@
                                 <div class="flex items-center gap-1.5">
                                     <span>{{ $match->away_team['name'] }}</span>
                                     @if($match->away_team['logo'] ?? null)
-                                    <img src="{{ $match->away_team['logo'] }}" alt="" class="h-4 w-4 object-contain">
+                                    <img loading="lazy" decoding="async" src="{{ $match->away_team['logo'] }}" alt="" class="h-4 w-4 object-contain">
                                     @endif
                                 </div>
                             </div>

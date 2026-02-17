@@ -26,7 +26,7 @@ class PollController extends Controller
 
     public function show(Poll $poll)
     {
-        $poll->load(['options' => fn($q) => $q->orderByDesc('votes_count'), 'user', 'match']);
+        $poll->load(['options' => fn($q) => $q->orderByDesc('votes_count'), 'user', 'match.homeClub', 'match.awayClub']);
 
         $userVote = null;
         if (auth()->check()) {

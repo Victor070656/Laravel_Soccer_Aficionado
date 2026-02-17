@@ -32,7 +32,7 @@ class AdminDashboardController extends Controller
             ->take(10)
             ->get();
 
-        $recentUsers = User::latest()->take(10)->get();
+        $recentUsers = User::with('roles')->latest()->take(10)->get();
 
         return view('admin.dashboard', compact('stats', 'recentReports', 'recentUsers'));
     }

@@ -34,8 +34,9 @@ class SearchController extends Controller
         }
 
         if ($type === 'all' || $type === 'users') {
-            $results['users'] = User::where('name', 'like', "%{$query}%")
-                ->orWhere('username', 'like', "%{$query}%")
+            $results['users'] = User::select(['id', 'name', 'username', 'avatar', 'points'])
+                ->where(fn($q) => $q->where('name', 'like', "%{$query}%")
+                    ->orWhere('username', 'like', "%{$query}%"))
                 ->take(10)->get();
         }
 
@@ -49,6 +50,7 @@ class SearchController extends Controller
         if ($type === 'all' || $type === 'communities') {
             $results['communities'] = Community::where('is_active', true)
                 ->where('name', 'like', "%{$query}%")
+                ->withCount('members')
                 ->take(10)->get();
         }
 
@@ -61,8 +63,10 @@ class SearchController extends Controller
 
         if ($type === 'all' || $type === 'matches') {
             $results['matches'] = FootballMatch::with(['homeClub', 'awayClub'])
-                ->whereHas('homeClub', fn($q) => $q->where('name', 'like', "%{$query}%"))
-                ->orWhereHas('awayClub', fn($q) => $q->where('name', 'like', "%{$query}%"))
+                ->where(function ($q) use ($query) {
+                    $q->whereHas('homeClub', fn($sq) => $sq->where('name', 'like', "%{$query}%"))
+                        ->orWhereHas('awayClub', fn($sq) => $sq->where('name', 'like', "%{$query}%"));
+                })
                 ->take(10)->get();
         }
 

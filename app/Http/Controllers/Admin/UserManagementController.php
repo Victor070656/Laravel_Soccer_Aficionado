@@ -35,10 +35,11 @@ class UserManagementController extends Controller
 
     public function show(User $user)
     {
-        $user->load(['roles', 'posts', 'communities', 'badges']);
+        $user->load(['roles', 'communities', 'badges']);
         $user->loadCount(['posts', 'comments', 'followers', 'following']);
+        $roles = Role::all();
 
-        return view('admin.users.show', compact('user'));
+        return view('admin.users.show', compact('user', 'roles'));
     }
 
     public function ban(Request $request, User $user)

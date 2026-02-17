@@ -30,8 +30,8 @@ class MatchManagementController extends Controller
 
     public function create()
     {
-        $clubs = Club::where('is_active', true)->orderBy('name')->get();
-        $competitions = Competition::where('is_active', true)->get();
+        $clubs = Club::where('is_active', true)->orderBy('name')->select(['id', 'name'])->get();
+        $competitions = Competition::where('is_active', true)->select(['id', 'name'])->get();
 
         return view('admin.matches.create', compact('clubs', 'competitions'));
     }
@@ -57,8 +57,8 @@ class MatchManagementController extends Controller
 
     public function edit(FootballMatch $match)
     {
-        $clubs = Club::where('is_active', true)->orderBy('name')->get();
-        $competitions = Competition::where('is_active', true)->get();
+        $clubs = Club::where('is_active', true)->orderBy('name')->select(['id', 'name'])->get();
+        $competitions = Competition::where('is_active', true)->select(['id', 'name'])->get();
 
         return view('admin.matches.edit', compact('match', 'clubs', 'competitions'));
     }

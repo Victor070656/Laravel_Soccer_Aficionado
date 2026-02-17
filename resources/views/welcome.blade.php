@@ -143,7 +143,7 @@
                 <div class="relative hidden lg:block">
                     <div class="animate-scale-in animation-delay-300">
                         <div class="relative rounded-3xl overflow-hidden shadow-2xl shadow-zinc-900/20 dark:shadow-black/40 border border-zinc-200/50 dark:border-zinc-700/50">
-                            <img src="https://images.unsplash.com/photo-1508098682722-e99c643e7f0b?w=700&h=500&fit=crop&q=80" alt="Football Stadium" class="w-full h-[420px] object-cover">
+                            <img fetchpriority="high" decoding="async" src="https://images.unsplash.com/photo-1508098682722-e99c643e7f0b?w=700&h=500&fit=crop&q=80" alt="Football Stadium" class="w-full h-[420px] object-cover">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                             <div class="absolute bottom-0 left-0 right-0 p-8">
                                 <div class="flex items-center gap-3 mb-3">
@@ -222,7 +222,7 @@
     {{-- Stats Section --}}
     <section class="relative py-20 overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-r from-green-600 via-emerald-600 to-green-700"></div>
-        <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1920&q=60'); background-size: cover; background-position: center;"></div>
+        <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600&q=30'); background-size: cover; background-position: center;"></div>
         <div class="absolute inset-0 bg-gradient-to-r from-green-600/90 via-emerald-600/90 to-green-700/90"></div>
         <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6">
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
@@ -269,7 +269,7 @@
                 @foreach($features as $feature)
                 <div class="group relative rounded-2xl overflow-hidden border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800/80 hover:border-green-300 dark:hover:border-green-700/60 transition-all duration-500 hover-lift">
                     <div class="relative h-44 overflow-hidden">
-                        <img src="{{ $feature['image'] }}" alt="{{ $feature['title'] }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy">
+                        <img src="{{ $feature['image'] }}" alt="{{ $feature['title'] }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" decoding="async">
                         <div class="absolute inset-0 bg-gradient-to-t from-white dark:from-zinc-800 via-transparent to-transparent"></div>
                         <div class="absolute top-4 left-4">
                             <div class="w-12 h-12 rounded-xl bg-gradient-to-br {{ $feature['color'] }} flex items-center justify-center text-2xl shadow-lg">{{ $feature['icon'] }}</div>
@@ -330,7 +330,7 @@
                 </div>
                 <div class="relative">
                     <div class="rounded-3xl overflow-hidden shadow-2xl shadow-zinc-900/20 dark:shadow-black/40 border border-zinc-200/50 dark:border-zinc-700/50">
-                        <img src="https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=700&h=500&fit=crop&q=80" alt="Match Experience" class="w-full h-[400px] object-cover" loading="lazy">
+                        <img src="https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=700&h=500&fit=crop&q=80" alt="Match Experience" class="w-full h-[400px] object-cover" loading="lazy" decoding="async">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent rounded-3xl"></div>
                     </div>
                     <div class="absolute -bottom-6 -left-6 sm:left-auto sm:-right-6 animate-float">
@@ -377,7 +377,7 @@
         <div class="relative max-w-5xl mx-auto">
             <div class="relative rounded-3xl overflow-hidden">
                 <div class="absolute inset-0">
-                    <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&h=600&fit=crop&q=70" alt="" class="w-full h-full object-cover" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&h=600&fit=crop&q=70" alt="" class="w-full h-full object-cover" loading="lazy" decoding="async">
                     <div class="absolute inset-0 bg-gradient-to-r from-green-900/95 via-emerald-800/90 to-green-900/95"></div>
                 </div>
                 <div class="relative z-10 px-8 sm:px-16 py-16 sm:py-20 text-center">

@@ -2,7 +2,7 @@
     <div class="max-w-7xl mx-auto space-y-8 p-2 sm:p-4">
         {{-- Live Banner --}}
         <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-red-700 via-rose-600 to-orange-600 p-6 sm:p-8 text-white shadow-xl">
-            <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=1200&q=50'); background-size: cover; background-position: center;"></div>
+            <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=600&q=30'); background-size: cover; background-position: center;"></div>
             <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
             <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/3 -translate-x-1/4"></div>
             <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -38,7 +38,7 @@
                 <div class="flex items-center justify-between px-5 py-3 bg-gradient-to-r from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 border-b border-red-100 dark:border-red-800/40">
                     <div class="flex items-center gap-2">
                         @if($match->league['logo'] ?? null)
-                        <img src="{{ $match->league['logo'] }}" alt="" class="h-4 w-4 object-contain">
+                        <img loading="lazy" decoding="async" src="{{ $match->league['logo'] }}" alt="" class="h-4 w-4 object-contain">
                         @endif
                         <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400">{{ $match->league['name'] }}</span>
                     </div>
@@ -58,7 +58,7 @@
                         <div class="flex-1 text-center">
                             <div class="w-14 h-14 mx-auto mb-2 rounded-xl bg-zinc-50 dark:bg-zinc-700/50 flex items-center justify-center p-1.5 group-hover:scale-110 transition-transform duration-300">
                                 @if($match->home_team['logo'] ?? null)
-                                <img src="{{ $match->home_team['logo'] }}" alt="" class="h-10 w-10 object-contain">
+                                <img loading="lazy" decoding="async" src="{{ $match->home_team['logo'] }}" alt="" class="h-10 w-10 object-contain">
                                 @else
                                 <span class="text-2xl">⚽</span>
                                 @endif
@@ -76,7 +76,7 @@
                         <div class="flex-1 text-center">
                             <div class="w-14 h-14 mx-auto mb-2 rounded-xl bg-zinc-50 dark:bg-zinc-700/50 flex items-center justify-center p-1.5 group-hover:scale-110 transition-transform duration-300">
                                 @if($match->away_team['logo'] ?? null)
-                                <img src="{{ $match->away_team['logo'] }}" alt="" class="h-10 w-10 object-contain">
+                                <img loading="lazy" decoding="async" src="{{ $match->away_team['logo'] }}" alt="" class="h-10 w-10 object-contain">
                                 @else
                                 <span class="text-2xl">⚽</span>
                                 @endif

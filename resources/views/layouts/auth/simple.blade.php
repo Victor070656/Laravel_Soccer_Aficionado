@@ -7,7 +7,7 @@
         <div class="flex min-h-svh">
             {{-- Left decorative panel (hidden on mobile) --}}
             <div class="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-green-600 via-emerald-600 to-teal-700 items-center justify-center p-12">
-                <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1508098682722-e99c643e7f0b?w=1200&q=50'); background-size: cover; background-position: center;"></div>
+                <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1508098682722-e99c643e7f0b?w=600&q=30'); background-size: cover; background-position: center;"></div>
                 <div class="absolute inset-0 bg-gradient-to-br from-green-600/90 via-emerald-600/90 to-teal-700/90"></div>
                 <div class="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
                 <div class="absolute bottom-0 left-0 w-72 h-72 bg-white/5 rounded-full translate-y-1/3 -translate-x-1/4"></div>

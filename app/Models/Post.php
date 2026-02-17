@@ -91,11 +91,11 @@ class Post extends Model
 
     public function scopeFeed($query, User $user)
     {
-        $followingIds = $user->following()->pluck('users.id');
+        $followingQuery = $user->following()->select('users.id');
 
         return $query->approved()
-            ->where(function ($q) use ($user, $followingIds) {
-                $q->whereIn('user_id', $followingIds)
+            ->where(function ($q) use ($user, $followingQuery) {
+                $q->whereIn('user_id', $followingQuery)
                     ->orWhere('user_id', $user->id);
             })
             ->latest();

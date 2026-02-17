@@ -43,7 +43,7 @@
             <div>
                 <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Logo</label>
                 @if($club->logo)
-                <div class="mb-2"><img src="{{ asset('storage/' . $club->logo) }}" alt="" class="w-16 h-16 rounded"></div>
+                <div class="mb-2"><img loading="lazy" decoding="async" src="{{ asset('storage/' . $club->logo) }}" alt="" class="w-16 h-16 rounded"></div>
                 @endif
                 <input type="file" name="logo" accept="image/*" class="text-sm text-zinc-500">
             </div>

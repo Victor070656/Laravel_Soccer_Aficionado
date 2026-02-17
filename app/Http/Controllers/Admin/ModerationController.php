@@ -41,7 +41,7 @@ class ModerationController extends Controller
 
     public function pendingPosts()
     {
-        $posts = Post::with('user')
+        $posts = Post::with(['user', 'community'])
             ->where('is_approved', false)
             ->latest()
             ->paginate(25);

@@ -59,7 +59,7 @@
                 <a href="{{ route('clubs.show', $club) }}" class="flex items-center gap-3 rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 p-4 shadow-sm hover:shadow-md hover:border-green-300 dark:hover:border-green-700 transition-all group">
                     @if($club->logo)
                     <div class="w-11 h-11 rounded-xl bg-zinc-50 dark:bg-zinc-700/50 flex items-center justify-center p-1 group-hover:scale-110 transition-transform">
-                        <img src="{{ asset('storage/' . $club->logo) }}" alt="" class="w-8 h-8 object-contain">
+                        <img loading="lazy" decoding="async" src="{{ asset('storage/' . $club->logo) }}" alt="" class="w-8 h-8 object-contain">
                     </div>
                     @else
                     <div class="w-11 h-11 rounded-xl bg-zinc-100 dark:bg-zinc-700 flex items-center justify-center group-hover:scale-110 transition-transform">⚽</div>

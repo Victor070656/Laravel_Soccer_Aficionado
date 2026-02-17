@@ -11,7 +11,8 @@ class NotificationController extends Controller
     {
         $notifications = Notification::where('user_id', $request->user()->id)
             ->latest()
-            ->paginate(30);
+            ->paginate(30)
+            ->through(fn($n) => $n);
 
         return view('notifications.index', compact('notifications'));
     }

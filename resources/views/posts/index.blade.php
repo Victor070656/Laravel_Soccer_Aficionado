@@ -2,7 +2,7 @@
     <div class="max-w-3xl mx-auto space-y-8 p-2 sm:p-4">
         {{-- Header --}}
         <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-green-700 via-emerald-600 to-teal-600 p-6 sm:p-8 text-white shadow-xl">
-            <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1200&q=50'); background-size: cover; background-position: center;"></div>
+            <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=600&q=30'); background-size: cover; background-position: center;"></div>
             <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
             <div class="relative z-10">
                 <h1 class="text-2xl sm:text-3xl font-bold mb-2 flex items-center gap-3">
@@ -70,7 +70,7 @@
                             @if($post->media)
                             <div class="mt-3 grid gap-2 {{ count($post->media) > 1 ? 'grid-cols-2' : '' }}">
                                 @foreach($post->media as $media)
-                                <img src="{{ asset('storage/' . $media) }}" alt="" class="rounded-xl max-h-64 w-full object-cover">
+                                <img loading="lazy" decoding="async" src="{{ asset('storage/' . $media) }}" alt="" class="rounded-xl max-h-64 w-full object-cover">
                                 @endforeach
                             </div>
                             @endif

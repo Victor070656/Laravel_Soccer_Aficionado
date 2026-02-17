@@ -68,7 +68,7 @@
                     </a>
                     @if($post->media)
                     <div class="mt-3 rounded-xl overflow-hidden">
-                        <img src="{{ asset('storage/' . $post->media[0]) }}" alt="" class="rounded-xl max-h-52 w-full object-cover hover:opacity-90 transition-opacity">
+                        <img loading="lazy" decoding="async" src="{{ asset('storage/' . $post->media[0]) }}" alt="" class="rounded-xl max-h-52 w-full object-cover hover:opacity-90 transition-opacity">
                     </div>
                     @endif
                     <div class="flex items-center gap-4 mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-700/50">
@@ -115,7 +115,7 @@
                     <div class="p-4 space-y-2">
                         @foreach($favoriteClubs as $club)
                         <a href="{{ route('clubs.show', $club) }}" class="flex items-center gap-3 p-2 rounded-xl text-sm text-zinc-700 dark:text-zinc-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all">
-                            @if($club->logo)<img src="{{ asset('storage/' . $club->logo) }}" alt="" class="w-7 h-7 rounded-lg object-contain">@else<span class="w-7 h-7 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-sm">⚽</span>@endif
+                            @if($club->logo)<img loading="lazy" decoding="async" src="{{ asset('storage/' . $club->logo) }}" alt="" class="w-7 h-7 rounded-lg object-contain">@else<span class="w-7 h-7 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-sm">⚽</span>@endif
                             <span class="font-medium">{{ $club->name }}</span>
                         </a>
                         @endforeach

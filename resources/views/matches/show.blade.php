@@ -11,7 +11,7 @@
                 };
             @endphp
             <div class="bg-gradient-to-r {{ $heroGradient }} p-6 sm:p-8 lg:p-10 text-white">
-                <div class="absolute inset-0 opacity-5" style="background-image: url('https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1200&q=50'); background-size: cover; background-position: center;"></div>
+                <div class="absolute inset-0 opacity-5" style="background-image: url('https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=600&q=30'); background-size: cover; background-position: center;"></div>
                 <div class="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
                 <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/3 -translate-x-1/4"></div>
 
@@ -19,7 +19,7 @@
                 <div class="relative z-10 text-center mb-6">
                     <div class="inline-flex items-center gap-2 rounded-xl bg-white/15 backdrop-blur-sm px-4 py-2 text-sm border border-white/10">
                         @if($match->league['logo'] ?? null)
-                        <img src="{{ $match->league['logo'] }}" alt="" class="h-5 w-5 object-contain">
+                        <img loading="lazy" decoding="async" src="{{ $match->league['logo'] }}" alt="" class="h-5 w-5 object-contain">
                         @endif
                         <span class="font-medium">{{ $match->league['name'] }}</span>
                         <span class="text-white/50">·</span>
@@ -36,7 +36,7 @@
                     <div class="flex-1 text-center">
                         <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center p-2 border border-white/10">
                             @if($match->home_team['logo'] ?? null)
-                            <img src="{{ $match->home_team['logo'] }}" alt="{{ $match->home_team['name'] }}" class="h-14 w-14 sm:h-16 sm:w-16 object-contain">
+                            <img loading="lazy" decoding="async" src="{{ $match->home_team['logo'] }}" alt="{{ $match->home_team['name'] }}" class="h-14 w-14 sm:h-16 sm:w-16 object-contain">
                             @else
                             <span class="text-4xl">⚽</span>
                             @endif
@@ -70,7 +70,7 @@
                     <div class="flex-1 text-center">
                         <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center p-2 border border-white/10">
                             @if($match->away_team['logo'] ?? null)
-                            <img src="{{ $match->away_team['logo'] }}" alt="{{ $match->away_team['name'] }}" class="h-14 w-14 sm:h-16 sm:w-16 object-contain">
+                            <img loading="lazy" decoding="async" src="{{ $match->away_team['logo'] }}" alt="{{ $match->away_team['name'] }}" class="h-14 w-14 sm:h-16 sm:w-16 object-contain">
                             @else
                             <span class="text-4xl">⚽</span>
                             @endif
@@ -192,7 +192,7 @@
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             @if($lineup->team['logo'] ?? null)
-                            <img src="{{ $lineup->team['logo'] }}" alt="" class="h-6 w-6 object-contain">
+                            <img loading="lazy" decoding="async" src="{{ $lineup->team['logo'] }}" alt="" class="h-6 w-6 object-contain">
                             @endif
                             <h3 class="font-bold text-zinc-900 dark:text-white">{{ $lineup->team['name'] }}</h3>
                         </div>

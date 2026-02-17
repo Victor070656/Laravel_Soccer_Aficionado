@@ -29,7 +29,7 @@
                         <td class="px-4 py-3">
                             <div class="flex items-center gap-2">
                                 @if($club->logo)
-                                <img src="{{ asset('storage/' . $club->logo) }}" alt="" class="w-8 h-8 rounded">
+                                <img loading="lazy" decoding="async" src="{{ asset('storage/' . $club->logo) }}" alt="" class="w-8 h-8 rounded">
                                 @endif
                                 <span class="font-medium text-zinc-900 dark:text-white">{{ $club->name }}</span>
                             </div>

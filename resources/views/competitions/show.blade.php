@@ -2,20 +2,20 @@
     <div class="max-w-7xl mx-auto space-y-8 p-2 sm:p-4">
         {{-- Header --}}
         <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-amber-600 via-yellow-600 to-orange-600 p-6 sm:p-8 text-white shadow-xl">
-            <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&q=50'); background-size: cover; background-position: center;"></div>
+            <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600&q=30'); background-size: cover; background-position: center;"></div>
             <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
             <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/3 -translate-x-1/4"></div>
             <div class="relative z-10 flex items-center gap-4">
                 @if($competition->logo)
                 <div class="w-16 h-16 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center p-2 border border-white/10">
-                    <img src="{{ $competition->logo }}" alt="{{ $competition->name }}" class="w-10 h-10 object-contain">
+                    <img loading="lazy" decoding="async" src="{{ $competition->logo }}" alt="{{ $competition->name }}" class="w-10 h-10 object-contain">
                 </div>
                 @endif
                 <div>
                     <h1 class="text-2xl sm:text-3xl font-bold">{{ $competition->name }}</h1>
                     <div class="flex items-center gap-2 text-sm text-amber-100 mt-1">
                         @if($competition->country_flag ?? null)
-                        <img src="{{ $competition->country_flag }}" alt="" class="h-3 w-4 object-contain">
+                        <img loading="lazy" decoding="async" src="{{ $competition->country_flag }}" alt="" class="h-3 w-4 object-contain">
                         @endif
                         {{ ucfirst($competition->type) }} · {{ $competition->country ?? 'International' }} · Season {{ $seasonDisplay }}
                     </div>
@@ -65,7 +65,7 @@
                             <td class="px-4 py-3">
                                 <a href="{{ route('clubs.show', $standing->team['id']) }}" class="flex items-center gap-2.5 font-medium text-zinc-900 dark:text-white hover:text-green-600 transition">
                                     @if($standing->team['logo'] ?? null)
-                                    <img src="{{ $standing->team['logo'] }}" alt="" class="h-5 w-5 object-contain">
+                                    <img loading="lazy" decoding="async" src="{{ $standing->team['logo'] }}" alt="" class="h-5 w-5 object-contain">
                                     @endif
                                     <span class="truncate">{{ $standing->team['name'] }}</span>
                                 </a>
@@ -109,7 +109,7 @@
                     @foreach($teams as $team)
                     <a href="{{ route('clubs.show', $team->id) }}" class="flex items-center gap-2.5 p-3 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-700/30 transition group border border-transparent hover:border-zinc-200 dark:hover:border-zinc-600">
                         @if($team->logo)
-                        <img src="{{ $team->logo }}" alt="" class="h-8 w-8 object-contain group-hover:scale-110 transition-transform">
+                        <img loading="lazy" decoding="async" src="{{ $team->logo }}" alt="" class="h-8 w-8 object-contain group-hover:scale-110 transition-transform">
                         @endif
                         <span class="text-sm font-medium text-zinc-800 dark:text-zinc-200 group-hover:text-green-600 transition">{{ $team->name }}</span>
                     </a>
@@ -136,7 +136,7 @@
                         <div class="flex justify-between items-center text-sm font-medium text-zinc-800 dark:text-zinc-200 mt-1">
                             <div class="flex items-center gap-1.5">
                                 @if($match->home_team['logo'] ?? null)
-                                <img src="{{ $match->home_team['logo'] }}" alt="" class="h-4 w-4 object-contain">
+                                <img loading="lazy" decoding="async" src="{{ $match->home_team['logo'] }}" alt="" class="h-4 w-4 object-contain">
                                 @endif
                                 <span>{{ $match->home_team['name'] }}</span>
                             </div>
@@ -144,7 +144,7 @@
                             <div class="flex items-center gap-1.5">
                                 <span>{{ $match->away_team['name'] }}</span>
                                 @if($match->away_team['logo'] ?? null)
-                                <img src="{{ $match->away_team['logo'] }}" alt="" class="h-4 w-4 object-contain">
+                                <img loading="lazy" decoding="async" src="{{ $match->away_team['logo'] }}" alt="" class="h-4 w-4 object-contain">
                                 @endif
                             </div>
                         </div>
@@ -175,7 +175,7 @@
                         <div class="flex justify-between items-center text-sm">
                             <div class="flex items-center gap-1.5 flex-1 min-w-0">
                                 @if($match->home_team['logo'] ?? null)
-                                <img src="{{ $match->home_team['logo'] }}" alt="" class="h-4 w-4 object-contain flex-shrink-0">
+                                <img loading="lazy" decoding="async" src="{{ $match->home_team['logo'] }}" alt="" class="h-4 w-4 object-contain flex-shrink-0">
                                 @endif
                                 <span class="font-medium text-zinc-800 dark:text-zinc-200 truncate">{{ $match->home_team['name'] }}</span>
                             </div>
@@ -183,7 +183,7 @@
                             <div class="flex items-center gap-1.5 flex-1 min-w-0 justify-end">
                                 <span class="font-medium text-zinc-800 dark:text-zinc-200 truncate">{{ $match->away_team['name'] }}</span>
                                 @if($match->away_team['logo'] ?? null)
-                                <img src="{{ $match->away_team['logo'] }}" alt="" class="h-4 w-4 object-contain flex-shrink-0">
+                                <img loading="lazy" decoding="async" src="{{ $match->away_team['logo'] }}" alt="" class="h-4 w-4 object-contain flex-shrink-0">
                                 @endif
                             </div>
                         </div>

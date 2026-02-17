@@ -36,7 +36,8 @@ class PostApiController extends BaseApiController
 
     public function show(Post $post)
     {
-        $post->load(['user', 'community', 'comments.user']);
+        $post->load(['user', 'community']);
+        $post->loadCount(['likes', 'comments', 'shares']);
 
         return $this->success($post);
     }

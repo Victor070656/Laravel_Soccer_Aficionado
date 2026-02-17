@@ -8,7 +8,7 @@
             </div>
             @else
             <div class="h-52 sm:h-64 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center relative">
-                <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1459865264687-595d652de67e?w=1200&q=50'); background-size: cover; background-position: center;"></div>
+                <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1459865264687-595d652de67e?w=600&q=30'); background-size: cover; background-position: center;"></div>
                 <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
                 <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/3 -translate-x-1/4"></div>
                 <span class="text-7xl relative z-10 drop-shadow-lg">⚽</span>
@@ -103,7 +103,7 @@
                         @if($post->media)
                         <div class="mt-4 grid gap-2 {{ count($post->media) > 1 ? 'grid-cols-2' : '' }}">
                             @foreach($post->media as $media)
-                            <img src="{{ asset('storage/' . $media) }}" alt="" class="rounded-xl w-full object-cover max-h-64">
+                            <img loading="lazy" decoding="async" src="{{ asset('storage/' . $media) }}" alt="" class="rounded-xl w-full object-cover max-h-64">
                             @endforeach
                         </div>
                         @endif

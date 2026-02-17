@@ -17,12 +17,13 @@ class DashboardController extends Controller
     public function __invoke(Request $request)
     {
         $user = $request->user();
+        $user->load('favoriteClubs');
 
         $feed = Post::with(['user', 'community'])
+            ->withCount(['likes', 'comments', 'shares'])
             ->approved()
             ->feed($user)
-            ->take(20)
-            ->get();
+            ->paginate(20);
 
         $liveMatches = collect($this->api->getLiveFixtures())
             ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
@@ -36,7 +37,7 @@ class DashboardController extends Controller
             ->take(3)
             ->get();
 
-        $trendingPosts = Post::with('user')
+        $trendingPosts = Post::with(['user', 'community'])
             ->trending()
             ->take(5)
             ->get();
