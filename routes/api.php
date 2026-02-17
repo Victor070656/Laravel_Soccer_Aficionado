@@ -35,6 +35,7 @@ Route::prefix('v1')->group(function () {
         // Auth
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/user', [AuthController::class, 'user']);
+        Route::put('/user', [AuthController::class, 'updateProfile']);
 
         // Posts
         Route::get('/feed', [PostApiController::class, 'feed']);

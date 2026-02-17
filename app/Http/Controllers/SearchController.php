@@ -7,10 +7,16 @@ use App\Models\Community;
 use App\Models\FootballMatch;
 use App\Models\Post;
 use App\Models\User;
+use App\Services\FootballApiService;
 use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
+    public function __construct(
+        protected FootballApiService $api,
+    ) {
+    }
+
     public function __invoke(Request $request)
     {
         $query = $request->input('q', '');
@@ -41,10 +47,9 @@ class SearchController extends Controller
         }
 
         if ($type === 'all' || $type === 'clubs') {
-            $results['clubs'] = Club::where('is_active', true)
-                ->where(fn($q) => $q->where('name', 'like', "%{$query}%")
-                    ->orWhere('country', 'like', "%{$query}%"))
-                ->take(10)->get();
+            $results['clubs'] = collect($this->api->getAllTeams(search: $query))
+                ->take(10)
+                ->map(fn(array $raw) => (object) FootballApiService::normaliseTeam($raw));
         }
 
         if ($type === 'all' || $type === 'communities') {
@@ -61,20 +66,11 @@ class SearchController extends Controller
                 ->take(10)->get();
         }
 
-        if ($type === 'all' || $type === 'matches') {
-            $results['matches'] = FootballMatch::with(['homeClub', 'awayClub'])
-                ->where(function ($q) use ($query) {
-                    $q->whereHas('homeClub', fn($sq) => $sq->where('name', 'like', "%{$query}%"))
-                        ->orWhereHas('awayClub', fn($sq) => $sq->where('name', 'like', "%{$query}%"));
-                })
-                ->take(10)->get();
-        }
-
         $users = $results['users'];
         $clubs = $results['clubs'];
         $communities = $results['communities'];
         $posts = $results['posts'];
-        $matches = $results['matches'];
+        $matches = collect(); // Matches come from API, not local DB
 
         return view('search.index', compact('users', 'clubs', 'communities', 'posts', 'matches', 'query', 'type'));
     }

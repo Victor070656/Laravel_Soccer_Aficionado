@@ -75,4 +75,42 @@ class AuthController extends BaseApiController
 
         return $this->success($user);
     }
+
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'bio' => 'nullable|string|max:500',
+            'country' => 'nullable|string|max:100',
+            'timezone' => 'nullable|string|max:100',
+            'favorite_clubs' => 'nullable|array',
+            'favorite_clubs.*' => 'integer',
+            'primary_club_id' => 'nullable|integer',
+        ]);
+
+        $user->update(collect($validated)->only(['name', 'bio', 'country', 'timezone'])->toArray());
+
+        if (array_key_exists('favorite_clubs', $validated)) {
+            $api = app(\App\Services\FootballApiService::class);
+            $syncData = [];
+            foreach ($validated['favorite_clubs'] as $apiTeamId) {
+                $raw = $api->getTeam((int) $apiTeamId);
+                if ($raw) {
+                    $team = \App\Services\FootballApiService::normaliseTeam($raw);
+                    $club = \App\Models\Club::fromApiTeam($team);
+                    $syncData[$club->id] = [
+                        'is_primary' => $apiTeamId == ($validated['primary_club_id'] ?? null),
+                    ];
+                }
+            }
+            $user->favoriteClubs()->sync($syncData);
+        }
+
+        $user->loadCount(['followers', 'following', 'posts']);
+        $user->load(['roles', 'favoriteClubs', 'badges']);
+
+        return $this->success($user, 'Profile updated.');
+    }
 }

@@ -3,6 +3,7 @@
         <div class="rounded-2xl border border-zinc-200 dark:border-zinc-700/50 bg-white dark:bg-zinc-800/50 backdrop-blur-sm p-3 shadow-lg shadow-black/5">
             <flux:navlist aria-label="{{ __('Settings') }}">
                 <flux:navlist.item :href="route('profile.edit')" wire:navigate icon="user">{{ __('Profile') }}</flux:navlist.item>
+                <flux:navlist.item :href="route('settings.clubs')" wire:navigate icon="heart">{{ __('Favorite Clubs') }}</flux:navlist.item>
                 <flux:navlist.item :href="route('user-password.edit')" wire:navigate icon="lock-closed">{{ __('Password') }}</flux:navlist.item>
                 @if (Laravel\Fortify\Features::canManageTwoFactorAuthentication())
                     <flux:navlist.item :href="route('two-factor.show')" wire:navigate icon="shield-check">{{ __('Two-Factor Auth') }}</flux:navlist.item>

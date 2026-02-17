@@ -272,7 +272,8 @@
                     <div class="p-4">
                         <div class="flex flex-wrap gap-2">
                             @foreach($favoriteClubs as $club)
-                            <a href="{{ route('clubs.show', $club) }}" class="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 px-4 py-2 text-xs font-medium text-green-700 dark:text-green-400 hover:from-green-100 hover:to-emerald-100 dark:hover:from-green-900/50 dark:hover:to-emerald-900/50 transition-all border border-green-200/50 dark:border-green-800/50 hover:scale-105">
+                            <a href="{{ $club->api_team_id ? route('clubs.show', $club->api_team_id) : '#' }}" class="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 px-4 py-2 text-xs font-medium text-green-700 dark:text-green-400 hover:from-green-100 hover:to-emerald-100 dark:hover:from-green-900/50 dark:hover:to-emerald-900/50 transition-all border border-green-200/50 dark:border-green-800/50 hover:scale-105">
+                                @if($club->logo_url)<img src="{{ $club->logo_url }}" alt="" class="w-4 h-4 object-contain">@endif
                                 {{ $club->name }}
                             </a>
                             @endforeach

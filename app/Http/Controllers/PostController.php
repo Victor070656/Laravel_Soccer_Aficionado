@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Models\Comment;
 use App\Models\Like;
 use App\Models\Share;
+use App\Concerns\ExtractsMentions;
 use App\Services\GamificationService;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
+    use ExtractsMentions;
     public function __construct(
         protected GamificationService $gamification,
         protected NotificationService $notifications,
@@ -67,10 +69,36 @@ class PostController extends Controller
             'media' => !empty($mediaPaths) ? $mediaPaths : null,
         ]);
 
+        $this->extractAndSaveMentions($validated['body'], $post);
+
         $this->gamification->awardPoints($request->user(), 'post_created', $post);
         $this->gamification->recordActivity($request->user(), 'post_created', $post);
 
         return redirect()->route('posts.show', $post)->with('success', 'Post created successfully!');
+    }
+
+    public function edit(Post $post)
+    {
+        $this->authorize('update', $post);
+
+        return view('posts.edit', compact('post'));
+    }
+
+    public function update(Request $request, Post $post)
+    {
+        $this->authorize('update', $post);
+
+        $validated = $request->validate([
+            'body' => 'required|string|max:5000',
+        ]);
+
+        $post->update(['body' => $validated['body']]);
+
+        // Re-extract mentions
+        $post->mentions()->delete();
+        $this->extractAndSaveMentions($validated['body'], $post);
+
+        return redirect()->route('posts.show', $post)->with('success', 'Post updated successfully!');
     }
 
     public function destroy(Request $request, Post $post)
@@ -115,6 +143,8 @@ class PostController extends Controller
             'body' => $validated['body'],
             'parent_id' => $validated['parent_id'] ?? null,
         ]);
+
+        $this->extractAndSaveMentions($validated['body'], $comment);
 
         $post->increment('comments_count');
 

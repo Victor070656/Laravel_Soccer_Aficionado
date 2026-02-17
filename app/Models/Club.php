@@ -12,6 +12,7 @@ class Club extends Model
     use HasFactory;
 
     protected $fillable = [
+        'api_team_id',
         'name',
         'slug',
         'short_name',
@@ -75,9 +76,38 @@ class Club extends Model
 
     // ── Helpers ────────────────────────────────────────────
 
+    /**
+     * Find or create a local Club record from normalised API team data.
+     */
+    public static function fromApiTeam(array $team): self
+    {
+        return static::updateOrCreate(
+            ['api_team_id' => $team['id']],
+            [
+                'name' => $team['name'],
+                'slug' => \Illuminate\Support\Str::slug($team['name']),
+                'logo' => $team['logo'] ?? null,
+                'country' => $team['country'] ?? null,
+                'city' => $team['venue']['city'] ?? null,
+                'stadium' => $team['venue']['name'] ?? null,
+                'founded_year' => $team['founded'] ?? null,
+                'is_active' => true,
+            ],
+        );
+    }
+
     public function getLogoUrlAttribute(): ?string
     {
-        return $this->logo ? asset('storage/' . $this->logo) : null;
+        if (!$this->logo) {
+            return null;
+        }
+
+        // API logos are already full URLs
+        if (str_starts_with($this->logo, 'http')) {
+            return $this->logo;
+        }
+
+        return asset('storage/' . $this->logo);
     }
 
     public function getAllMatches()

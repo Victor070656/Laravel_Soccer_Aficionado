@@ -13,11 +13,18 @@
                                 <a href="{{ route('profiles.show', $post->user) }}" class="font-bold text-zinc-900 dark:text-white hover:text-green-600 transition">{{ $post->user->name }}</a>
                                 <span class="text-xs text-zinc-400 dark:text-zinc-500">{{ $post->created_at->diffForHumans() }}</span>
                             </div>
+                            @can('update', $post)
+                            <div class="flex items-center gap-3">
+                                <a href="{{ route('posts.edit', $post) }}" class="text-xs text-zinc-400 hover:text-blue-600 transition font-medium">Edit</a>
+                            @endcan
                             @can('delete', $post)
                             <form action="{{ route('posts.destroy', $post) }}" method="POST" onsubmit="return confirm('Delete this post?')">
                                 @csrf @method('DELETE')
                                 <button class="text-xs text-zinc-400 hover:text-red-600 transition font-medium">Delete</button>
                             </form>
+                            @endcan
+                            @can('update', $post)
+                            </div>
                             @endcan
                         </div>
 

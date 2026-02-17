@@ -23,7 +23,7 @@
                                 @endif
                             </div>
                             @if(auth()->id() !== $user->id)
-                            <form action="{{ route('profiles.follow', $user) }}" method="POST" class="sm:ml-auto">
+                            <form action="{{ route('users.follow', $user) }}" method="POST" class="sm:ml-auto">
                                 @csrf
                                 <button class="rounded-xl {{ $isFollowing ? 'border-2 border-zinc-200 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400 hover:border-red-300 hover:text-red-500 dark:hover:border-red-700 dark:hover:text-red-400' : 'bg-gradient-to-r from-green-600 to-emerald-500 text-white shadow-lg shadow-green-600/20 hover:from-green-500 hover:to-emerald-400' }} px-6 py-2.5 text-sm font-semibold transition-all hover:scale-105">
                                     {{ $isFollowing ? '✓ Following' : '+ Follow' }}
@@ -44,7 +44,7 @@
                 </div>
 
                 <div class="grid grid-cols-4 gap-4 mt-6 pt-6 border-t border-zinc-100 dark:border-zinc-700/50">
-                    @foreach([['count' => $postsCount, 'label' => 'Posts', 'color' => 'text-zinc-900 dark:text-white'],['count' => $followersCount, 'label' => 'Followers', 'color' => 'text-zinc-900 dark:text-white'],['count' => $followingCount, 'label' => 'Following', 'color' => 'text-zinc-900 dark:text-white'],['count' => $user->points ?? 0, 'label' => 'Points', 'color' => 'text-green-600']] as $stat)
+                    @foreach([['count' => $user->posts_count, 'label' => 'Posts', 'color' => 'text-zinc-900 dark:text-white'],['count' => $user->followers_count, 'label' => 'Followers', 'color' => 'text-zinc-900 dark:text-white'],['count' => $user->following_count, 'label' => 'Following', 'color' => 'text-zinc-900 dark:text-white'],['count' => $user->points ?? 0, 'label' => 'Points', 'color' => 'text-green-600']] as $stat)
                     <div class="text-center">
                         <span class="block text-xl sm:text-2xl font-bold {{ $stat['color'] }}">{{ $stat['count'] }}</span>
                         <span class="text-xs text-zinc-500">{{ $stat['label'] }}</span>
@@ -90,14 +90,14 @@
 
             {{-- Sidebar --}}
             <div class="space-y-5">
-                @if($badges->count())
+                @if($user->badges->count())
                 <div class="rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 overflow-hidden shadow-sm">
                     <div class="px-5 py-4 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 border-b border-zinc-100 dark:border-zinc-700/50">
                         <h3 class="font-bold text-sm text-zinc-900 dark:text-white flex items-center gap-2">🏅 Badges</h3>
                     </div>
                     <div class="p-4">
                         <div class="flex flex-wrap gap-2">
-                            @foreach($badges as $badge)
+                            @foreach($user->badges as $badge)
                             <span title="{{ $badge->description }}" class="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/30 dark:to-yellow-900/30 px-3 py-1.5 text-xs font-medium text-amber-700 dark:text-amber-300 border border-amber-200/50 dark:border-amber-800/50 hover:scale-105 transition-transform cursor-default">
                                 {{ $badge->icon ?? '🏆' }} {{ $badge->name }}
                             </span>
@@ -107,15 +107,15 @@
                 </div>
                 @endif
 
-                @if($favoriteClubs->count())
+                @if($user->favoriteClubs->count())
                 <div class="rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 overflow-hidden shadow-sm">
                     <div class="px-5 py-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-b border-zinc-100 dark:border-zinc-700/50">
                         <h3 class="font-bold text-sm text-zinc-900 dark:text-white flex items-center gap-2">💚 Favorite Clubs</h3>
                     </div>
                     <div class="p-4 space-y-2">
-                        @foreach($favoriteClubs as $club)
-                        <a href="{{ route('clubs.show', $club) }}" class="flex items-center gap-3 p-2 rounded-xl text-sm text-zinc-700 dark:text-zinc-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all">
-                            @if($club->logo)<img loading="lazy" decoding="async" src="{{ asset('storage/' . $club->logo) }}" alt="" class="w-7 h-7 rounded-lg object-contain">@else<span class="w-7 h-7 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-sm">⚽</span>@endif
+                        @foreach($user->favoriteClubs as $club)
+                        <a href="{{ $club->api_team_id ? route('clubs.show', $club->api_team_id) : '#' }}" class="flex items-center gap-3 p-2 rounded-xl text-sm text-zinc-700 dark:text-zinc-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all">
+                            @if($club->logo_url)<img loading="lazy" decoding="async" src="{{ $club->logo_url }}" alt="" class="w-7 h-7 rounded-lg object-contain">@else<span class="w-7 h-7 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-sm">⚽</span>@endif
                             <span class="font-medium">{{ $club->name }}</span>
                         </a>
                         @endforeach
@@ -123,13 +123,13 @@
                 </div>
                 @endif
 
-                @if($communities->count())
+                @if($user->communities->count())
                 <div class="rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 overflow-hidden shadow-sm">
                     <div class="px-5 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-b border-zinc-100 dark:border-zinc-700/50">
                         <h3 class="font-bold text-sm text-zinc-900 dark:text-white flex items-center gap-2">👥 Communities</h3>
                     </div>
                     <div class="p-4 space-y-1">
-                        @foreach($communities as $community)
+                        @foreach($user->communities as $community)
                         <a href="{{ route('communities.show', $community) }}" class="block p-2 rounded-xl text-sm text-zinc-700 dark:text-zinc-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all font-medium">{{ $community->name }}</a>
                         @endforeach
                     </div>
