@@ -31,7 +31,6 @@ class User extends Authenticatable
         'avatar',
         'country',
         'timezone',
-        'points',
         'is_banned',
         'banned_at',
         'ban_reason',
@@ -134,6 +133,11 @@ class User extends Authenticatable
     public function reportsFiled(): HasMany
     {
         return $this->hasMany(Report::class, 'reporter_id');
+    }
+
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class)->latest();
     }
 
     // ── Helper Methods ─────────────────────────────────────

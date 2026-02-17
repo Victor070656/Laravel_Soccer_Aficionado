@@ -48,21 +48,21 @@
                     </div>
                 </div>
             </div>
-            <div class="rounded-2xl bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20 p-5 hover-lift transition-all duration-300">
+            <div class="rounded-2xl bg-gradient-to-br from-pink-500/10 to-pink-600/5 border border-pink-500/20 p-5 hover-lift transition-all duration-300">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-lg">⚽</div>
+                    <div class="w-10 h-10 rounded-xl bg-pink-500/20 flex items-center justify-center text-lg">💬</div>
                     <div>
-                        <p class="text-2xl font-bold text-zinc-900 dark:text-white">{{ number_format($stats['clubs']) }}</p>
-                        <p class="text-xs text-zinc-500 font-medium">Clubs</p>
+                        <p class="text-2xl font-bold text-zinc-900 dark:text-white">{{ number_format($stats['comments']) }}</p>
+                        <p class="text-xs text-zinc-500 font-medium">Comments</p>
                     </div>
                 </div>
             </div>
             <div class="rounded-2xl bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 p-5 hover-lift transition-all duration-300">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-orange-500/20 flex items-center justify-center text-lg">🏟️</div>
+                    <div class="w-10 h-10 rounded-xl bg-orange-500/20 flex items-center justify-center text-lg">❤️</div>
                     <div>
-                        <p class="text-2xl font-bold text-zinc-900 dark:text-white">{{ number_format($stats['matches']) }}</p>
-                        <p class="text-xs text-zinc-500 font-medium">Matches</p>
+                        <p class="text-2xl font-bold text-zinc-900 dark:text-white">{{ number_format($stats['likes']) }}</p>
+                        <p class="text-xs text-zinc-500 font-medium">Likes</p>
                     </div>
                 </div>
             </div>
@@ -77,10 +77,10 @@
             </div>
             <div class="rounded-2xl bg-gradient-to-br from-yellow-500/10 to-yellow-600/5 border border-yellow-500/20 p-5 hover-lift transition-all duration-300">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-yellow-500/20 flex items-center justify-center text-lg">🏆</div>
+                    <div class="w-10 h-10 rounded-xl bg-yellow-500/20 flex items-center justify-center text-lg">🚫</div>
                     <div>
-                        <p class="text-2xl font-bold text-zinc-900 dark:text-white">{{ number_format($stats['competitions']) }}</p>
-                        <p class="text-xs text-zinc-500 font-medium">Competitions</p>
+                        <p class="text-2xl font-bold text-zinc-900 dark:text-white">{{ number_format($stats['banned_users']) }}</p>
+                        <p class="text-xs text-zinc-500 font-medium">Banned Users</p>
                     </div>
                 </div>
             </div>
@@ -143,17 +143,21 @@
                 <div class="w-12 h-12 mx-auto rounded-2xl bg-blue-500/10 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">👥</div>
                 <p class="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mt-3">Manage Users</p>
             </a>
-            <a href="{{ route('admin.clubs.index') }}" class="group rounded-2xl border border-zinc-200 dark:border-zinc-700/50 bg-white dark:bg-zinc-800/50 p-6 text-center hover:border-green-400 dark:hover:border-green-500/50 transition-all duration-300 hover-lift">
-                <div class="w-12 h-12 mx-auto rounded-2xl bg-green-500/10 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">⚽</div>
-                <p class="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mt-3">Manage Clubs</p>
+            <a href="{{ route('admin.communities.index') }}" class="group rounded-2xl border border-zinc-200 dark:border-zinc-700/50 bg-white dark:bg-zinc-800/50 p-6 text-center hover:border-indigo-400 dark:hover:border-indigo-500/50 transition-all duration-300 hover-lift">
+                <div class="w-12 h-12 mx-auto rounded-2xl bg-indigo-500/10 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">🌍</div>
+                <p class="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mt-3">Communities</p>
             </a>
-            <a href="{{ route('admin.matches.index') }}" class="group rounded-2xl border border-zinc-200 dark:border-zinc-700/50 bg-white dark:bg-zinc-800/50 p-6 text-center hover:border-orange-400 dark:hover:border-orange-500/50 transition-all duration-300 hover-lift">
-                <div class="w-12 h-12 mx-auto rounded-2xl bg-orange-500/10 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">🏟️</div>
-                <p class="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mt-3">Manage Matches</p>
+            <a href="{{ route('admin.polls.index') }}" class="group rounded-2xl border border-zinc-200 dark:border-zinc-700/50 bg-white dark:bg-zinc-800/50 p-6 text-center hover:border-cyan-400 dark:hover:border-cyan-500/50 transition-all duration-300 hover-lift">
+                <div class="w-12 h-12 mx-auto rounded-2xl bg-cyan-500/10 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">📊</div>
+                <p class="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mt-3">Manage Polls</p>
             </a>
             <a href="{{ route('admin.moderation.reports') }}" class="group rounded-2xl border border-zinc-200 dark:border-zinc-700/50 bg-white dark:bg-zinc-800/50 p-6 text-center hover:border-red-400 dark:hover:border-red-500/50 transition-all duration-300 hover-lift">
                 <div class="w-12 h-12 mx-auto rounded-2xl bg-red-500/10 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">🛡️</div>
                 <p class="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mt-3">Moderation</p>
+            </a>
+            <a href="{{ route('admin.moderation.pendingPosts') }}" class="group rounded-2xl border border-zinc-200 dark:border-zinc-700/50 bg-white dark:bg-zinc-800/50 p-6 text-center hover:border-amber-400 dark:hover:border-amber-500/50 transition-all duration-300 hover-lift">
+                <div class="w-12 h-12 mx-auto rounded-2xl bg-amber-500/10 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">📝</div>
+                <p class="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mt-3">Pending ({{ $stats['pending_posts'] + $stats['pending_comments'] }})</p>
             </a>
         </div>
     </div>

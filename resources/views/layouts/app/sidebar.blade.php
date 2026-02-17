@@ -49,6 +49,18 @@
                     <flux:sidebar.item icon="chart-pie" :href="route('admin.dashboard')" :current="request()->routeIs('admin.dashboard')" wire:navigate>
                         {{ __('Admin Panel') }}
                     </flux:sidebar.item>
+                    <flux:sidebar.item icon="users" :href="route('admin.users.index')" :current="request()->routeIs('admin.users.*')" wire:navigate>
+                        {{ __('Manage Users') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="user-group" :href="route('admin.communities.index')" :current="request()->routeIs('admin.communities.*')" wire:navigate>
+                        {{ __('Communities') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="chart-bar" :href="route('admin.polls.index')" :current="request()->routeIs('admin.polls.*')" wire:navigate>
+                        {{ __('Polls') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="exclamation-triangle" :href="route('admin.moderation.reports')" :current="request()->routeIs('admin.moderation.*')" wire:navigate>
+                        {{ __('Moderation') }}
+                    </flux:sidebar.item>
                 </flux:sidebar.group>
                 @endif
             </flux:sidebar.nav>

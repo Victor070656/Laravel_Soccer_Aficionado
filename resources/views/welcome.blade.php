@@ -263,7 +263,7 @@
                         ['icon' => '📊', 'title' => 'Polls & Voting', 'description' => 'Vote on match predictions, player ratings, and hot takes. See how your opinions compare to the community.', 'color' => 'from-purple-500 to-pink-500', 'image' => 'https://images.unsplash.com/photo-1551958219-acbc608c6377?w=400&h=200&fit=crop&q=70'],
                         ['icon' => '🏅', 'title' => 'Gamification', 'description' => 'Earn points for engaging, unlock badges, and climb the leaderboard. Show off your dedication!', 'color' => 'from-amber-500 to-yellow-500', 'image' => 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=400&h=200&fit=crop&q=70'],
                         ['icon' => '⚽', 'title' => 'Club & Player Data', 'description' => 'Browse detailed club profiles, player stats, competition standings, and comprehensive football data.', 'color' => 'from-green-500 to-emerald-500', 'image' => 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400&h=200&fit=crop&q=70'],
-                        ['icon' => '📱', 'title' => 'REST API', 'description' => 'Full-featured API with token authentication. Build mobile apps or integrations with our platform.', 'color' => 'from-indigo-500 to-violet-500', 'image' => 'https://images.unsplash.com/photo-1461896836934-bd45ba25e57d?w=400&h=200&fit=crop&q=70'],
+                        ['icon' => '📱', 'title' => 'Mobile App', 'description' => 'Full-featured Mobile App integration for you, with a modern interface.', 'color' => 'from-indigo-500 to-violet-500', 'image' => 'https://images.unsplash.com/photo-1461896836934-bd45ba25e57d?w=400&h=200&fit=crop&q=70'],
                     ];
                 @endphp
                 @foreach($features as $feature)
@@ -449,7 +449,7 @@
             </div>
             <div class="border-t border-zinc-200 dark:border-zinc-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div class="text-sm text-zinc-500">&copy; {{ date('Y') }} Soccer Aficionado. All rights reserved.</div>
-                <div class="flex items-center gap-2 text-sm text-zinc-400">Made with <span class="text-red-500">❤️</span> for football fans</div>
+                <div class="flex items-center gap-2 text-sm text-zinc-400">Made with <span class="text-red-500">❤️</span> for football fans. By <a href="https://royalsolutions.com.ng" class="underline">Royal Solutions Technologies</a></div>
             </div>
         </div>
     </footer>

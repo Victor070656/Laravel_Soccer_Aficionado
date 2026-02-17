@@ -60,7 +60,7 @@
                 @csrf
                 <div class="flex items-center gap-3">
                     <span class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 text-sm">🔗</span>
-                    <input type="text" name="comment" placeholder="Add a comment and share..." class="flex-1 rounded-xl border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-green-500 focus:ring-green-500/20 text-sm">
+                    <input type="text" name="comment" placeholder="Add a comment and share..." class="flex-1 rounded-xl p-4 border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-green-500 focus:ring-green-500/20 text-sm">
                     <button type="submit" class="rounded-xl border border-zinc-200 dark:border-zinc-600 px-5 py-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition">Share</button>
                 </div>
             </form>
@@ -76,7 +76,7 @@
             </div>
             <form action="{{ route('posts.comment', $post) }}" method="POST" class="p-5">
                 @csrf
-                <textarea name="body" rows="2" placeholder="Write a comment..." class="w-full rounded-xl border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-green-500 focus:ring-green-500/20 text-sm resize-none" required></textarea>
+                <textarea name="body" rows="2" placeholder="Write a comment..." class="w-full rounded-xl p-4 border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-green-500 focus:ring-green-500/20 text-sm resize-none" required></textarea>
                 <div class="flex justify-end mt-3">
                     <button type="submit" class="rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 px-6 py-2.5 text-sm font-semibold text-white hover:from-green-500 hover:to-emerald-400 transition-all shadow-md shadow-green-600/20 hover:scale-105">Comment</button>
                 </div>
@@ -123,7 +123,7 @@
                             <form action="{{ route('posts.comment', $post) }}" method="POST" class="mt-3 flex gap-2 items-center">
                                 @csrf
                                 <input type="hidden" name="parent_id" value="{{ $comment->id }}">
-                                <input type="text" name="body" placeholder="Reply..." class="flex-1 rounded-xl border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-green-500 focus:ring-green-500/20 text-xs py-2">
+                                <input type="text" name="body" placeholder="Reply..." class="flex-1 rounded-xl p-4 border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-green-500 focus:ring-green-500/20 text-xs py-2">
                                 <button type="submit" class="text-xs text-green-600 hover:text-green-700 font-semibold transition">Reply</button>
                             </form>
                         </div>

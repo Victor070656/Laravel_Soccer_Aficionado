@@ -84,7 +84,9 @@ class FootballMatch extends Model
 
     public function scopeForClub($query, int $clubId)
     {
-        return $query->where('home_club_id', $clubId)->orWhere('away_club_id', $clubId);
+        return $query->where(function ($q) use ($clubId) {
+            $q->where('home_club_id', $clubId)->orWhere('away_club_id', $clubId);
+        });
     }
 
     // ── Helpers ────────────────────────────────────────────

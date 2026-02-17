@@ -142,4 +142,25 @@ class PostController extends Controller
 
         return back()->with('success', 'Post shared!');
     }
+
+    public function pin(Request $request, Post $post)
+    {
+        $this->authorize('pin', $post);
+
+        $post->update(['is_pinned' => !$post->is_pinned]);
+
+        $status = $post->is_pinned ? 'pinned' : 'unpinned';
+
+        return back()->with('success', "Post {$status} successfully.");
+    }
+
+    public function deleteComment(Request $request, Comment $comment)
+    {
+        $this->authorize('delete', $comment);
+
+        $comment->post->decrement('comments_count');
+        $comment->delete();
+
+        return back()->with('success', 'Comment deleted.');
+    }
 }

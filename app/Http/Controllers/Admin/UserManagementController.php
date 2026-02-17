@@ -44,6 +44,14 @@ class UserManagementController extends Controller
 
     public function ban(Request $request, User $user)
     {
+        if ($user->id === $request->user()->id) {
+            return back()->with('error', 'You cannot ban yourself.');
+        }
+
+        if ($user->isAdmin()) {
+            return back()->with('error', 'You cannot ban another admin.');
+        }
+
         $validated = $request->validate([
             'reason' => 'required|string|max:500',
         ]);

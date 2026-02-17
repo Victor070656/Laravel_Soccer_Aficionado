@@ -42,7 +42,7 @@ class PollController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:2000',
             'type' => 'required|in:general,motm,prediction,gotw',
-            'match_id' => 'nullable|exists:matches,id',
+            'match_id' => 'nullable|exists:matches,id', // FootballMatch uses 'matches' table
             'closes_at' => 'nullable|date|after:now',
             'options' => 'required|array|min:2|max:10',
             'options.*.label' => 'required|string|max:255',

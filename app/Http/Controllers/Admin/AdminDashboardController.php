@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Club;
+use App\Models\Comment;
 use App\Models\Community;
-use App\Models\Competition;
-use App\Models\FootballMatch;
+use App\Models\Like;
 use App\Models\Poll;
 use App\Models\Post;
 use App\Models\Report;
@@ -20,14 +19,16 @@ class AdminDashboardController extends Controller
         $stats = [
             'users' => User::count(),
             'posts' => Post::count(),
-            'clubs' => Club::count(),
+            'comments' => Comment::count(),
             'communities' => Community::count(),
-            'matches' => FootballMatch::count(),
             'polls' => Poll::count(),
-            'competitions' => Competition::count(),
+            'likes' => Like::count(),
             'pending_reports' => Report::pending()->count(),
             'banned_users' => User::where('is_banned', true)->count(),
             'new_users_today' => User::whereDate('created_at', today())->count(),
+            'pending_posts' => Post::where('is_approved', false)->count(),
+            'pending_comments' => Comment::where('is_approved', false)->count(),
+            'active_polls' => Poll::where('is_active', true)->where(fn($q) => $q->whereNull('closes_at')->orWhere('closes_at', '>', now()))->count(),
         ];
 
         $recentReports = Report::with(['reporter', 'reportable'])

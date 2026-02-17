@@ -13,9 +13,9 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Admin\AdminDashboardController;
-use App\Http\Controllers\Admin\ClubManagementController;
-use App\Http\Controllers\Admin\MatchManagementController;
+use App\Http\Controllers\Admin\CommunityManagementController;
 use App\Http\Controllers\Admin\ModerationController;
+use App\Http\Controllers\Admin\PollManagementController;
 use App\Http\Controllers\Admin\UserManagementController;
 use Illuminate\Support\Facades\Route;
 
@@ -52,6 +52,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('posts.like');
     Route::post('/posts/{post}/comment', [PostController::class, 'comment'])->name('posts.comment');
     Route::post('/posts/{post}/share', [PostController::class, 'share'])->name('posts.share');
+    Route::post('/posts/{post}/pin', [PostController::class, 'pin'])->name('posts.pin');
+    Route::delete('/comments/{comment}', [PostController::class, 'deleteComment'])->name('comments.destroy');
 
     // Communities
     Route::get('/communities', [CommunityController::class, 'index'])->name('communities.index');
@@ -94,11 +96,18 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/users/{user}/assign-role', [UserManagementController::class, 'assignRole'])->name('users.assignRole');
     Route::post('/users/{user}/remove-role', [UserManagementController::class, 'removeRole'])->name('users.removeRole');
 
-    // Club Management
-    Route::resource('clubs', ClubManagementController::class)->except('show');
+    // Community Management
+    Route::get('/communities', [CommunityManagementController::class, 'index'])->name('communities.index');
+    Route::post('/communities/{community}/toggle-active', [CommunityManagementController::class, 'toggleActive'])->name('communities.toggleActive');
+    Route::delete('/communities/{community}', [CommunityManagementController::class, 'destroy'])->name('communities.destroy');
 
-    // Match Management
-    Route::resource('matches', MatchManagementController::class)->except('show');
+    // Poll Management
+    Route::get('/polls', [PollManagementController::class, 'index'])->name('polls.index');
+    Route::get('/polls/create', [PollManagementController::class, 'create'])->name('polls.create');
+    Route::post('/polls', [PollManagementController::class, 'store'])->name('polls.store');
+    Route::post('/polls/{poll}/close', [PollManagementController::class, 'close'])->name('polls.close');
+    Route::post('/polls/{poll}/reopen', [PollManagementController::class, 'reopen'])->name('polls.reopen');
+    Route::delete('/polls/{poll}', [PollManagementController::class, 'destroy'])->name('polls.destroy');
 
     // Moderation
     Route::get('/moderation/reports', [ModerationController::class, 'reports'])->name('moderation.reports');
@@ -106,6 +115,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/moderation/pending-posts', [ModerationController::class, 'pendingPosts'])->name('moderation.pendingPosts');
     Route::post('/moderation/posts/{post}/approve', [ModerationController::class, 'approvePost'])->name('moderation.approvePost');
     Route::delete('/moderation/posts/{post}/reject', [ModerationController::class, 'rejectPost'])->name('moderation.rejectPost');
+    Route::get('/moderation/pending-comments', [ModerationController::class, 'pendingComments'])->name('moderation.pendingComments');
+    Route::post('/moderation/comments/{comment}/approve', [ModerationController::class, 'approveComment'])->name('moderation.approveComment');
+    Route::delete('/moderation/comments/{comment}', [ModerationController::class, 'deleteComment'])->name('moderation.deleteComment');
 });
 
 require __DIR__ . '/settings.php';

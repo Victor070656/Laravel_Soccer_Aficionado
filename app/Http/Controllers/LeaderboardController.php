@@ -15,11 +15,11 @@ class LeaderboardController extends Controller
 
     public function __invoke()
     {
-        $topUsers = $this->gamification->getLeaderboard(50);
+        $leaders = $this->gamification->getLeaderboard(50);
 
         $currentUser = auth()->user();
-        $currentUserRank = User::where('points', '>', $currentUser->points)->count() + 1;
+        $currentRank = User::where('points', '>', $currentUser->points)->count() + 1;
 
-        return view('leaderboard.index', compact('topUsers', 'currentUser', 'currentUserRank'));
+        return view('leaderboard.index', compact('leaders', 'currentUser', 'currentRank'));
     }
 }
