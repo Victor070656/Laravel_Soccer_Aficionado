@@ -43,7 +43,7 @@
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-red-500/20 flex items-center justify-center text-lg">🚨</div>
                     <div>
-                        <p class="text-2xl font-bold text-red-500">{{ number_format($stats['reports']) }}</p>
+                        <p class="text-2xl font-bold text-red-500">{{ number_format($stats['pending_reports']) }}</p>
                         <p class="text-xs text-zinc-500 font-medium">Pending Reports</p>
                     </div>
                 </div>
