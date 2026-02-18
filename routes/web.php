@@ -13,7 +13,11 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AnalyticsController;
+use App\Http\Controllers\Admin\ClubManagementController;
 use App\Http\Controllers\Admin\CommunityManagementController;
+use App\Http\Controllers\Admin\CompetitionManagementController;
+use App\Http\Controllers\Admin\MatchManagementController;
 use App\Http\Controllers\Admin\ModerationController;
 use App\Http\Controllers\Admin\PollManagementController;
 use App\Http\Controllers\Admin\UserManagementController;
@@ -120,6 +124,27 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/moderation/pending-comments', [ModerationController::class, 'pendingComments'])->name('moderation.pendingComments');
     Route::post('/moderation/comments/{comment}/approve', [ModerationController::class, 'approveComment'])->name('moderation.approveComment');
     Route::delete('/moderation/comments/{comment}', [ModerationController::class, 'deleteComment'])->name('moderation.deleteComment');
+
+    // Match Management (API-based)
+    Route::get('/matches', [MatchManagementController::class, 'index'])->name('matches.index');
+    Route::get('/matches/{id}', [MatchManagementController::class, 'show'])->name('matches.show')->where('id', '[0-9]+');
+    Route::post('/matches/sync-api', [MatchManagementController::class, 'syncFromApi'])->name('matches.syncApi');
+    Route::post('/matches/sync-teams', [MatchManagementController::class, 'syncTeams'])->name('matches.syncTeams');
+
+    // Club Management (API-based)
+    Route::get('/clubs', [ClubManagementController::class, 'index'])->name('clubs.index');
+    Route::get('/clubs/{id}', [ClubManagementController::class, 'show'])->name('clubs.show')->where('id', '[0-9]+');
+    Route::post('/clubs/{id}/sync', [ClubManagementController::class, 'syncClub'])->name('clubs.syncClub')->where('id', '[0-9]+');
+    Route::post('/clubs/sync-league', [ClubManagementController::class, 'syncLeague'])->name('clubs.syncLeague');
+    Route::post('/clubs/{club}/toggle-active', [ClubManagementController::class, 'toggleActive'])->name('clubs.toggleActive');
+    Route::delete('/clubs/{club}', [ClubManagementController::class, 'destroy'])->name('clubs.destroy');
+
+    // Competition Management (API-based)
+    Route::get('/competitions', [CompetitionManagementController::class, 'index'])->name('competitions.index');
+    Route::get('/competitions/{id}', [CompetitionManagementController::class, 'show'])->name('competitions.show')->where('id', '[0-9]+');
+
+    // Analytics
+    Route::get('/analytics', AnalyticsController::class)->name('analytics');
 });
 
 require __DIR__ . '/settings.php';

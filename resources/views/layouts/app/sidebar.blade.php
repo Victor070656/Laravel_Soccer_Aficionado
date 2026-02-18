@@ -61,6 +61,18 @@
                     <flux:sidebar.item icon="exclamation-triangle" :href="route('admin.moderation.reports')" :current="request()->routeIs('admin.moderation.*')" wire:navigate>
                         {{ __('Moderation') }}
                     </flux:sidebar.item>
+                    <flux:sidebar.item icon="trophy" :href="route('admin.matches.index')" :current="request()->routeIs('admin.matches.*')" wire:navigate>
+                        {{ __('Matches') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="shield-check" :href="route('admin.clubs.index')" :current="request()->routeIs('admin.clubs.*')" wire:navigate>
+                        {{ __('Clubs') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="flag" :href="route('admin.competitions.index')" :current="request()->routeIs('admin.competitions.*')" wire:navigate>
+                        {{ __('Competitions') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="presentation-chart-line" :href="route('admin.analytics')" :current="request()->routeIs('admin.analytics')" wire:navigate>
+                        {{ __('Analytics') }}
+                    </flux:sidebar.item>
                 </flux:sidebar.group>
                 @endif
             </flux:sidebar.nav>
