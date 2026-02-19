@@ -372,6 +372,11 @@
         </div>
     </section>
 
+    {{-- Ad Spot --}}
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+        <x-ad-unit placement="welcome" />
+    </div>
+
     {{-- CTA Section --}}
     <section class="py-24 px-4 sm:px-6 relative overflow-hidden">
         <div class="relative max-w-5xl mx-auto">

@@ -20,6 +20,9 @@
             </div>
         </div>
 
+        {{-- Banner Ad --}}
+        <x-ad-unit placement="banner" />
+
         {{-- Create Poll Form --}}
         <div id="create-poll" class="hidden rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 shadow-lg overflow-hidden">
             <div class="px-6 py-4 border-b border-zinc-100 dark:border-zinc-700/60 bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-900/10 dark:to-purple-900/10">

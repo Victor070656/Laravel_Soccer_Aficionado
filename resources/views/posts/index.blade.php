@@ -95,6 +95,12 @@
                     </span>
                 </div>
             </div>
+
+            {{-- Inject feed ad after every 3rd post --}}
+            @if($loop->iteration % 3 === 0 && !$loop->last)
+            <x-ad-unit placement="feed" />
+            @endif
+
             @empty
             <div class="rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-700 p-12 text-center">
                 <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">

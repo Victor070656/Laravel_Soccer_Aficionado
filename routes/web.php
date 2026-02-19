@@ -12,6 +12,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\Admin\AdManagementController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\ClubManagementController;
@@ -145,6 +146,21 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Analytics
     Route::get('/analytics', AnalyticsController::class)->name('analytics');
+
+    // Ad Management
+    Route::get('/ads', [AdManagementController::class, 'index'])->name('ads.index');
+    Route::get('/ads/create', [AdManagementController::class, 'create'])->name('ads.create');
+    Route::post('/ads', [AdManagementController::class, 'store'])->name('ads.store');
+    Route::get('/ads/{ad}/edit', [AdManagementController::class, 'edit'])->name('ads.edit');
+    Route::put('/ads/{ad}', [AdManagementController::class, 'update'])->name('ads.update');
+    Route::post('/ads/{ad}/toggle', [AdManagementController::class, 'toggle'])->name('ads.toggle');
+    Route::delete('/ads/{ad}', [AdManagementController::class, 'destroy'])->name('ads.destroy');
 });
+
+// ── Ad Click Tracking ──────────────────────────────────
+Route::post('/ad/{ad}/click', function (\App\Models\Ad $ad) {
+    $ad->increment('click_count');
+    return response()->noContent();
+})->name('ad.click');
 
 require __DIR__ . '/settings.php';

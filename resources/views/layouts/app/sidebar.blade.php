@@ -73,6 +73,9 @@
                     <flux:sidebar.item icon="presentation-chart-line" :href="route('admin.analytics')" :current="request()->routeIs('admin.analytics')" wire:navigate>
                         {{ __('Analytics') }}
                     </flux:sidebar.item>
+                    <flux:sidebar.item icon="megaphone" :href="route('admin.ads.index')" :current="request()->routeIs('admin.ads.*')" wire:navigate>
+                        {{ __('Ads') }}
+                    </flux:sidebar.item>
                 </flux:sidebar.group>
                 @endif
             </flux:sidebar.nav>

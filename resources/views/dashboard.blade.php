@@ -235,6 +235,9 @@
                     </div>
                 </div>
 
+                {{-- Sidebar Ad --}}
+                <x-ad-unit placement="sidebar" />
+
                 {{-- Trending Posts --}}
                 <div class="rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 overflow-hidden shadow-sm">
                     <div class="px-5 py-4 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border-b border-zinc-100 dark:border-zinc-700/50">
