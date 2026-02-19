@@ -19,9 +19,13 @@
         <div class="grid grid-cols-3 gap-4 max-w-2xl mx-auto">
             {{-- 2nd Place --}}
             <div class="flex flex-col items-center pt-8">
+                @if($leaders[1]->avatar)
+                <img src="{{ $leaders[1]->avatar_url }}" alt="{{ $leaders[1]->name }}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover shadow-lg ring-4 ring-zinc-200 dark:ring-zinc-600">
+                @else
                 <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-zinc-300 to-zinc-400 flex items-center justify-center text-white font-bold text-xl sm:text-2xl shadow-lg ring-4 ring-zinc-200 dark:ring-zinc-600">
                     {{ strtoupper(substr($leaders[1]->name, 0, 1)) }}
                 </div>
+                @endif
                 <span class="text-3xl mt-2">🥈</span>
                 @if($leaders[1]->username)
                 <a href="{{ route('profiles.show', $leaders[1]) }}" class="font-bold text-zinc-900 dark:text-white text-sm mt-1 text-center hover:text-green-600 transition">{{ $leaders[1]->name }}</a>
@@ -33,9 +37,13 @@
             </div>
             {{-- 1st Place --}}
             <div class="flex flex-col items-center">
+                @if($leaders[0]->avatar)
+                <img src="{{ $leaders[0]->avatar_url }}" alt="{{ $leaders[0]->name }}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover shadow-xl ring-4 ring-amber-300 dark:ring-amber-600">
+                @else
                 <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center text-white font-bold text-2xl sm:text-3xl shadow-xl ring-4 ring-amber-300 dark:ring-amber-600">
                     {{ strtoupper(substr($leaders[0]->name, 0, 1)) }}
                 </div>
+                @endif
                 <span class="text-4xl mt-2">🥇</span>
                 @if($leaders[0]->username)
                 <a href="{{ route('profiles.show', $leaders[0]) }}" class="font-bold text-zinc-900 dark:text-white text-sm mt-1 text-center hover:text-green-600 transition">{{ $leaders[0]->name }}</a>
@@ -47,9 +55,13 @@
             </div>
             {{-- 3rd Place --}}
             <div class="flex flex-col items-center pt-12">
+                @if($leaders[2]->avatar)
+                <img src="{{ $leaders[2]->avatar_url }}" alt="{{ $leaders[2]->name }}" class="w-14 h-14 sm:w-18 sm:h-18 rounded-full object-cover shadow-lg ring-4 ring-orange-200 dark:ring-orange-700">
+                @else
                 <div class="w-14 h-14 sm:w-18 sm:h-18 rounded-full bg-gradient-to-br from-orange-400 to-amber-600 flex items-center justify-center text-white font-bold text-lg sm:text-xl shadow-lg ring-4 ring-orange-200 dark:ring-orange-700">
                     {{ strtoupper(substr($leaders[2]->name, 0, 1)) }}
                 </div>
+                @endif
                 <span class="text-3xl mt-2">🥉</span>
                 @if($leaders[2]->username)
                 <a href="{{ route('profiles.show', $leaders[2]) }}" class="font-bold text-zinc-900 dark:text-white text-sm mt-1 text-center hover:text-green-600 transition">{{ $leaders[2]->name }}</a>
@@ -116,9 +128,13 @@
                             @else
                             <div class="flex items-center gap-3 group">
                             @endif
+                                @if($leader->avatar)
+                                <img src="{{ $leader->avatar_url }}" alt="{{ $leader->name }}" class="w-10 h-10 rounded-full object-cover shadow-sm group-hover:scale-105 transition-transform">
+                                @else
                                 <div class="w-10 h-10 rounded-full {{ $index < 3 ? 'bg-gradient-to-br from-amber-300 to-amber-500 text-white' : 'bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300' }} flex items-center justify-center font-bold shadow-sm group-hover:scale-105 transition-transform">
                                     {{ strtoupper(substr($leader->name, 0, 1)) }}
                                 </div>
+                                @endif
                                 <div>
                                     <div class="font-semibold text-zinc-900 dark:text-white group-hover:text-green-600 transition">{{ $leader->name }}</div>
                                     @if($leader->username)

@@ -13,9 +13,13 @@
         @forelse($posts as $post)
         <div class="rounded-2xl border border-amber-200 dark:border-amber-800/50 bg-white dark:bg-zinc-800/50 backdrop-blur-sm p-6 hover-lift transition-all duration-300">
             <div class="flex items-start gap-3">
+                @if($post->user->avatar)
+                <img src="{{ $post->user->avatar_url }}" alt="{{ $post->user->name }}" class="w-10 h-10 rounded-full object-cover">
+                @else
                 <div class="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-700 flex items-center justify-center text-sm font-bold">
                     {{ strtoupper(substr($post->user->name, 0, 1)) }}
                 </div>
+                @endif
                 <div class="flex-1">
                     <div class="flex items-center gap-2 mb-2">
                         <span class="font-medium text-zinc-900 dark:text-white">{{ $post->user->name }}</span>

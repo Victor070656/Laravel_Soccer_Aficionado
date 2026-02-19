@@ -29,7 +29,11 @@
                         @endif
                         <div class="flex items-center gap-3 mt-2">
                             <a href="{{ route('profiles.show', $poll->user) }}" class="inline-flex items-center gap-1.5 text-sm text-zinc-500 dark:text-zinc-400 hover:text-green-600 transition">
+                                @if($poll->user->avatar)
+                                <img src="{{ $poll->user->avatar_url }}" alt="{{ $poll->user->name }}" class="w-5 h-5 rounded-full object-cover">
+                                @else
                                 <div class="w-5 h-5 rounded-full bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center text-white text-[10px] font-bold">{{ strtoupper(substr($poll->user->name, 0, 1)) }}</div>
+                                @endif
                                 {{ $poll->user->name }}
                             </a>
                             <span class="text-xs text-zinc-400 dark:text-zinc-500">{{ $poll->created_at->diffForHumans() }}</span>

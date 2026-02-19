@@ -8,9 +8,13 @@
         {{-- User Info --}}
         <div class="rounded-2xl border border-zinc-200 dark:border-zinc-700/50 bg-white dark:bg-zinc-800/50 backdrop-blur-sm p-6 shadow-xl shadow-black/5">
             <div class="flex items-start gap-4">
+                @if($user->avatar)
+                <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" class="w-16 h-16 rounded-2xl object-cover shadow-xl">
+                @else
                 <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-2xl font-bold text-white shadow-xl shadow-blue-500/25">
                     {{ strtoupper(substr($user->name, 0, 1)) }}
                 </div>
+                @endif
                 <div class="flex-1">
                     <h1 class="text-xl font-bold text-zinc-900 dark:text-white">{{ $user->name }}</h1>
                     <p class="text-zinc-500">{{ $user->email }}</p>

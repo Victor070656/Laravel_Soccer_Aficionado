@@ -4,9 +4,13 @@
         <div class="rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 shadow-sm overflow-hidden">
             <div class="p-6">
                 <div class="flex items-start gap-4">
+                    @if($post->user->avatar)
+                    <img src="{{ $post->user->avatar_url }}" alt="{{ $post->user->name }}" class="flex-shrink-0 w-12 h-12 rounded-full object-cover shadow-md">
+                    @else
                     <div class="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-white font-bold text-lg shadow-md">
                         {{ strtoupper(substr($post->user->name, 0, 1)) }}
                     </div>
+                    @endif
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2 flex-wrap">
@@ -101,9 +105,13 @@
             <div class="rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 shadow-sm overflow-hidden">
                 <div class="p-5">
                     <div class="flex items-start gap-3">
+                        @if($comment->user->avatar)
+                        <img src="{{ $comment->user->avatar_url }}" alt="{{ $comment->user->name }}" class="w-9 h-9 rounded-full object-cover shadow-sm">
+                        @else
                         <div class="w-9 h-9 rounded-full bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center text-white text-xs font-bold shadow-sm">
                             {{ strtoupper(substr($comment->user->name, 0, 1)) }}
                         </div>
+                        @endif
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2">
                                 <a href="{{ route('profiles.show', $comment->user) }}" class="font-semibold text-sm text-zinc-900 dark:text-white hover:text-green-600 transition">{{ $comment->user->name }}</a>

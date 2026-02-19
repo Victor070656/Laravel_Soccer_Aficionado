@@ -31,9 +31,13 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 @foreach($users as $user)
                 <a href="{{ route('profiles.show', $user) }}" class="flex items-center gap-3 rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 p-4 shadow-sm hover:shadow-md hover:border-green-300 dark:hover:border-green-700 transition-all group">
+                    @if($user->avatar)
+                    <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" class="w-11 h-11 rounded-full object-cover shadow-sm group-hover:scale-110 transition-transform">
+                    @else
                     <div class="w-11 h-11 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-white font-bold shadow-sm group-hover:scale-110 transition-transform">
                         {{ strtoupper(substr($user->name, 0, 1)) }}
                     </div>
+                    @endif
                     <div>
                         <div class="font-semibold text-zinc-900 dark:text-white group-hover:text-green-600 transition">{{ $user->name }}</div>
                         @if($user->username)
@@ -108,7 +112,11 @@
                 @foreach($posts as $post)
                 <a href="{{ route('posts.show', $post) }}" class="block rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 p-5 shadow-sm hover:shadow-md hover:border-green-300 dark:hover:border-green-700 transition-all">
                     <div class="flex items-center gap-2 mb-2">
+                        @if($post->user->avatar)
+                        <img src="{{ $post->user->avatar_url }}" alt="{{ $post->user->name }}" class="w-6 h-6 rounded-full object-cover">
+                        @else
                         <div class="w-6 h-6 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-white text-[10px] font-bold">{{ strtoupper(substr($post->user->name, 0, 1)) }}</div>
+                        @endif
                         <span class="text-sm font-medium text-zinc-500 dark:text-zinc-400">{{ $post->user->name }}</span>
                         <span class="text-xs text-zinc-400 dark:text-zinc-500">{{ $post->created_at->diffForHumans() }}</span>
                     </div>

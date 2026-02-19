@@ -25,9 +25,13 @@
             <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data" class="p-5">
                 @csrf
                 <div class="flex items-start gap-3">
+                    @if(auth()->user()->avatar)
+                    <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="flex-shrink-0 w-10 h-10 rounded-full object-cover shadow-sm">
+                    @else
                     <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-white font-bold text-sm shadow-sm">
                         {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                     </div>
+                    @endif
                     <div class="flex-1">
                         <textarea name="body" rows="3" placeholder="Share your thoughts..." class="w-full rounded-xl p-4 border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-green-500 focus:ring-green-500/20 text-sm resize-none" required></textarea>
                         @error('body') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
@@ -51,9 +55,13 @@
             <div class="rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
                 <div class="p-5">
                     <div class="flex items-start gap-3">
+                        @if($post->user->avatar)
+                        <img src="{{ $post->user->avatar_url }}" alt="{{ $post->user->name }}" class="flex-shrink-0 w-10 h-10 rounded-full object-cover shadow-sm">
+                        @else
                         <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-white font-bold text-sm shadow-sm">
                             {{ strtoupper(substr($post->user->name, 0, 1)) }}
                         </div>
+                        @endif
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2 flex-wrap">
                                 <a href="{{ route('profiles.show', $post->user) }}" class="font-semibold text-sm text-zinc-900 dark:text-white hover:text-green-600 transition">{{ $post->user->name }}</a>
@@ -96,8 +104,8 @@
                 </div>
             </div>
 
-            {{-- Inject feed ad after every 3rd post --}}
-            @if($loop->iteration % 3 === 0 && !$loop->last)
+            {{-- Inject feed ad after every 5th post --}}
+            @if($loop->iteration % 5 === 0 && !$loop->last)
             <x-ad-unit placement="feed" />
             @endif
 

@@ -89,9 +89,13 @@
                 <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data" class="rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 p-5 shadow-sm hover:shadow-md transition-shadow">
                     @csrf
                     <div class="flex items-start gap-3">
+                        @if(auth()->user()->avatar)
+                        <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="flex-shrink-0 w-10 h-10 rounded-full object-cover shadow-md">
+                        @else
                         <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-white font-bold text-sm shadow-md">
                             {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                         </div>
+                        @endif
                         <div class="flex-1">
                             <textarea name="body" rows="3" placeholder="What's on your mind about football? ⚽" class="w-full rounded-xl p-4 border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-green-500 focus:ring-green-500/20 text-sm resize-none placeholder:text-zinc-400"></textarea>
                             <div class="flex items-center justify-between mt-3">
@@ -112,8 +116,14 @@
                 @forelse($feed as $post)
                 <div class="rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 p-5 shadow-sm hover:shadow-md transition-all duration-300 group">
                     <div class="flex items-start gap-3">
-                        <a href="{{ route('profiles.show', $post->user) }}" class="flex-shrink-0 w-11 h-11 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-white font-bold text-sm shadow-md hover:scale-110 transition-transform">
-                            {{ strtoupper(substr($post->user->name, 0, 1)) }}
+                        <a href="{{ route('profiles.show', $post->user) }}" class="flex-shrink-0 w-11 h-11 rounded-full hover:scale-110 transition-transform">
+                            @if($post->user->avatar)
+                            <img src="{{ $post->user->avatar_url }}" alt="{{ $post->user->name }}" class="w-11 h-11 rounded-full object-cover shadow-md">
+                            @else
+                            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-white font-bold text-sm shadow-md">
+                                {{ strtoupper(substr($post->user->name, 0, 1)) }}
+                            </div>
+                            @endif
                         </a>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2 flex-wrap">

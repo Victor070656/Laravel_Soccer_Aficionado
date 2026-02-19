@@ -11,9 +11,13 @@
             <div class="relative px-6 sm:px-8 pb-6">
                 <div class="flex flex-col sm:flex-row items-center sm:items-end gap-4 -mt-12 sm:-mt-16">
                     {{-- Avatar --}}
+                    @if($user->avatar)
+                    <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" class="flex-shrink-0 w-24 h-24 sm:w-32 sm:h-32 rounded-2xl object-cover border-4 border-white dark:border-zinc-800 shadow-xl">
+                    @else
                     <div class="flex-shrink-0 w-24 h-24 sm:w-32 sm:h-32 rounded-2xl bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-white text-3xl sm:text-4xl font-bold border-4 border-white dark:border-zinc-800 shadow-xl">
                         {{ strtoupper(substr($user->name, 0, 1)) }}
                     </div>
+                    @endif
                     <div class="flex-1 text-center sm:text-left pb-2">
                         <div class="flex flex-col sm:flex-row items-center gap-3">
                             <div>

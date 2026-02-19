@@ -27,7 +27,11 @@
                     <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-700/30 transition">
                         <td class="px-5 py-4">
                             <div class="flex items-center gap-2">
+                                @if($comment->user?->avatar)
+                                <img src="{{ $comment->user->avatar_url }}" alt="{{ $comment->user->name }}" class="w-8 h-8 rounded-full object-cover">
+                                @else
                                 <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-xs font-bold text-white">{{ strtoupper(substr($comment->user->name ?? '?', 0, 1)) }}</div>
+                                @endif
                                 <span class="text-sm font-medium text-zinc-900 dark:text-white">{{ $comment->user?->name ?? 'Deleted' }}</span>
                             </div>
                         </td>

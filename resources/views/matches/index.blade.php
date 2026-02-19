@@ -66,6 +66,9 @@
             </div>
         </form>
 
+        {{-- Banner Ad --}}
+        <x-ad-unit placement="banner" />
+
         {{-- Match List --}}
         <div class="space-y-4">
             @forelse($matches as $match)

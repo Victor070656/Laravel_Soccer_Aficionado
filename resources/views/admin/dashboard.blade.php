@@ -124,7 +124,11 @@
                     @foreach($recentUsers as $user)
                     <div class="flex items-center justify-between py-3 border-b border-zinc-100 dark:border-zinc-700/50 last:border-0">
                         <div class="flex items-center gap-3">
+                            @if($user->avatar)
+                            <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" class="w-9 h-9 rounded-full object-cover shadow-lg">
+                            @else
                             <div class="w-9 h-9 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-xs font-bold text-white shadow-lg shadow-green-500/20">{{ strtoupper(substr($user->name, 0, 1)) }}</div>
+                            @endif
                             <div>
                                 <a href="{{ route('admin.users.show', $user) }}" class="text-sm font-medium text-zinc-900 dark:text-white hover:text-green-500 transition-colors">{{ $user->name }}</a>
                                 <p class="text-xs text-zinc-400">{{ $user->email }}</p>

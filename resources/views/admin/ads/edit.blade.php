@@ -29,7 +29,7 @@
                 {{-- Title --}}
                 <div>
                     <label for="title" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Ad Title</label>
-                    <input type="text" name="title" id="title" value="{{ old('title', $ad->title) }}" required class="w-full rounded-xl border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-rose-500 focus:ring-rose-500/20 text-sm">
+                    <input type="text" name="title" id="title" value="{{ old('title', $ad->title) }}" required class="w-full rounded-xl p-4 border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-rose-500 focus:ring-rose-500/20 text-sm">
                 </div>
 
                 {{-- Current Image --}}
@@ -50,13 +50,13 @@
                 {{-- Link URL --}}
                 <div>
                     <label for="link_url" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Destination URL <span class="text-zinc-400 font-normal">(optional)</span></label>
-                    <input type="url" name="link_url" id="link_url" value="{{ old('link_url', $ad->link_url) }}" class="w-full rounded-xl border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-rose-500 focus:ring-rose-500/20 text-sm" placeholder="https://example.com/landing-page">
+                    <input type="url" name="link_url" id="link_url" value="{{ old('link_url', $ad->link_url) }}" class="w-full rounded-xl p-4 border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-rose-500 focus:ring-rose-500/20 text-sm" placeholder="https://example.com/landing-page">
                 </div>
 
                 {{-- Placement --}}
                 <div>
                     <label for="placement" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Placement</label>
-                    <select name="placement" id="placement" required class="w-full rounded-xl border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-rose-500 focus:ring-rose-500/20 text-sm">
+                    <select name="placement" id="placement" required class="w-full rounded-xl p-4 border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-rose-500 focus:ring-rose-500/20 text-sm">
                         <option value="sidebar" {{ old('placement', $ad->placement) === 'sidebar' ? 'selected' : '' }}>📱 Sidebar — Dashboard & page sidebars</option>
                         <option value="feed" {{ old('placement', $ad->placement) === 'feed' ? 'selected' : '' }}>📰 Feed — Between posts in the feed</option>
                         <option value="banner" {{ old('placement', $ad->placement) === 'banner' ? 'selected' : '' }}>🖼️ Banner — Top of main content pages</option>
@@ -68,12 +68,12 @@
                     {{-- Start Date --}}
                     <div>
                         <label for="starts_at" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Start Date <span class="text-zinc-400 font-normal">(optional)</span></label>
-                        <input type="datetime-local" name="starts_at" id="starts_at" value="{{ old('starts_at', $ad->starts_at?->format('Y-m-d\TH:i')) }}" class="w-full rounded-xl border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-rose-500 focus:ring-rose-500/20 text-sm">
+                        <input type="datetime-local" name="starts_at" id="starts_at" value="{{ old('starts_at', $ad->starts_at?->format('Y-m-d\TH:i')) }}" class="w-full rounded-xl p-4 border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-rose-500 focus:ring-rose-500/20 text-sm">
                     </div>
                     {{-- End Date --}}
                     <div>
                         <label for="ends_at" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">End Date <span class="text-zinc-400 font-normal">(optional)</span></label>
-                        <input type="datetime-local" name="ends_at" id="ends_at" value="{{ old('ends_at', $ad->ends_at?->format('Y-m-d\TH:i')) }}" class="w-full rounded-xl border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-rose-500 focus:ring-rose-500/20 text-sm">
+                        <input type="datetime-local" name="ends_at" id="ends_at" value="{{ old('ends_at', $ad->ends_at?->format('Y-m-d\TH:i')) }}" class="w-full rounded-xl p-4 border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-rose-500 focus:ring-rose-500/20 text-sm">
                     </div>
                 </div>
 
