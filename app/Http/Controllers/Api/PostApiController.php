@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Concerns\ExtractsMentions;
+use App\Models\Comment;
 use App\Models\Post;
 use App\Services\GamificationService;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PostApiController extends BaseApiController
 {
+    use ExtractsMentions;
+
     public function __construct(
         protected GamificationService $gamification,
         protected NotificationService $notifications,
@@ -18,6 +23,7 @@ class PostApiController extends BaseApiController
     public function index(Request $request)
     {
         $posts = Post::with(['user', 'community'])
+            ->withCount(['likes', 'comments', 'shares'])
             ->approved()
             ->latest()
             ->paginate(20);
@@ -28,6 +34,7 @@ class PostApiController extends BaseApiController
     public function feed(Request $request)
     {
         $posts = Post::with(['user', 'community'])
+            ->withCount(['likes', 'comments', 'shares'])
             ->feed($request->user())
             ->paginate(20);
 
@@ -36,7 +43,11 @@ class PostApiController extends BaseApiController
 
     public function show(Post $post)
     {
-        $post->load(['user', 'community']);
+        $post->load([
+            'user',
+            'community',
+            'comments' => fn($q) => $q->with(['user', 'replies.user'])->where('is_approved', true)->latest(),
+        ]);
         $post->loadCount(['likes', 'comments', 'shares']);
 
         return $this->success($post);
@@ -47,11 +58,29 @@ class PostApiController extends BaseApiController
         $validated = $request->validate([
             'body' => 'required|string|max:5000',
             'community_id' => 'nullable|exists:communities,id',
+            'media.*' => 'nullable|file|mimes:jpg,jpeg,png,gif,mp4,webm|max:10240',
         ]);
 
-        $post = $request->user()->posts()->create($validated);
+        $mediaPaths = [];
+        if ($request->hasFile('media')) {
+            foreach ($request->file('media') as $file) {
+                $mediaPaths[] = $file->store('posts', 'public');
+            }
+        }
+
+        $post = $request->user()->posts()->create([
+            'body' => $validated['body'],
+            'community_id' => $validated['community_id'] ?? null,
+            'type' => !empty($mediaPaths) ? 'image' : 'text',
+            'media' => !empty($mediaPaths) ? $mediaPaths : null,
+        ]);
+
+        $this->extractAndSaveMentions($validated['body'], $post);
 
         $this->gamification->awardPoints($request->user(), 'post_created', $post);
+        $this->gamification->recordActivity($request->user(), 'post_created', $post);
+
+        $post->load('user');
 
         return $this->success($post, 'Post created.', 201);
     }
@@ -81,6 +110,8 @@ class PostApiController extends BaseApiController
         $post->likes()->create(['user_id' => $user->id]);
         $post->increment('likes_count');
 
+        $post->loadMissing('user');
+        $this->gamification->awardPoints($post->user, 'like_received', $post);
         $this->notifications->notifyLike($user, $post);
 
         return $this->success(null, 'Post liked.');
@@ -95,12 +126,83 @@ class PostApiController extends BaseApiController
 
         $comment = $post->allComments()->create([
             'user_id' => $request->user()->id,
-            ...$validated,
+            'body' => $validated['body'],
+            'parent_id' => $validated['parent_id'] ?? null,
         ]);
 
+        $this->extractAndSaveMentions($validated['body'], $comment);
+
         $post->increment('comments_count');
+
+        $this->gamification->awardPoints($request->user(), 'comment_created', $comment);
+        $this->gamification->recordActivity($request->user(), 'comment_created', $comment);
         $this->notifications->notifyComment($request->user(), $post);
 
         return $this->success($comment->load('user'), 'Comment added.', 201);
+    }
+
+    public function update(Request $request, Post $post)
+    {
+        if ($post->user_id !== $request->user()->id && !$request->user()->isAdmin()) {
+            return $this->error('Unauthorized.', 403);
+        }
+
+        $validated = $request->validate([
+            'body' => 'required|string|max:5000',
+        ]);
+
+        $post->update(['body' => $validated['body']]);
+
+        // Re-extract mentions
+        $post->mentions()->delete();
+        $this->extractAndSaveMentions($validated['body'], $post);
+
+        $post->load(['user', 'community']);
+        $post->loadCount(['likes', 'comments', 'shares']);
+
+        return $this->success($post, 'Post updated.');
+    }
+
+    public function share(Request $request, Post $post)
+    {
+        $validated = $request->validate([
+            'comment' => 'nullable|string|max:500',
+        ]);
+
+        $share = $post->shares()->create([
+            'user_id' => $request->user()->id,
+            'comment' => $validated['comment'] ?? null,
+        ]);
+
+        $post->increment('shares_count');
+
+        $this->gamification->awardPoints($request->user(), 'share_created', $post);
+
+        return $this->success($share, 'Post shared.');
+    }
+
+    public function pin(Request $request, Post $post)
+    {
+        if (!$request->user()->isAdmin()) {
+            return $this->error('Unauthorized.', 403);
+        }
+
+        $post->update(['is_pinned' => !$post->is_pinned]);
+
+        $status = $post->is_pinned ? 'pinned' : 'unpinned';
+
+        return $this->success(['is_pinned' => $post->is_pinned], "Post {$status}.");
+    }
+
+    public function deleteComment(Request $request, Comment $comment)
+    {
+        if ($comment->user_id !== $request->user()->id && !$request->user()->isAdmin()) {
+            return $this->error('Unauthorized.', 403);
+        }
+
+        $comment->post->decrement('comments_count');
+        $comment->delete();
+
+        return $this->success(null, 'Comment deleted.');
     }
 }

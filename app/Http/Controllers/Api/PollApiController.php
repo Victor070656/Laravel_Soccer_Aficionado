@@ -4,10 +4,16 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Poll;
 use App\Models\PollOption;
+use App\Services\GamificationService;
 use Illuminate\Http\Request;
 
 class PollApiController extends BaseApiController
 {
+    public function __construct(
+        protected GamificationService $gamification,
+    ) {
+    }
+
     public function index()
     {
         $polls = Poll::with(['options', 'user', 'match.homeClub', 'match.awayClub'])
@@ -22,7 +28,15 @@ class PollApiController extends BaseApiController
     {
         $poll->load(['options' => fn($q) => $q->orderByDesc('votes_count'), 'user', 'match.homeClub', 'match.awayClub']);
 
-        return $this->success($poll);
+        $userVote = null;
+        if (auth('sanctum')->check()) {
+            $userVote = $poll->votes()->where('user_id', auth('sanctum')->id())->first();
+        }
+
+        return $this->success([
+            'poll' => $poll,
+            'user_vote' => $userVote,
+        ]);
     }
 
     public function vote(Request $request, Poll $poll)
@@ -55,6 +69,41 @@ class PollApiController extends BaseApiController
         $option->increment('votes_count');
         $poll->increment('total_votes');
 
+        $this->gamification->awardPoints($user, 'vote_cast', $poll);
+
         return $this->success(null, 'Vote recorded.');
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string|max:2000',
+            'type' => 'required|in:general,motm,prediction,gotw',
+            'match_id' => 'nullable|exists:matches,id',
+            'closes_at' => 'nullable|date|after:now',
+            'options' => 'required|array|min:2|max:10',
+            'options.*.label' => 'required|string|max:255',
+            'options.*.player_id' => 'nullable|exists:players,id',
+        ]);
+
+        $poll = $request->user()->polls()->create([
+            'title' => $validated['title'],
+            'description' => $validated['description'] ?? null,
+            'type' => $validated['type'],
+            'match_id' => $validated['match_id'] ?? null,
+            'closes_at' => $validated['closes_at'] ?? null,
+        ]);
+
+        foreach ($validated['options'] as $option) {
+            $poll->options()->create([
+                'label' => $option['label'],
+                'player_id' => $option['player_id'] ?? null,
+            ]);
+        }
+
+        $poll->load(['options', 'user']);
+
+        return $this->success($poll, 'Poll created!', 201);
     }
 }
