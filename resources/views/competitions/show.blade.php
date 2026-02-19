@@ -17,11 +17,31 @@
                         @if($competition->country_flag ?? null)
                         <img loading="lazy" decoding="async" src="{{ $competition->country_flag }}" alt="" class="h-3 w-4 object-contain">
                         @endif
-                        {{ ucfirst($competition->type) }} · {{ $competition->country ?? 'International' }} · Season {{ $seasonDisplay }}
+                        {{ ucfirst($competition->type) }} · {{ $competition->country ?? 'International' }}
                     </div>
+                </div>
+                <div class="ml-auto flex-shrink-0">
+                    <form method="GET" action="{{ route('competitions.show', $competition->id) }}" class="flex items-center gap-2">
+                        <label for="season" class="text-sm text-amber-100 font-medium hidden sm:inline">Season</label>
+                        <select name="season" id="season" onchange="this.form.submit()" class="rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 text-white text-sm font-semibold px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/30 cursor-pointer appearance-none" style="background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m6 8 4 4 4-4'/%3E%3C/svg%3E\"); background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1.25em 1.25em; padding-right: 2rem;">
+                            @foreach($availableSeasons as $season)
+                            <option value="{{ $season['value'] }}" {{ $selectedSeason === $season['value'] ? 'selected' : '' }} class="text-zinc-900">
+                                {{ $season['label'] }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </form>
                 </div>
             </div>
         </div>
+
+        {{-- Past season notice --}}
+        @unless($isCurrentSeason)
+        <div class="rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 p-4 flex items-center gap-3">
+            <span class="text-xl">📅</span>
+            <p class="text-sm text-amber-700 dark:text-amber-400">You are viewing the <strong>{{ $seasonDisplay }}</strong> season. Upcoming matches and recent results are only available for the current season.</p>
+        </div>
+        @endunless
 
         {{-- Standings --}}
         @if($standings->isNotEmpty())
@@ -29,7 +49,7 @@
             <div class="px-5 py-4 border-b border-zinc-100 dark:border-zinc-700/60 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/10 dark:to-yellow-900/10">
                 <h3 class="font-bold text-zinc-900 dark:text-white flex items-center gap-2">
                     <span class="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 text-sm">🏆</span>
-                    Standings
+                    Standings — {{ $seasonDisplay }}
                 </h3>
             </div>
             <div class="overflow-x-auto">
@@ -119,7 +139,8 @@
         </div>
         @endif
 
-        {{-- Matches --}}
+        {{-- Matches (current season only) --}}
+        @if($isCurrentSeason)
         <div class="grid gap-6 lg:grid-cols-2">
             {{-- Upcoming --}}
             <div class="rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 shadow-sm overflow-hidden">
@@ -197,6 +218,7 @@
                 </div>
             </div>
         </div>
+        @endif
 
         {{-- Back link --}}
         <div class="text-center pb-4">

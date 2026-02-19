@@ -24,7 +24,7 @@ class CompetitionController extends Controller
         ]);
     }
 
-    public function show(int $id)
+    public function show(Request $request, int $id)
     {
         $league = $this->api->getLeague($id);
 
@@ -34,31 +34,69 @@ class CompetitionController extends Controller
 
         $competition = (object) $league;
 
-        // Standings (may be grouped)
-        $rawStandings = $this->api->getStandings($id);
+        // Determine which season to show
+        $currentSeason = $this->api->getSeason();
+        $selectedSeason = $request->query('season', $currentSeason);
+
+        // Validate season format (e.g. "2024-2025")
+        if (!preg_match('/^\d{4}-\d{4}$/', $selectedSeason)) {
+            $selectedSeason = $currentSeason;
+        }
+
+        $isCurrentSeason = $selectedSeason === $currentSeason;
+
+        // Build list of available seasons (current + 4 previous)
+        $currentYear = (int) explode('-', $currentSeason)[0];
+        $availableSeasons = [];
+        for ($y = $currentYear; $y >= $currentYear - 4; $y--) {
+            $season = $y . '-' . ($y + 1);
+            $availableSeasons[] = [
+                'value' => $season,
+                'label' => $y . '/' . substr((string) ($y + 1), -2),
+            ];
+        }
+
+        // Standings (may be grouped) — use selected season
+        $rawStandings = $this->api->getStandings($id, $selectedSeason);
         $standings = collect();
         if (!empty($rawStandings)) {
-            // Flatten all groups into a single collection for single-group leagues
-            // or keep first group for display
             $firstGroup = $rawStandings[0] ?? [];
             $standings = collect($firstGroup)
                 ->map(fn(array $row) => (object) FootballApiService::normaliseStandingRow($row));
         }
 
-        // Upcoming fixtures for this league
-        $upcomingMatches = collect($this->api->getUpcomingFixtures(10, $id))
-            ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
+        // Upcoming fixtures & recent results only make sense for the current season
+        $upcomingMatches = collect();
+        $recentResults = collect();
+        if ($isCurrentSeason) {
+            $upcomingMatches = collect($this->api->getUpcomingFixtures(10, $id))
+                ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
 
-        // Recent results for this league
-        $recentResults = collect($this->api->getFinishedFixtures(10, $id))
-            ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
+            $recentResults = collect($this->api->getFinishedFixtures(10, $id))
+                ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
+        }
 
         // Teams in this league
         $teams = collect($this->api->getTeamsByLeague($id))
             ->map(fn(array $raw) => (object) FootballApiService::normaliseTeam($raw));
 
-        return view('competitions.show', compact('competition', 'standings', 'upcomingMatches', 'recentResults', 'teams') + [
-            'seasonDisplay' => $this->api->seasonDisplay(),
+        // Build display string for the selected season
+        $parts = explode('-', $selectedSeason);
+        $seasonDisplay = count($parts) === 2
+            ? $parts[0] . '/' . substr($parts[1], -2)
+            : $selectedSeason;
+
+        return view('competitions.show', compact(
+            'competition',
+            'standings',
+            'upcomingMatches',
+            'recentResults',
+            'teams',
+            'availableSeasons',
+            'selectedSeason',
+            'isCurrentSeason',
+        ) + [
+            'seasonDisplay' => $seasonDisplay,
         ]);
     }
 }

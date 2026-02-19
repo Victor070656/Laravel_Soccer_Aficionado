@@ -23,7 +23,11 @@
                     {{ strtoupper(substr($leaders[1]->name, 0, 1)) }}
                 </div>
                 <span class="text-3xl mt-2">🥈</span>
+                @if($leaders[1]->username)
                 <a href="{{ route('profiles.show', $leaders[1]) }}" class="font-bold text-zinc-900 dark:text-white text-sm mt-1 text-center hover:text-green-600 transition">{{ $leaders[1]->name }}</a>
+                @else
+                <span class="font-bold text-zinc-900 dark:text-white text-sm mt-1 text-center">{{ $leaders[1]->name }}</span>
+                @endif
                 <span class="text-sm font-bold text-zinc-500 dark:text-zinc-400 tabular-nums">{{ number_format($leaders[1]->points) }} pts</span>
                 <div class="w-full h-24 bg-gradient-to-t from-zinc-200 to-zinc-100 dark:from-zinc-700 dark:to-zinc-600 rounded-t-2xl mt-2"></div>
             </div>
@@ -33,7 +37,11 @@
                     {{ strtoupper(substr($leaders[0]->name, 0, 1)) }}
                 </div>
                 <span class="text-4xl mt-2">🥇</span>
+                @if($leaders[0]->username)
                 <a href="{{ route('profiles.show', $leaders[0]) }}" class="font-bold text-zinc-900 dark:text-white text-sm mt-1 text-center hover:text-green-600 transition">{{ $leaders[0]->name }}</a>
+                @else
+                <span class="font-bold text-zinc-900 dark:text-white text-sm mt-1 text-center">{{ $leaders[0]->name }}</span>
+                @endif
                 <span class="text-sm font-bold text-amber-600 dark:text-amber-400 tabular-nums">{{ number_format($leaders[0]->points) }} pts</span>
                 <div class="w-full h-32 bg-gradient-to-t from-amber-200 to-amber-100 dark:from-amber-800/50 dark:to-amber-700/50 rounded-t-2xl mt-2"></div>
             </div>
@@ -43,7 +51,11 @@
                     {{ strtoupper(substr($leaders[2]->name, 0, 1)) }}
                 </div>
                 <span class="text-3xl mt-2">🥉</span>
+                @if($leaders[2]->username)
                 <a href="{{ route('profiles.show', $leaders[2]) }}" class="font-bold text-zinc-900 dark:text-white text-sm mt-1 text-center hover:text-green-600 transition">{{ $leaders[2]->name }}</a>
+                @else
+                <span class="font-bold text-zinc-900 dark:text-white text-sm mt-1 text-center">{{ $leaders[2]->name }}</span>
+                @endif
                 <span class="text-sm font-bold text-zinc-500 dark:text-zinc-400 tabular-nums">{{ number_format($leaders[2]->points) }} pts</span>
                 <div class="w-full h-16 bg-gradient-to-t from-orange-200 to-orange-100 dark:from-orange-800/40 dark:to-orange-700/40 rounded-t-2xl mt-2"></div>
             </div>
@@ -99,7 +111,11 @@
                             @endif
                         </td>
                         <td class="px-5 py-4 whitespace-nowrap">
+                            @if($leader->username)
                             <a href="{{ route('profiles.show', $leader) }}" class="flex items-center gap-3 hover:text-green-600 transition group">
+                            @else
+                            <div class="flex items-center gap-3 group">
+                            @endif
                                 <div class="w-10 h-10 rounded-full {{ $index < 3 ? 'bg-gradient-to-br from-amber-300 to-amber-500 text-white' : 'bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300' }} flex items-center justify-center font-bold shadow-sm group-hover:scale-105 transition-transform">
                                     {{ strtoupper(substr($leader->name, 0, 1)) }}
                                 </div>
@@ -109,7 +125,11 @@
                                     <div class="text-xs text-zinc-400 dark:text-zinc-500">{{ '@' . $leader->username }}</div>
                                     @endif
                                 </div>
+                            @if($leader->username)
                             </a>
+                            @else
+                            </div>
+                            @endif
                         </td>
                         <td class="px-5 py-4 whitespace-nowrap text-right">
                             <span class="text-lg font-black {{ $index < 3 ? 'text-amber-600 dark:text-amber-400' : 'text-zinc-900 dark:text-white' }} tabular-nums">{{ number_format($leader->points) }}</span>

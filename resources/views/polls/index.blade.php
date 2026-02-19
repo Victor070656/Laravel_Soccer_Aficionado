@@ -31,21 +31,34 @@
             <form action="{{ route('polls.store') }}" method="POST" class="p-6 space-y-5">
                 @csrf
                 <div>
-                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Question</label>
-                    <input type="text" name="question" required class="w-full rounded-xl border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-green-500 focus:ring-green-500/20 text-sm" placeholder="What do you want to ask?">
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Title</label>
+                    <input type="text" name="title" required class="w-full rounded-xl border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-violet-500 focus:ring-violet-500/20 text-sm" placeholder="e.g. Who will win the derby?">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Description <span class="text-zinc-400 font-normal">(optional — give voters more context)</span></label>
+                    <textarea name="description" rows="2" class="w-full rounded-xl border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-violet-500 focus:ring-violet-500/20 text-sm" placeholder="Add details so voters know what this poll is about…"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Poll Type</label>
+                    <select name="type" required class="w-full rounded-xl border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-violet-500 focus:ring-violet-500/20 text-sm">
+                        <option value="general">💬 General — Fan debate or opinion</option>
+                        <option value="prediction">🔮 Prediction — Match result forecast</option>
+                        <option value="motm">⭐ Man of the Match</option>
+                        <option value="gotw">🥅 Goal of the Week</option>
+                    </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Options</label>
                     <div id="poll-options" class="space-y-2">
-                        <input type="text" name="options[]" placeholder="Option 1" required class="w-full rounded-xl border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-green-500 focus:ring-green-500/20 text-sm">
-                        <input type="text" name="options[]" placeholder="Option 2" required class="w-full rounded-xl border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-green-500 focus:ring-green-500/20 text-sm">
+                        <input type="text" name="options[0][label]" placeholder="Option 1" required class="w-full rounded-xl border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-violet-500 focus:ring-violet-500/20 text-sm">
+                        <input type="text" name="options[1][label]" placeholder="Option 2" required class="w-full rounded-xl border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-violet-500 focus:ring-violet-500/20 text-sm">
                     </div>
                     <button type="button" onclick="addPollOption()" class="mt-2 text-sm text-violet-600 hover:text-violet-700 dark:text-violet-400 font-medium transition">+ Add option</button>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Link to Match (optional)</label>
-                        <select name="match_id" class="w-full rounded-xl border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-green-500 focus:ring-green-500/20 text-sm">
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Link to Match <span class="text-zinc-400 font-normal">(optional)</span></label>
+                        <select name="match_id" class="w-full rounded-xl border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-violet-500 focus:ring-violet-500/20 text-sm">
                             <option value="">No match</option>
                             @foreach(\App\Models\FootballMatch::upcoming()->with('homeClub', 'awayClub')->limit(20)->get() as $match)
                             <option value="{{ $match->id }}">{{ $match->homeClub->name }} vs {{ $match->awayClub->name }} ({{ $match->kick_off->format('M d') }})</option>
@@ -53,8 +66,8 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Ends at</label>
-                        <input type="datetime-local" name="ends_at" class="w-full rounded-xl border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-green-500 focus:ring-green-500/20 text-sm">
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Closes at <span class="text-zinc-400 font-normal">(optional)</span></label>
+                        <input type="datetime-local" name="closes_at" class="w-full rounded-xl border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-violet-500 focus:ring-violet-500/20 text-sm">
                     </div>
                 </div>
                 <div class="flex justify-end pt-2">
@@ -70,9 +83,27 @@
                 <div class="p-6">
                     <div class="flex items-start justify-between mb-4">
                         <div class="flex-1 min-w-0">
-                            <a href="{{ route('polls.show', $poll) }}" class="text-lg font-bold text-zinc-900 dark:text-white hover:text-violet-600 transition">{{ $poll->question }}</a>
-                            <div class="flex items-center gap-3 mt-1.5">
+                            <a href="{{ route('polls.show', $poll) }}" class="text-lg font-bold text-zinc-900 dark:text-white hover:text-violet-600 transition">{{ $poll->title }}</a>
+                            @if($poll->description)
+                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1 line-clamp-2">{{ $poll->description }}</p>
+                            @endif
+                            <div class="flex flex-wrap items-center gap-2 mt-2">
                                 <span class="text-xs text-zinc-400 dark:text-zinc-500">by {{ $poll->user->name }}</span>
+                                <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full
+                                    @switch($poll->type)
+                                        @case('motm') text-amber-700 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-300 @break
+                                        @case('prediction') text-blue-700 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-300 @break
+                                        @case('gotw') text-rose-700 bg-rose-50 dark:bg-rose-900/20 dark:text-rose-300 @break
+                                        @default text-violet-700 bg-violet-50 dark:bg-violet-900/20 dark:text-violet-300
+                                    @endswitch
+                                ">
+                                    @switch($poll->type)
+                                        @case('motm') ⭐ Man of the Match @break
+                                        @case('prediction') 🔮 Prediction @break
+                                        @case('gotw') 🥅 Goal of the Week @break
+                                        @default 💬 General
+                                    @endswitch
+                                </span>
                                 @if($poll->match)
                                 <span class="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded-full">🏟️ {{ $poll->match->homeClub->name }} vs {{ $poll->match->awayClub->name }}</span>
                                 @endif
@@ -102,7 +133,7 @@
                         <div class="relative rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-700/50">
                             <div class="absolute inset-y-0 left-0 bg-gradient-to-r from-violet-200 to-purple-200 dark:from-violet-800/50 dark:to-purple-800/50 transition-all duration-700 ease-out" style="width: {{ $pct }}%"></div>
                             <div class="relative flex items-center justify-between px-4 py-3">
-                                <span class="text-sm font-medium text-zinc-900 dark:text-white">{{ $option->text }}</span>
+                                <span class="text-sm font-medium text-zinc-900 dark:text-white">{{ $option->label }}</span>
                                 <span class="text-sm font-bold text-zinc-900 dark:text-white tabular-nums">{{ $pct }}%</span>
                             </div>
                         </div>
@@ -111,7 +142,7 @@
                             @csrf
                             <input type="hidden" name="poll_option_id" value="{{ $option->id }}">
                             <button type="submit" class="w-full text-left rounded-xl border-2 border-zinc-200 dark:border-zinc-600 px-4 py-3 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:border-violet-500 hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-all hover:scale-[1.01]">
-                                {{ $option->text }}
+                                {{ $option->label }}
                             </button>
                         </form>
                         @endif
@@ -120,8 +151,8 @@
 
                     <div class="flex items-center justify-between mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-700/60">
                         <span class="text-xs text-zinc-400 dark:text-zinc-500 font-medium">{{ $totalVotes }} votes</span>
-                        @if($poll->ends_at)
-                        <span class="text-xs text-zinc-400 dark:text-zinc-500">Ends {{ $poll->ends_at->diffForHumans() }}</span>
+                        @if($poll->closes_at)
+                        <span class="text-xs text-zinc-400 dark:text-zinc-500">{{ $poll->isOpen() ? 'Closes' : 'Closed' }} {{ $poll->closes_at->diffForHumans() }}</span>
                         @endif
                     </div>
                 </div>
@@ -143,13 +174,15 @@
     <script>
         let optionCount = 2;
         function addPollOption() {
-            optionCount++;
+            if (optionCount >= 10) return;
             const input = document.createElement('input');
             input.type = 'text';
-            input.name = 'options[]';
-            input.placeholder = 'Option ' + optionCount;
-            input.className = 'w-full rounded-xl border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-green-500 focus:ring-green-500/20 text-sm';
+            input.name = 'options[' + optionCount + '][label]';
+            input.placeholder = 'Option ' + (optionCount + 1);
+            input.required = true;
+            input.className = 'w-full rounded-xl border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-violet-500 focus:ring-violet-500/20 text-sm';
             document.getElementById('poll-options').appendChild(input);
+            optionCount++;
         }
     </script>
 </x-layouts::app>

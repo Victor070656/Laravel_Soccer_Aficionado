@@ -143,7 +143,7 @@
                 <div class="relative hidden lg:block">
                     <div class="animate-scale-in animation-delay-300">
                         <div class="relative rounded-3xl overflow-hidden shadow-2xl shadow-zinc-900/20 dark:shadow-black/40 border border-zinc-200/50 dark:border-zinc-700/50">
-                            <img fetchpriority="high" decoding="async" src="https://images.unsplash.com/photo-1508098682722-e99c643e7f0b?w=700&h=500&fit=crop&q=80" alt="Football Stadium" class="w-full h-[420px] object-cover">
+                            <img fetchpriority="high" decoding="async" src="https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Zm9vdGJhbGwlMjBzdGFkaXVtfGVufDB8fDB8fHww" alt="Football Stadium" class="w-full h-[420px] object-cover">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                             <div class="absolute bottom-0 left-0 right-0 p-8">
                                 <div class="flex items-center gap-3 mb-3">
@@ -263,7 +263,7 @@
                         ['icon' => '📊', 'title' => 'Polls & Voting', 'description' => 'Vote on match predictions, player ratings, and hot takes. See how your opinions compare to the community.', 'color' => 'from-purple-500 to-pink-500', 'image' => 'https://images.unsplash.com/photo-1551958219-acbc608c6377?w=400&h=200&fit=crop&q=70'],
                         ['icon' => '🏅', 'title' => 'Gamification', 'description' => 'Earn points for engaging, unlock badges, and climb the leaderboard. Show off your dedication!', 'color' => 'from-amber-500 to-yellow-500', 'image' => 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=400&h=200&fit=crop&q=70'],
                         ['icon' => '⚽', 'title' => 'Club & Player Data', 'description' => 'Browse detailed club profiles, player stats, competition standings, and comprehensive football data.', 'color' => 'from-green-500 to-emerald-500', 'image' => 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400&h=200&fit=crop&q=70'],
-                        ['icon' => '📱', 'title' => 'Mobile App', 'description' => 'Full-featured Mobile App integration for you, with a modern interface.', 'color' => 'from-indigo-500 to-violet-500', 'image' => 'https://images.unsplash.com/photo-1461896836934-bd45ba25e57d?w=400&h=200&fit=crop&q=70'],
+                        ['icon' => '📱', 'title' => 'Mobile App', 'description' => 'Full-featured Mobile App integration for you, with a modern interface.', 'color' => 'from-indigo-500 to-violet-500', 'image' => 'https://www.cnet.com/a/img/resize/06c0bcbaf54afd03068b35f9edca8a117a9e48ba/hub/2025/06/25/38a0e720-b9d3-4837-a652-39a044d16f9c/apple-sports-app-tennis-feature.jpg?auto=webp&fit=crop&height=675&width=1200'],
                     ];
                 @endphp
                 @foreach($features as $feature)

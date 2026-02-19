@@ -1,4 +1,4 @@
-<x-layouts::app :title="$poll->question">
+<x-layouts::app :title="$poll->title">
     <div class="max-w-3xl mx-auto space-y-6 p-2 sm:p-4">
         {{-- Poll Card --}}
         <div class="rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 shadow-sm overflow-hidden">
@@ -6,7 +6,27 @@
             <div class="px-6 py-5 border-b border-zinc-100 dark:border-zinc-700/60 bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-900/10 dark:to-purple-900/10">
                 <div class="flex items-start justify-between gap-4">
                     <div class="flex-1">
-                        <h1 class="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white">{{ $poll->question }}</h1>
+                        <div class="flex flex-wrap items-center gap-2 mb-1.5">
+                            <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full
+                                @switch($poll->type)
+                                    @case('motm') text-amber-700 bg-amber-100 dark:bg-amber-900/30 dark:text-amber-300 @break
+                                    @case('prediction') text-blue-700 bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 @break
+                                    @case('gotw') text-rose-700 bg-rose-100 dark:bg-rose-900/30 dark:text-rose-300 @break
+                                    @default text-violet-700 bg-violet-100 dark:bg-violet-900/30 dark:text-violet-300
+                                @endswitch
+                            ">
+                                @switch($poll->type)
+                                    @case('motm') ⭐ Man of the Match @break
+                                    @case('prediction') 🔮 Prediction @break
+                                    @case('gotw') 🥅 Goal of the Week @break
+                                    @default 💬 General
+                                @endswitch
+                            </span>
+                        </div>
+                        <h1 class="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white">{{ $poll->title }}</h1>
+                        @if($poll->description)
+                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1.5 leading-relaxed">{{ $poll->description }}</p>
+                        @endif
                         <div class="flex items-center gap-3 mt-2">
                             <a href="{{ route('profiles.show', $poll->user) }}" class="inline-flex items-center gap-1.5 text-sm text-zinc-500 dark:text-zinc-400 hover:text-green-600 transition">
                                 <div class="w-5 h-5 rounded-full bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center text-white text-[10px] font-bold">{{ strtoupper(substr($poll->user->name, 0, 1)) }}</div>
@@ -62,7 +82,7 @@
                                 @if($isWinning)
                                 <span class="text-sm">👑</span>
                                 @endif
-                                <span class="text-sm font-semibold text-zinc-900 dark:text-white">{{ $option->text }}</span>
+                                <span class="text-sm font-semibold text-zinc-900 dark:text-white">{{ $option->label }}</span>
                             </div>
                             <div class="flex items-center gap-3">
                                 <span class="text-xs text-zinc-500 dark:text-zinc-400">{{ $option->votes_count }} votes</span>
@@ -75,7 +95,7 @@
                         @csrf
                         <input type="hidden" name="poll_option_id" value="{{ $option->id }}">
                         <button type="submit" class="w-full text-left rounded-xl border-2 border-zinc-200 dark:border-zinc-600 px-5 py-4 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:border-violet-500 hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-all hover:scale-[1.01] hover:shadow-md">
-                            {{ $option->text }}
+                            {{ $option->label }}
                         </button>
                     </form>
                     @endif
@@ -88,8 +108,8 @@
                         <span class="w-7 h-7 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 text-xs">📊</span>
                         <span class="text-sm font-medium text-zinc-600 dark:text-zinc-300">{{ $totalVotes }} total votes</span>
                     </div>
-                    @if($poll->ends_at)
-                    <span class="text-sm text-zinc-500 dark:text-zinc-400">{{ $poll->isOpen() ? 'Ends' : 'Ended' }} {{ $poll->ends_at->diffForHumans() }}</span>
+                    @if($poll->closes_at)
+                    <span class="text-sm text-zinc-500 dark:text-zinc-400">{{ $poll->isOpen() ? 'Closes' : 'Closed' }} {{ $poll->closes_at->diffForHumans() }}</span>
                     @endif
                 </div>
             </div>
