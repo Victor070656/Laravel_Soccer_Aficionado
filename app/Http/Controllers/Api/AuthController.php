@@ -82,6 +82,7 @@ class AuthController extends BaseApiController
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
+            'username' => 'sometimes|string|max:255',
             'bio' => 'nullable|string|max:500',
             'country' => 'nullable|string|max:100',
             'timezone' => 'nullable|string|max:100',

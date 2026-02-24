@@ -12,7 +12,10 @@ class EnsureUserIsAdmin
     {
         if (!$request->user() || !$request->user()->isAdmin()) {
             if ($request->expectsJson()) {
-                return response()->json(['message' => 'Unauthorized.'], 403);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized.',
+                ], 403);
             }
 
             abort(403, 'Unauthorized.');
