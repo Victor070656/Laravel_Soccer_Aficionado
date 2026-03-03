@@ -38,6 +38,7 @@ class DashboardController extends Controller
             ->get();
 
         $trendingPosts = Post::with(['user', 'community'])
+            ->withCount(['likes', 'comments', 'shares'])
             ->trending()
             ->take(5)
             ->get();

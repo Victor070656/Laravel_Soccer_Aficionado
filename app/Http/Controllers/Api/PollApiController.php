@@ -61,7 +61,7 @@ class PollApiController extends BaseApiController
             return $this->error('Invalid option.', 422);
         }
 
-        $user->votes()->create([
+        $vote = $user->votes()->create([
             'poll_id' => $poll->id,
             'poll_option_id' => $option->id,
         ]);
@@ -69,7 +69,7 @@ class PollApiController extends BaseApiController
         $option->increment('votes_count');
         $poll->increment('total_votes');
 
-        $this->gamification->awardPoints($user, 'vote_cast', $poll);
+        $this->gamification->awardPoints($user, 'vote_cast', $vote);
 
         return $this->success(null, 'Vote recorded.');
     }

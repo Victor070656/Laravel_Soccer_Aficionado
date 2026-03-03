@@ -22,7 +22,7 @@ class ProfileController extends Controller
 
         $posts = $user->posts()
             ->with(['community', 'user'])
-            ->withCount(['likes', 'comments'])
+            ->withCount(['likes', 'comments', 'shares'])
             ->approved()
             ->latest()
             ->paginate(20);

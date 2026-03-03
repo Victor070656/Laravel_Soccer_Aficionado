@@ -417,53 +417,80 @@ class FootballApiService
     }
 
     /**
-     * Get a single fixture by its TheSportsDB event ID.
+     * Fetch and cache the raw TheSportsDB event object for a fixture.
+     *
+     * lookupevent.php returns the richest payload: goal scorers, cards,
+     * lineup strings, formations, shots, spectators, description, etc.
+     * All detail methods (getFixture, getFixtureEvents, getFixtureLineups,
+     * getFixtureStatistics) share this cached raw event.
      */
-    public function getFixture(int $fixtureId): ?array
+    protected function getRawEvent(int $fixtureId): ?array
     {
-        $cacheKey = "tsdb:fixture:{$fixtureId}";
+        $cacheKey = "tsdb:raw_event:{$fixtureId}";
         $ttl = $this->cacheTtl['fixture'] ?? 300;
 
         return $this->cacheRemember($cacheKey, $ttl, function () use ($fixtureId) {
             $data = $this->get('lookupevent.php', ['id' => $fixtureId]);
-
             if ($data === null) {
-                return null; // API failed – don't cache
-            }
-
-            $events = $data['events'] ?? [];
-            if (empty($events)) {
                 return null;
             }
-            return self::tsdbEventToFixture($events[0]);
+            $events = $data['events'] ?? [];
+            return !empty($events) ? $events[0] : null;
         });
     }
 
     /**
-     * Get events (goals, cards, etc.) for a fixture.
-     * TheSportsDB free tier doesn't have detailed events – return empty.
+     * Get a single fixture by its TheSportsDB event ID.
+     */
+    public function getFixture(int $fixtureId): ?array
+    {
+        $raw = $this->getRawEvent($fixtureId);
+        return $raw ? self::tsdbEventToFixture($raw) : null;
+    }
+
+    /**
+     * Get events (goals, cards) for a fixture.
+     *
+     * Parsed from the goal-detail & card-detail strings that
+     * lookupevent.php returns (e.g. "45':Salah;90':Firmino;").
      */
     public function getFixtureEvents(int $fixtureId): array
     {
-        return []; // Not available on free tier
+        $raw = $this->getRawEvent($fixtureId);
+        if (!$raw) {
+            return [];
+        }
+        return self::parseMatchEvents($raw);
     }
 
     /**
      * Get lineups for a fixture.
-     * TheSportsDB free tier doesn't have lineups – return empty.
+     *
+     * Parsed from lineup strings that lookupevent.php returns
+     * (e.g. strHomeLineupGoalkeeper, strHomeLineupDefense, etc.).
      */
     public function getFixtureLineups(int $fixtureId): array
     {
-        return []; // Not available on free tier
+        $raw = $this->getRawEvent($fixtureId);
+        if (!$raw) {
+            return [];
+        }
+        return self::parseMatchLineups($raw);
     }
 
     /**
      * Get match statistics for a fixture.
-     * TheSportsDB free tier doesn't have match stats – return empty.
+     *
+     * Extracts shots, cards counts, and any other stats available
+     * from the lookupevent.php payload.
      */
     public function getFixtureStatistics(int $fixtureId): array
     {
-        return []; // Not available on free tier
+        $raw = $this->getRawEvent($fixtureId);
+        if (!$raw) {
+            return [];
+        }
+        return self::parseMatchStatistics($raw);
     }
 
     /**
@@ -573,6 +600,7 @@ class FootballApiService
                         'name' => $league['strLeague'] ?? $meta['name'],
                         'type' => strtolower($league['strLeagueAlternate'] ?? '') ?: 'league',
                         'logo' => $league['strBadge'] ?? null,
+                        'logo_wide' => $league['strLogo'] ?? null,
                         'country' => $league['strCountry'] ?? $meta['country'],
                         'country_code' => null,
                         'country_flag' => ($league['strCountry'] ?? $meta['country'])
@@ -583,6 +611,8 @@ class FootballApiService
                         'season_end' => null,
                         'banner' => $league['strBanner'] ?? null,
                         'fanart' => $league['strFanart1'] ?? null,
+                        'trophy' => $league['strTrophy'] ?? null,
+                        'poster' => $league['strPoster'] ?? null,
                         'description' => $league['strDescriptionEN'] ?? null,
                     ];
                 } else {
@@ -592,6 +622,7 @@ class FootballApiService
                         'name' => $meta['name'],
                         'type' => 'league',
                         'logo' => null,
+                        'logo_wide' => null,
                         'country' => $meta['country'],
                         'country_code' => null,
                         'country_flag' => 'https://flagsapi.com/' . self::countryToIso($meta['country']) . '/flat/32.png',
@@ -600,6 +631,8 @@ class FootballApiService
                         'season_end' => null,
                         'banner' => null,
                         'fanart' => null,
+                        'trophy' => null,
+                        'poster' => null,
                         'description' => null,
                     ];
                 }
@@ -629,6 +662,7 @@ class FootballApiService
                     'name' => $league['strLeague'] ?? 'Unknown',
                     'type' => strtolower($league['strLeagueAlternate'] ?? '') ?: 'league',
                     'logo' => $league['strBadge'] ?? null,
+                    'logo_wide' => $league['strLogo'] ?? null,
                     'country' => $league['strCountry'] ?? null,
                     'country_code' => null,
                     'country_flag' => $league['strCountry']
@@ -638,6 +672,10 @@ class FootballApiService
                     'season_start' => null,
                     'season_end' => null,
                     'description' => $league['strDescriptionEN'] ?? null,
+                    'banner' => $league['strBanner'] ?? null,
+                    'fanart' => $league['strFanart1'] ?? null,
+                    'trophy' => $league['strTrophy'] ?? null,
+                    'poster' => $league['strPoster'] ?? null,
                 ];
             }
 
@@ -652,6 +690,7 @@ class FootballApiService
                 'name' => $meta['name'],
                 'type' => 'league',
                 'logo' => null,
+                'logo_wide' => null,
                 'country' => $meta['country'],
                 'country_code' => null,
                 'country_flag' => 'https://flagsapi.com/' . self::countryToIso($meta['country']) . '/flat/32.png',
@@ -659,6 +698,10 @@ class FootballApiService
                 'season_start' => null,
                 'season_end' => null,
                 'description' => null,
+                'banner' => null,
+                'fanart' => null,
+                'trophy' => null,
+                'poster' => null,
             ];
         });
     }
@@ -790,9 +833,11 @@ class FootballApiService
             usort($teams, fn($a, $b) => strcasecmp($a['team']['name'] ?? '', $b['team']['name'] ?? ''));
             Cache::put($cacheKey, $teams, $ttl);
 
-            // Warm individual team caches so club detail pages don't need
-            // extra API calls.
-            foreach ($allTeams as $teamId => $teamData) {
+            // Warm individual team caches ONLY for teams with full data
+            // (from search_all_teams). Minimal stubs from events should NOT
+            // pollute the cache — getTeam() needs to call lookupteam.php
+            // for full details (description, social links, stadium, etc.).
+            foreach ($searchTeams as $teamId => $teamData) {
                 $teamCacheKey = "tsdb:team:{$teamId}";
                 if (!Cache::has($teamCacheKey)) {
                     Cache::put($teamCacheKey, $teamData, $ttl);
@@ -1094,8 +1139,19 @@ class FootballApiService
             'et_score' => ['home' => null, 'away' => null],
             'penalty_score' => ['home' => null, 'away' => null],
             'score_display' => $scoreDisplay,
+            'result' => !empty($e['strResult']) ? $e['strResult'] : null,
+            'description' => !empty($e['strDescriptionEN']) ? $e['strDescriptionEN'] : null,
+            'season' => $e['strSeason'] ?? null,
+            'spectators' => isset($e['intSpectators']) && $e['intSpectators'] !== '' ? (int) $e['intSpectators'] : null,
+            'home_formation' => !empty($e['strHomeFormation']) ? $e['strHomeFormation'] : null,
+            'away_formation' => !empty($e['strAwayFormation']) ? $e['strAwayFormation'] : null,
+            'home_goal_details' => !empty($e['strHomeGoalDetails']) ? $e['strHomeGoalDetails'] : null,
+            'away_goal_details' => !empty($e['strAwayGoalDetails']) ? $e['strAwayGoalDetails'] : null,
             'poster' => $e['strPoster'] ?? null,
             'thumb' => $e['strThumb'] ?? null,
+            'banner' => $e['strBanner'] ?? null,
+            'square' => $e['strSquare'] ?? null,
+            'fanart' => $e['strFanart'] ?? null,
             'video' => $e['strVideo'] ?? null,
         ];
     }
@@ -1145,6 +1201,25 @@ class FootballApiService
             'founded' => $team['founded'] ?? null,
             'national' => $team['national'] ?? false,
             'logo' => $team['logo'] ?? null,
+            'banner' => $team['banner'] ?? null,
+            'fanart' => $team['fanart'] ?? null,
+            'jersey' => $team['jersey'] ?? null,
+            'description' => $team['description'] ?? null,
+            'gender' => $team['gender'] ?? null,
+            'league' => $team['league'] ?? null,
+            'league_id' => $team['league_id'] ?? null,
+            'colours' => [
+                'primary' => $team['colour1'] ?? null,
+                'secondary' => $team['colour2'] ?? null,
+                'tertiary' => $team['colour3'] ?? null,
+            ],
+            'social' => [
+                'website' => $team['website'] ?? null,
+                'facebook' => $team['facebook'] ?? null,
+                'twitter' => $team['twitter'] ?? null,
+                'instagram' => $team['instagram'] ?? null,
+                'youtube' => $team['youtube'] ?? null,
+            ],
             'venue' => [
                 'id' => $venue['id'] ?? null,
                 'name' => $venue['name'] ?? null,
@@ -1152,6 +1227,7 @@ class FootballApiService
                 'capacity' => $venue['capacity'] ?? null,
                 'surface' => $venue['surface'] ?? null,
                 'image' => $venue['image'] ?? null,
+                'description' => $venue['description'] ?? null,
             ],
         ];
     }
@@ -1208,6 +1284,21 @@ class FootballApiService
                 'founded' => $t['intFormedYear'] ?? null,
                 'national' => false,
                 'logo' => $t['strBadge'] ?? null,
+                'banner' => $t['strBanner'] ?? $t['strTeamBanner'] ?? null,
+                'fanart' => $t['strFanart1'] ?? null,
+                'jersey' => $t['strTeamJersey'] ?? $t['strEquipment'] ?? null,
+                'description' => $t['strDescriptionEN'] ?? null,
+                'gender' => $t['strGender'] ?? null,
+                'league' => $t['strLeague'] ?? null,
+                'league_id' => isset($t['idLeague']) ? (int) $t['idLeague'] : null,
+                'colour1' => $t['strColour1'] ?? null,
+                'colour2' => $t['strColour2'] ?? null,
+                'colour3' => $t['strColour3'] ?? null,
+                'website' => $t['strWebsite'] ?? null,
+                'facebook' => $t['strFacebook'] ?? null,
+                'twitter' => $t['strTwitter'] ?? null,
+                'instagram' => $t['strInstagram'] ?? null,
+                'youtube' => $t['strYoutube'] ?? null,
             ],
             'venue' => [
                 'id' => null,
@@ -1216,6 +1307,7 @@ class FootballApiService
                 'capacity' => isset($t['intStadiumCapacity']) ? (int) $t['intStadiumCapacity'] : null,
                 'surface' => null,
                 'image' => $t['strStadiumThumb'] ?? null,
+                'description' => $t['strStadiumDescription'] ?? null,
             ],
         ];
     }
@@ -1299,6 +1391,318 @@ class FootballApiService
 
         // Fallback: treat unknown playing positions as Midfielder
         return 'Midfielder';
+    }
+
+    // ── Match Detail Parsers ───────────────────────────────
+
+    /**
+     * Parse a TheSportsDB detail string into structured entries.
+     *
+     * TheSportsDB encodes goals, cards, etc. as semicolon-delimited strings:
+     *   "45':Salah;90'+2':Firmino (Penalty);"
+     *
+     * @return array<int, array{time: int, player: string, extra: string}>
+     */
+    protected static function parseDetailString(string $details): array
+    {
+        $details = trim($details);
+        if (empty($details)) {
+            return [];
+        }
+
+        $result = [];
+        $entries = array_filter(array_map('trim', explode(';', $details)));
+
+        foreach ($entries as $entry) {
+            if (empty($entry)) {
+                continue;
+            }
+
+            // Match patterns like "45':Player" or "90'+2':Player (Penalty)"
+            if (preg_match("/^(\d+)'(?:\+(\d+))?:(.*)$/", $entry, $matches)) {
+                $time = (int) $matches[1];
+                $playerAndExtra = trim($matches[3]);
+
+                // Extract extra info in parentheses
+                $extra = '';
+                $player = $playerAndExtra;
+                if (preg_match('/^(.*?)\s*\(([^)]+)\)\s*$/', $playerAndExtra, $pMatches)) {
+                    $player = trim($pMatches[1]);
+                    $extra = trim($pMatches[2]);
+                }
+
+                $result[] = [
+                    'time' => $time,
+                    'player' => $player,
+                    'extra' => $extra,
+                ];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Parse goal and card events from a raw TheSportsDB event.
+     *
+     * @return array<int, array{time: int, team_id: int, team_name: string, type: string, detail: string, player: string, assist: ?string, icon: string}>
+     */
+    protected static function parseMatchEvents(array $e): array
+    {
+        $events = [];
+        $homeId = (int) ($e['idHomeTeam'] ?? 0);
+        $awayId = (int) ($e['idAwayTeam'] ?? 0);
+        $homeName = $e['strHomeTeam'] ?? 'Home';
+        $awayName = $e['strAwayTeam'] ?? 'Away';
+
+        // ── Goals ──
+        foreach (self::parseDetailString($e['strHomeGoalDetails'] ?? '') as $d) {
+            $events[] = self::buildEventEntry($d, $homeId, $homeName, 'Goal');
+        }
+        foreach (self::parseDetailString($e['strAwayGoalDetails'] ?? '') as $d) {
+            $events[] = self::buildEventEntry($d, $awayId, $awayName, 'Goal');
+        }
+
+        // ── Red Cards ──
+        foreach (self::parseDetailString($e['strHomeRedCards'] ?? '') as $d) {
+            $events[] = [
+                'time' => $d['time'],
+                'team_id' => $homeId,
+                'team_name' => $homeName,
+                'type' => 'Card',
+                'detail' => 'Red Card',
+                'player' => $d['player'],
+                'assist' => null,
+                'icon' => '🟥',
+            ];
+        }
+        foreach (self::parseDetailString($e['strAwayRedCards'] ?? '') as $d) {
+            $events[] = [
+                'time' => $d['time'],
+                'team_id' => $awayId,
+                'team_name' => $awayName,
+                'type' => 'Card',
+                'detail' => 'Red Card',
+                'player' => $d['player'],
+                'assist' => null,
+                'icon' => '🟥',
+            ];
+        }
+
+        // ── Yellow Cards ──
+        foreach (self::parseDetailString($e['strHomeYellowCards'] ?? '') as $d) {
+            $events[] = [
+                'time' => $d['time'],
+                'team_id' => $homeId,
+                'team_name' => $homeName,
+                'type' => 'Card',
+                'detail' => 'Yellow Card',
+                'player' => $d['player'],
+                'assist' => null,
+                'icon' => '🟨',
+            ];
+        }
+        foreach (self::parseDetailString($e['strAwayYellowCards'] ?? '') as $d) {
+            $events[] = [
+                'time' => $d['time'],
+                'team_id' => $awayId,
+                'team_name' => $awayName,
+                'type' => 'Card',
+                'detail' => 'Yellow Card',
+                'player' => $d['player'],
+                'assist' => null,
+                'icon' => '🟨',
+            ];
+        }
+
+        // Sort chronologically
+        usort($events, fn($a, $b) => ($a['time'] ?? 0) - ($b['time'] ?? 0));
+
+        return $events;
+    }
+
+    /**
+     * Build a single goal event entry from a parsed detail.
+     */
+    protected static function buildEventEntry(array $d, int $teamId, string $teamName, string $type): array
+    {
+        $extra = strtolower($d['extra'] ?? '');
+        $detail = 'Normal Goal';
+        $icon = '⚽';
+
+        if (str_contains($extra, 'own')) {
+            $detail = 'Own Goal';
+            $icon = '🔴';
+        } elseif (str_contains($extra, 'pen')) {
+            $detail = 'Penalty';
+            $icon = '⚽(P)';
+        }
+
+        return [
+            'time' => $d['time'],
+            'team_id' => $teamId,
+            'team_name' => $teamName,
+            'type' => $type,
+            'detail' => $detail,
+            'player' => $d['player'],
+            'assist' => null,
+            'icon' => $icon,
+        ];
+    }
+
+    /**
+     * Parse lineups from a raw TheSportsDB event.
+     *
+     * Returns one entry per team (home first, away second).
+     */
+    protected static function parseMatchLineups(array $e): array
+    {
+        $lineups = [];
+
+        $homeLineup = self::parseTeamLineup($e, 'Home');
+        $awayLineup = self::parseTeamLineup($e, 'Away');
+
+        if ($homeLineup) {
+            $homeLineup['team'] = [
+                'id' => (int) ($e['idHomeTeam'] ?? 0),
+                'name' => $e['strHomeTeam'] ?? 'Home',
+                'logo' => $e['strHomeTeamBadge'] ?? null,
+            ];
+            $lineups[] = $homeLineup;
+        }
+
+        if ($awayLineup) {
+            $awayLineup['team'] = [
+                'id' => (int) ($e['idAwayTeam'] ?? 0),
+                'name' => $e['strAwayTeam'] ?? 'Away',
+                'logo' => $e['strAwayTeamBadge'] ?? null,
+            ];
+            $lineups[] = $awayLineup;
+        }
+
+        return $lineups;
+    }
+
+    /**
+     * Parse a single team's lineup from the event payload.
+     *
+     * @param  string $side  'Home' or 'Away'
+     */
+    protected static function parseTeamLineup(array $e, string $side): ?array
+    {
+        $gk = trim($e["str{$side}LineupGoalkeeper"] ?? '');
+        $def = trim($e["str{$side}LineupDefense"] ?? '');
+        $mid = trim($e["str{$side}LineupMidfield"] ?? '');
+        $fwd = trim($e["str{$side}LineupForward"] ?? '');
+        $subs = trim($e["str{$side}LineupSubstitutes"] ?? '');
+        $formation = trim($e["str{$side}Formation"] ?? '');
+
+        // No lineup data at all → return null
+        if (empty($gk) && empty($def) && empty($mid) && empty($fwd)) {
+            return null;
+        }
+
+        $startXI = [];
+        foreach (self::parseLineupPlayers($gk) as $player) {
+            $startXI[] = ['player' => ['name' => $player, 'pos' => 'G', 'grid' => null]];
+        }
+        foreach (self::parseLineupPlayers($def) as $player) {
+            $startXI[] = ['player' => ['name' => $player, 'pos' => 'D', 'grid' => null]];
+        }
+        foreach (self::parseLineupPlayers($mid) as $player) {
+            $startXI[] = ['player' => ['name' => $player, 'pos' => 'M', 'grid' => null]];
+        }
+        foreach (self::parseLineupPlayers($fwd) as $player) {
+            $startXI[] = ['player' => ['name' => $player, 'pos' => 'F', 'grid' => null]];
+        }
+
+        $substitutes = [];
+        foreach (self::parseLineupPlayers($subs) as $player) {
+            $substitutes[] = ['player' => ['name' => $player, 'pos' => null, 'grid' => null]];
+        }
+
+        return [
+            'formation' => $formation ?: null,
+            'startXI' => $startXI,
+            'substitutes' => $substitutes,
+        ];
+    }
+
+    /**
+     * Split a semicolon/comma-delimited lineup string into player names.
+     */
+    protected static function parseLineupPlayers(string $lineup): array
+    {
+        if (empty(trim($lineup))) {
+            return [];
+        }
+
+        return array_values(array_filter(
+            array_map('trim', preg_split('/[;,]/', $lineup)),
+            fn($name) => !empty($name)
+        ));
+    }
+
+    /**
+     * Parse match statistics from a raw TheSportsDB event.
+     *
+     * Extracts shots, card counts, and any other available numeric stats.
+     */
+    protected static function parseMatchStatistics(array $e): array
+    {
+        $stats = [];
+
+        // Direct stat fields from TheSportsDB
+        $statFields = [
+            ['intHomeShots', 'intAwayShots', 'Total Shots'],
+            ['intHomeShotsOnTarget', 'intAwayShotsOnTarget', 'Shots on Target'],
+        ];
+
+        foreach ($statFields as [$homeKey, $awayKey, $label]) {
+            $home = $e[$homeKey] ?? null;
+            $away = $e[$awayKey] ?? null;
+
+            if ($home !== null && $home !== '' && $away !== null && $away !== '') {
+                $stats[] = [
+                    'type' => $label,
+                    'home' => (int) $home,
+                    'away' => (int) $away,
+                ];
+            }
+        }
+
+        // Derive card counts from event detail strings
+        $homeYellows = count(self::parseDetailString($e['strHomeYellowCards'] ?? ''));
+        $awayYellows = count(self::parseDetailString($e['strAwayYellowCards'] ?? ''));
+        $homeReds = count(self::parseDetailString($e['strHomeRedCards'] ?? ''));
+        $awayReds = count(self::parseDetailString($e['strAwayRedCards'] ?? ''));
+
+        if ($homeYellows > 0 || $awayYellows > 0) {
+            $stats[] = [
+                'type' => 'Yellow Cards',
+                'home' => $homeYellows,
+                'away' => $awayYellows,
+            ];
+        }
+
+        if ($homeReds > 0 || $awayReds > 0) {
+            $stats[] = [
+                'type' => 'Red Cards',
+                'home' => $homeReds,
+                'away' => $awayReds,
+            ];
+        }
+
+        // Spectators
+        if (isset($e['intSpectators']) && $e['intSpectators'] !== '' && $e['intSpectators'] !== null) {
+            $stats[] = [
+                'type' => 'Spectators',
+                'home' => (int) $e['intSpectators'],
+                'away' => null,
+            ];
+        }
+
+        return $stats;
     }
 
     // ── Helpers ────────────────────────────────────────────

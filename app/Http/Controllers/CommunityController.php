@@ -37,7 +37,7 @@ class CommunityController extends Controller
 
         $posts = $community->posts()
             ->with(['user'])
-            ->withCount(['likes', 'comments'])
+            ->withCount(['likes', 'comments', 'shares'])
             ->approved()
             ->latest()
             ->paginate(20);

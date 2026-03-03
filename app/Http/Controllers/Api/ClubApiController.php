@@ -19,17 +19,15 @@ class ClubApiController extends BaseApiController
             country: $request->input('country'),
         );
 
-        $teams = array_map(
-            fn(array $raw) => FootballApiService::normaliseTeam($raw),
-            $allTeams,
-        );
+        $teams = collect($allTeams)
+            ->map(fn(array $raw) => (object) FootballApiService::normaliseTeam($raw));
 
         // Simple pagination
         $page = max(1, (int) $request->input('page', 1));
         $perPage = 24;
         $total = count($teams);
         $offset = ($page - 1) * $perPage;
-        $paginatedTeams = array_slice($teams, $offset, $perPage);
+        $paginatedTeams = $teams->slice($offset, $perPage)->values();
 
         return $this->success([
             'data' => $paginatedTeams,
@@ -37,6 +35,7 @@ class ClubApiController extends BaseApiController
             'per_page' => $perPage,
             'total' => $total,
             'last_page' => max(1, (int) ceil($total / $perPage)),
+            'has_more' => ($page * $perPage) < $total,
         ]);
     }
 
