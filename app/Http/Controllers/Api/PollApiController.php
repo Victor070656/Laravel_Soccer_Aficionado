@@ -21,6 +21,18 @@ class PollApiController extends BaseApiController
             ->latest()
             ->paginate(20);
 
+        // Append per-user vote state and alias 'user' as 'created_by'
+        $authUser = auth('sanctum')->user();
+        $polls->getCollection()->transform(function ($poll) use ($authUser) {
+            $vote = $authUser
+                ? $poll->votes()->where('user_id', $authUser->id)->first()
+                : null;
+            $poll->user_vote = $vote?->poll_option_id ?? null;
+            $poll->created_by = $poll->user;
+            $poll->options->each(fn ($opt) => $opt->setRelation('poll', $poll));
+            return $poll;
+        });
+
         return $this->success($polls);
     }
 
@@ -32,6 +44,9 @@ class PollApiController extends BaseApiController
         if (auth('sanctum')->check()) {
             $userVote = $poll->votes()->where('user_id', auth('sanctum')->id())->first();
         }
+
+        $poll->created_by = $poll->user;
+        $poll->options->each(fn ($opt) => $opt->setRelation('poll', $poll));
 
         return $this->success([
             'poll' => $poll,

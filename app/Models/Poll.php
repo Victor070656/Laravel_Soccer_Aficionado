@@ -30,6 +30,14 @@ class Poll extends Model
         ];
     }
 
+
+    protected $appends = ['is_closed'];
+
+    public function getIsClosedAttribute(): bool
+    {
+        return !$this->isOpen();
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

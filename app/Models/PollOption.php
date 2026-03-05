@@ -10,6 +10,14 @@ class PollOption extends Model
 {
     protected $fillable = ['poll_id', 'player_id', 'label', 'image', 'votes_count'];
 
+    protected $appends = ['percentage'];
+
+    /**
+     * Hide the inverse poll relation to prevent circular serialisation
+     * (each option was embedding the full poll + all options again).
+     */
+    protected $hidden = ['poll'];
+
     public function poll(): BelongsTo
     {
         return $this->belongsTo(Poll::class);
@@ -27,7 +35,7 @@ class PollOption extends Model
 
     public function getPercentageAttribute(): float
     {
-        $total = $this->poll->total_votes;
+        $total = $this->poll->total_votes ?? 0;
 
         return $total > 0 ? round(($this->votes_count / $total) * 100, 1) : 0;
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Concerns\AppendsPostFlags;
 use App\Models\Community;
 use App\Services\GamificationService;
 use App\Services\NotificationService;
@@ -10,6 +11,8 @@ use Illuminate\Support\Str;
 
 class CommunityApiController extends BaseApiController
 {
+    use AppendsPostFlags;
+
     public function __construct(
         protected GamificationService $gamification,
         protected NotificationService $notifications,
@@ -18,7 +21,7 @@ class CommunityApiController extends BaseApiController
 
     public function index(Request $request)
     {
-        $query = Community::with('club')->where('is_active', true)->withCount('members');
+        $query = Community::with('club')->where('is_active', true)->withCount(['members', 'posts']);
 
         if ($request->filled('search')) {
             $query->where('name', 'like', "%{$request->search}%");
@@ -32,7 +35,7 @@ class CommunityApiController extends BaseApiController
     public function show(Community $community)
     {
         $community->load(['club', 'creator']);
-        $community->loadCount('members');
+        $community->loadCount(['members', 'posts']);
 
         $posts = $community->posts()
             ->with(['user'])
@@ -42,6 +45,8 @@ class CommunityApiController extends BaseApiController
             ->paginate(20);
 
         $isMember = auth('sanctum')->check() && auth('sanctum')->user()->isMemberOf($community);
+
+        $this->appendPostFlags($posts);
 
         return $this->success([
             'community' => $community,
@@ -112,7 +117,7 @@ class CommunityApiController extends BaseApiController
         $community->increment('members_count');
 
         $community->load(['club', 'creator']);
-        $community->loadCount('members');
+        $community->loadCount(['members', 'posts']);
 
         return $this->success($community, 'Community created!', 201);
     }

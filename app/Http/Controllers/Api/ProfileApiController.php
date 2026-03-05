@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Concerns\AppendsPostFlags;
 use App\Models\User;
 use App\Services\GamificationService;
 use App\Services\NotificationService;
@@ -9,6 +10,8 @@ use Illuminate\Http\Request;
 
 class ProfileApiController extends BaseApiController
 {
+    use AppendsPostFlags;
+
     public function __construct(
         protected GamificationService $gamification,
         protected NotificationService $notifications,
@@ -28,6 +31,8 @@ class ProfileApiController extends BaseApiController
             ->paginate(20);
 
         $isFollowing = auth('sanctum')->check() && auth('sanctum')->user()->isFollowing($user);
+
+        $this->appendPostFlags($posts);
 
         return $this->success([
             'user' => $user,

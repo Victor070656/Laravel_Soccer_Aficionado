@@ -25,6 +25,7 @@ class AuthController extends BaseApiController
             'password' => Hash::make($validated['password']),
         ]);
 
+        $user->loadCount(['followers', 'following', 'posts']);
         $token = $user->createToken('api-token')->plainTextToken;
 
         return $this->success([
@@ -52,6 +53,7 @@ class AuthController extends BaseApiController
             return $this->error('Your account has been suspended.', 403);
         }
 
+        $user->loadCount(['followers', 'following', 'posts']);
         $token = $user->createToken('api-token')->plainTextToken;
 
         return $this->success([
@@ -94,19 +96,28 @@ class AuthController extends BaseApiController
         $user->update(collect($validated)->only(['name', 'bio', 'country', 'timezone'])->toArray());
 
         if (array_key_exists('favorite_clubs', $validated)) {
-            $api = app(\App\Services\FootballApiService::class);
-            $syncData = [];
-            foreach ($validated['favorite_clubs'] as $apiTeamId) {
-                $raw = $api->getTeam((int) $apiTeamId);
-                if ($raw) {
-                    $team = \App\Services\FootballApiService::normaliseTeam($raw);
-                    $club = \App\Models\Club::fromApiTeam($team);
-                    $syncData[$club->id] = [
-                        'is_primary' => $apiTeamId == ($validated['primary_club_id'] ?? null),
-                    ];
+            try {
+                $api = app(\App\Services\FootballApiService::class);
+                $syncData = [];
+                foreach ($validated['favorite_clubs'] as $apiTeamId) {
+                    try {
+                        $raw = $api->getTeam((int) $apiTeamId);
+                        if ($raw) {
+                            $team = \App\Services\FootballApiService::normaliseTeam($raw);
+                            $club = \App\Models\Club::fromApiTeam($team);
+                            $syncData[$club->id] = [
+                                'is_primary' => $apiTeamId == ($validated['primary_club_id'] ?? null),
+                            ];
+                        }
+                    } catch (\Throwable $e) {
+                        \Illuminate\Support\Facades\Log::warning("Failed to process club API team ID {$apiTeamId}: " . $e->getMessage());
+                        continue;
+                    }
                 }
+                $user->favoriteClubs()->sync($syncData);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Failed to sync favorite clubs: ' . $e->getMessage());
             }
-            $user->favoriteClubs()->sync($syncData);
         }
 
         $user->loadCount(['followers', 'following', 'posts']);

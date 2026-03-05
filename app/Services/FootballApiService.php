@@ -897,24 +897,67 @@ class FootballApiService
      */
     public function getTeam(int $teamId): ?array
     {
+        // 1) Check the individual team cache first.
         $cacheKey = "tsdb:team:{$teamId}";
-        $ttl = $this->cacheTtl['teams'] ?? 86400;
+        $cached = Cache::get($cacheKey);
+        if ($cached !== null) {
+            return $cached;
+        }
 
-        return $this->cacheRemember($cacheKey, $ttl, function () use ($teamId) {
-            $data = $this->get('lookupteam.php', ['id' => $teamId]);
-
-            if ($data === null) {
-                return null; // API failed – don't cache
+        // 2) Search across all league team caches (populated by getTeamsByLeague).
+        //    This is essential on the free tier where lookupteam.php always
+        //    returns Arsenal regardless of the ID requested.
+        foreach ($this->leagues as $configId) {
+            $tsdbId = $this->resolveLeagueId($configId);
+            $leagueTeams = Cache::get("tsdb:teams:league:{$tsdbId}:{$this->season}");
+            if (!is_array($leagueTeams)) {
+                continue;
             }
+            foreach ($leagueTeams as $teamData) {
+                $tid = (int) ($teamData['team']['id'] ?? 0);
+                if ($tid === $teamId) {
+                    $ttl = $this->cacheTtl['teams'] ?? 86400;
+                    Cache::put($cacheKey, $teamData, $ttl);
+                    return $teamData;
+                }
+            }
+        }
 
+        // 3) If no league caches exist yet, warm them and retry.
+        $this->getAllTeams();
+        foreach ($this->leagues as $configId) {
+            $tsdbId = $this->resolveLeagueId($configId);
+            $leagueTeams = Cache::get("tsdb:teams:league:{$tsdbId}:{$this->season}");
+            if (!is_array($leagueTeams)) {
+                continue;
+            }
+            foreach ($leagueTeams as $teamData) {
+                $tid = (int) ($teamData['team']['id'] ?? 0);
+                if ($tid === $teamId) {
+                    $ttl = $this->cacheTtl['teams'] ?? 86400;
+                    Cache::put($cacheKey, $teamData, $ttl);
+                    return $teamData;
+                }
+            }
+        }
+
+        // 4) Absolute fallback: try lookupteam.php (unreliable on free tier).
+        $data = $this->get('lookupteam.php', ['id' => $teamId]);
+        if ($data !== null) {
             $teams = $data['teams'] ?? [];
-
-            if (empty($teams)) {
-                return null;
+            if (!empty($teams)) {
+                $raw = self::tsdbTeamToRaw($teams[0]);
+                // Only cache if the returned ID actually matches what we asked for.
+                $returnedId = (int) ($raw['team']['id'] ?? 0);
+                if ($returnedId === $teamId) {
+                    $ttl = $this->cacheTtl['teams'] ?? 86400;
+                    Cache::put($cacheKey, $raw, $ttl);
+                    return $raw;
+                }
             }
+        }
 
-            return self::tsdbTeamToRaw($teams[0]);
-        });
+        return null;
     }
 
     /**

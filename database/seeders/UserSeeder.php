@@ -226,6 +226,7 @@ class UserSeeder extends Seeder
                 ]);
                 $option->increment('votes_count');
             }
+            $poll->update(['total_votes' => $poll->options()->sum('votes_count')]);
         }
 
         // A general poll
@@ -249,5 +250,6 @@ class UserSeeder extends Seeder
             ]);
             $option->increment('votes_count');
         }
+        $poll->update(['total_votes' => $poll->options()->sum('votes_count')]);
     }
 }

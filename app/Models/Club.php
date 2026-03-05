@@ -81,19 +81,55 @@ class Club extends Model
      */
     public static function fromApiTeam(array $team): self
     {
-        return static::updateOrCreate(
-            ['api_team_id' => $team['id']],
-            [
+        $slug = \Illuminate\Support\Str::slug($team['name']);
+
+        // First try to match by api_team_id (canonical match)
+        $club = static::where('api_team_id', $team['id'])->first();
+
+        if ($club) {
+            $club->update([
                 'name' => $team['name'],
-                'slug' => \Illuminate\Support\Str::slug($team['name']),
+                'slug' => $slug,
                 'logo' => $team['logo'] ?? null,
                 'country' => $team['country'] ?? null,
                 'city' => $team['venue']['city'] ?? null,
                 'stadium' => $team['venue']['name'] ?? null,
                 'founded_year' => $team['founded'] ?? null,
                 'is_active' => true,
-            ],
-        );
+            ]);
+            return $club;
+        }
+
+        // Fallback: match by slug to avoid unique constraint violation
+        $club = static::where('slug', $slug)->first();
+
+        if ($club) {
+            // Link the existing club to this API team ID and update its data
+            $club->update([
+                'api_team_id' => $team['id'],
+                'name' => $team['name'],
+                'logo' => $team['logo'] ?? null,
+                'country' => $team['country'] ?? null,
+                'city' => $team['venue']['city'] ?? null,
+                'stadium' => $team['venue']['name'] ?? null,
+                'founded_year' => $team['founded'] ?? null,
+                'is_active' => true,
+            ]);
+            return $club;
+        }
+
+        // No existing club found — create a new one
+        return static::create([
+            'api_team_id' => $team['id'],
+            'name' => $team['name'],
+            'slug' => $slug,
+            'logo' => $team['logo'] ?? null,
+            'country' => $team['country'] ?? null,
+            'city' => $team['venue']['city'] ?? null,
+            'stadium' => $team['venue']['name'] ?? null,
+            'founded_year' => $team['founded'] ?? null,
+            'is_active' => true,
+        ]);
     }
 
     public function getLogoUrlAttribute(): ?string

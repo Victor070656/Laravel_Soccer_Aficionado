@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Concerns\AppendsPostFlags;
 use App\Concerns\ExtractsMentions;
 use App\Models\Comment;
 use App\Models\Post;
@@ -12,13 +13,16 @@ use Illuminate\Support\Facades\Storage;
 
 class PostApiController extends BaseApiController
 {
-    use ExtractsMentions;
+    use AppendsPostFlags, ExtractsMentions;
 
     public function __construct(
         protected GamificationService $gamification,
         protected NotificationService $notifications,
     ) {
     }
+
+
+
 
     public function index(Request $request)
     {
@@ -27,6 +31,8 @@ class PostApiController extends BaseApiController
             ->approved()
             ->latest()
             ->paginate(20);
+
+        $this->appendPostFlags($posts);
 
         return $this->success($posts);
     }
@@ -37,6 +43,8 @@ class PostApiController extends BaseApiController
             ->withCount(['likes', 'comments', 'shares'])
             ->feed($request->user())
             ->paginate(20);
+
+        $this->appendPostFlags($posts, $request->user());
 
         return $this->success($posts);
     }
@@ -49,6 +57,8 @@ class PostApiController extends BaseApiController
             'comments' => fn($q) => $q->with(['user', 'replies.user'])->where('is_approved', true)->latest(),
         ]);
         $post->loadCount(['likes', 'comments', 'shares']);
+
+        $this->appendPostFlags($post);
 
         return $this->success($post);
     }
