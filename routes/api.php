@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\AdApiController;
 use App\Http\Controllers\Api\ClubApiController;
 use App\Http\Controllers\Api\CommunityApiController;
 use App\Http\Controllers\Api\CompetitionApiController;
@@ -53,6 +54,10 @@ Route::prefix('v1')->group(function () {
     // Public data — Search
     Route::get('/search', SearchApiController::class);
 
+    // Public data — Ads
+    Route::get('/ads', [AdApiController::class, 'index']);
+    Route::post('/ads/{ad}/click', [AdApiController::class, 'click']);
+
     // Public data — Leaderboard
     Route::get('/leaderboard', LeaderboardApiController::class);
 
@@ -80,6 +85,7 @@ Route::prefix('v1')->group(function () {
 
         // Communities
         Route::post('/communities', [CommunityApiController::class, 'store']);
+        Route::put('/communities/{community}', [CommunityApiController::class, 'update']);
         Route::post('/communities/{community}/join', [CommunityApiController::class, 'join']);
         Route::post('/communities/{community}/leave', [CommunityApiController::class, 'leave']);
 

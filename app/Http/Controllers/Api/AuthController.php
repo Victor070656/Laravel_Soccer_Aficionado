@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends BaseApiController
@@ -84,16 +85,26 @@ class AuthController extends BaseApiController
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
-            'username' => 'sometimes|string|max:255',
+            'username' => ['sometimes', 'string', 'max:255', \Illuminate\Validation\Rule::unique('users')->ignore($user->id)],
             'bio' => 'nullable|string|max:500',
             'country' => 'nullable|string|max:100',
             'timezone' => 'nullable|string|max:100',
+            'avatar' => 'nullable|image|max:2048',
             'favorite_clubs' => 'nullable|array',
             'favorite_clubs.*' => 'integer',
             'primary_club_id' => 'nullable|integer',
         ]);
 
-        $user->update(collect($validated)->only(['name', 'bio', 'country', 'timezone'])->toArray());
+        $data = collect($validated)->only(['name', 'username', 'bio', 'country', 'timezone'])->toArray();
+
+        if ($request->hasFile('avatar')) {
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+        }
+
+        $user->update($data);
 
         if (array_key_exists('favorite_clubs', $validated)) {
             try {

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,10 +27,44 @@ class Post extends Model
     protected function casts(): array
     {
         return [
-            'media' => 'array',
             'is_pinned' => 'boolean',
             'is_approved' => 'boolean',
         ];
+    }
+
+    // ── Accessors ──────────────────────────────────────────
+
+    /**
+     * Transform raw media path strings into structured PostMedia objects
+     * with full URLs for the mobile app.
+     */
+    protected function media(): Attribute
+    {
+        return Attribute::make(
+            get: function (mixed $value) {
+                $paths = is_string($value) ? json_decode($value, true) : $value;
+                if (!$paths || !is_array($paths)) {
+                    return null;
+                }
+
+                return collect($paths)->map(function ($path, $index) {
+                    // If already transformed (e.g. from a nested call), return as-is
+                    if (is_array($path) && isset($path['url'])) {
+                        return $path;
+                    }
+
+                    $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+
+                    return [
+                        'id' => $index + 1,
+                        'url' => asset('storage/' . $path),
+                        'type' => in_array($ext, ['mp4', 'webm', 'mov']) ? 'video' : 'image',
+                        'thumbnail' => null,
+                    ];
+                })->all();
+            },
+            set: fn($value) => is_array($value) ? json_encode($value) : $value,
+        );
     }
 
     // ── Relationships ──────────────────────────────────────

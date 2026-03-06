@@ -7,6 +7,7 @@ use App\Models\Community;
 use App\Services\GamificationService;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class CommunityApiController extends BaseApiController
@@ -46,12 +47,14 @@ class CommunityApiController extends BaseApiController
 
         $isMember = auth('sanctum')->check() && auth('sanctum')->user()->isMemberOf($community);
 
+        $isOwner = auth('sanctum')->check() && $community->created_by === auth('sanctum')->user()->id;
         $this->appendPostFlags($posts);
 
         return $this->success([
             'community' => $community,
             'posts' => $posts,
             'is_member' => $isMember,
+            'is_owner' => $isOwner,
         ]);
     }
 
@@ -120,5 +123,53 @@ class CommunityApiController extends BaseApiController
         $community->loadCount(['members', 'posts']);
 
         return $this->success($community, 'Community created!', 201);
+    }
+
+    public function update(Request $request, Community $community)
+    {
+        if ($community->created_by !== $request->user()->id) {
+            return $this->error('Unauthorized.', 403);
+        }
+
+        $validated = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'description' => 'nullable|string|max:2000',
+            'rules' => 'nullable|string|max:5000',
+            'club_id' => 'nullable|exists:clubs,id',
+            'avatar' => 'nullable|image|max:2048',
+            'banner' => 'nullable|image|max:4096',
+        ]);
+
+        $data = [
+            'description' => $validated['description'] ?? $community->description,
+            'rules' => $validated['rules'] ?? $community->rules,
+            'club_id' => $validated['club_id'] ?? $community->club_id,
+        ];
+
+        if (isset($validated['name']) && $validated['name'] !== $community->name) {
+            $data['name'] = $validated['name'];
+            $data['slug'] = Str::slug($validated['name']);
+        }
+
+        if ($request->hasFile('avatar')) {
+            if ($community->avatar) {
+                Storage::disk('public')->delete($community->avatar);
+            }
+            $data['avatar'] = $request->file('avatar')->store('communities', 'public');
+        }
+
+        if ($request->hasFile('banner')) {
+            if ($community->banner) {
+                Storage::disk('public')->delete($community->banner);
+            }
+            $data['banner'] = $request->file('banner')->store('communities/banners', 'public');
+        }
+
+        $community->update($data);
+
+        $community->load(['club', 'creator']);
+        $community->loadCount(['members', 'posts']);
+
+        return $this->success($community, 'Community updated.');
     }
 }
