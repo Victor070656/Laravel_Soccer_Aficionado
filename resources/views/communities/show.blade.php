@@ -103,7 +103,7 @@
                         @if($post->media)
                         <div class="mt-4 grid gap-2 {{ count($post->media) > 1 ? 'grid-cols-2' : '' }}">
                             @foreach($post->media as $media)
-                            <img loading="lazy" decoding="async" src="{{ asset('storage/' . $media) }}" alt="" class="rounded-xl w-full object-cover max-h-64">
+                            <img loading="lazy" decoding="async" src="{{ $media['url'] }}" alt="" class="rounded-xl w-full object-cover max-h-64">
                             @endforeach
                         </div>
                         @endif

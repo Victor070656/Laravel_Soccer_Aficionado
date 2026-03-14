@@ -66,6 +66,14 @@ class FootballApiService
     // ── Core HTTP ──────────────────────────────────────────
 
     /**
+     * Whether we are using a premium API key.
+     */
+    public function isPremium(): bool
+    {
+        return $this->apiKey !== '123';
+    }
+
+    /**
      * Whether the service is configured and ready.
      */
     public function isConfigured(): bool
@@ -96,18 +104,26 @@ class FootballApiService
     /**
      * Make a GET request to TheSportsDB API.
      */
-    protected function get(string $endpoint, array $params = []): ?array
+    protected function get(string $endpoint, array $params = [], int $version = 1): ?array
     {
-        $url = "{$this->baseUrl}/{$this->apiKey}/{$endpoint}";
+        // Version 2 uses a different base URL structure and X-API-KEY header
+        if ($version === 2) {
+            $url = "https://www.thesportsdb.com/api/v2/json/{$endpoint}";
+            $request = Http::withHeaders(['X-API-KEY' => $this->apiKey]);
+        } else {
+            $url = "{$this->baseUrl}/{$this->apiKey}/{$endpoint}";
+            $request = Http::asJson();
+        }
 
         try {
-            $response = Http::timeout(10)->get($url, $params);
+            $response = $request->timeout(10)->get($url, $params);
 
             if ($response->successful()) {
                 return $response->json();
             }
 
             Log::warning('TheSportsDB API HTTP error', [
+                'version' => $version,
                 'endpoint' => $endpoint,
                 'params' => $params,
                 'status' => $response->status(),
@@ -116,6 +132,7 @@ class FootballApiService
             return null;
         } catch (\Throwable $e) {
             Log::error('TheSportsDB API exception', [
+                'version' => $version,
                 'endpoint' => $endpoint,
                 'message' => $e->getMessage(),
             ]);
@@ -278,34 +295,47 @@ class FootballApiService
     /**
      * Get upcoming fixtures across configured leagues.
      *
-     * Strategy: detect the current round via eventspastleague / eventsnextleague
+     * Free Strategy: detect the current round via eventspastleague / eventsnextleague
      * (each returns only 1 event on free tier), then fetch full rounds via
      * eventsround.php which gives 9-10 matches per round.
+     *
+     * Premium Strategy: use eventsnextleague.php directly as it returns up to 15 events.
      */
     public function getUpcomingFixtures(int $limit = 20, ?int $leagueId = null): array
     {
         $targetLeagues = $leagueId ? [$leagueId] : $this->leagues;
         $allFixtures = [];
 
-        // Limit look-ahead to stay within 30 req/min rate limit.
-        // Single-league view: 3 rounds for richer data.
-        // All-leagues view: 1 round per league (5 leagues × 1 = 5 round calls).
-        $maxRoundsAhead = $leagueId ? 3 : 1;
-
-        foreach ($targetLeagues as $league) {
-            $tsdbId = $this->resolveLeagueId($league);
-            $rounds = $this->getCurrentRounds($tsdbId);
-            $nextRound = $rounds['next_upcoming'];
-
-            $endRound = $nextRound + $maxRoundsAhead - 1;
-
-            for ($r = $nextRound; $r <= $endRound; $r++) {
-                $events = $this->getEventsForRound($tsdbId, $r);
-
+        if ($this->isPremium()) {
+            foreach ($targetLeagues as $league) {
+                $tsdbId = $this->resolveLeagueId($league);
+                $data = $this->get('eventsnextleague.php', ['id' => $tsdbId]);
+                $events = $data['events'] ?? [];
                 foreach ($events as $e) {
-                    $status = strtolower(trim($e['strStatus'] ?? 'Not Started'));
-                    if (in_array($status, ['not started', 'ns', ''])) {
-                        $allFixtures[] = $e;
+                    $allFixtures[] = $e;
+                }
+            }
+        } else {
+            // Limit look-ahead to stay within 30 req/min rate limit.
+            // Single-league view: 3 rounds for richer data.
+            // All-leagues view: 1 round per league (5 leagues × 1 = 5 round calls).
+            $maxRoundsAhead = $leagueId ? 3 : 1;
+
+            foreach ($targetLeagues as $league) {
+                $tsdbId = $this->resolveLeagueId($league);
+                $rounds = $this->getCurrentRounds($tsdbId);
+                $nextRound = $rounds['next_upcoming'];
+
+                $endRound = $nextRound + $maxRoundsAhead - 1;
+
+                for ($r = $nextRound; $r <= $endRound; $r++) {
+                    $events = $this->getEventsForRound($tsdbId, $r);
+
+                    foreach ($events as $e) {
+                        $status = strtolower(trim($e['strStatus'] ?? 'Not Started'));
+                        if (in_array($status, ['not started', 'ns', ''])) {
+                            $allFixtures[] = $e;
+                        }
                     }
                 }
             }
@@ -315,8 +345,8 @@ class FootballApiService
         usort(
             $allFixtures,
             fn($a, $b) =>
-            strtotime($a['strTimestamp'] ?? $a['dateEvent'] ?? '0')
-            - strtotime($b['strTimestamp'] ?? $b['dateEvent'] ?? '0')
+            strtotime($a['strTimestamp'] ?? ($a['dateEvent'] . ' ' . ($a['strTime'] ?? '00:00:00')))
+            - strtotime($b['strTimestamp'] ?? ($b['dateEvent'] . ' ' . ($b['strTime'] ?? '00:00:00')))
         );
 
         $allFixtures = array_slice($allFixtures, 0, $limit);
@@ -327,40 +357,53 @@ class FootballApiService
     /**
      * Get recently finished fixtures across configured leagues.
      *
-     * Strategy: detect the last completed round, then fetch that round
+     * Free Strategy: detect the last completed round, then fetch that round
      * plus the 2 preceding rounds via eventsround.php (9-10 matches each).
+     *
+     * Premium Strategy: use eventspastleague.php directly as it returns up to 15 events.
      */
     public function getFinishedFixtures(int $limit = 20, ?int $leagueId = null): array
     {
         $targetLeagues = $leagueId ? [$leagueId] : $this->leagues;
         $allFixtures = [];
 
-        // Same rate-limit strategy as upcoming.
-        $maxRoundsBack = $leagueId ? 3 : 1;
-
-        foreach ($targetLeagues as $league) {
-            $tsdbId = $this->resolveLeagueId($league);
-            $rounds = $this->getCurrentRounds($tsdbId);
-            $lastRound = $rounds['last_completed'];
-
-            $startRound = max(1, $lastRound - $maxRoundsBack + 1);
-
-            for ($r = $lastRound; $r >= $startRound; $r--) {
-                $events = $this->getEventsForRound($tsdbId, $r);
-
+        if ($this->isPremium()) {
+            foreach ($targetLeagues as $league) {
+                $tsdbId = $this->resolveLeagueId($league);
+                $data = $this->get('eventspastleague.php', ['id' => $tsdbId]);
+                $events = $data['events'] ?? [];
                 foreach ($events as $e) {
-                    $status = strtolower(trim($e['strStatus'] ?? ''));
-                    $isFinished = in_array($status, [
-                        'match finished',
-                        'finished',
-                        'ft',
-                        'aet',
-                        'after extra time',
-                        'after pen',
-                        'penalties',
-                    ]);
-                    if ($isFinished) {
-                        $allFixtures[] = $e;
+                    $allFixtures[] = $e;
+                }
+            }
+        } else {
+            // Same rate-limit strategy as upcoming.
+            $maxRoundsBack = $leagueId ? 3 : 1;
+
+            foreach ($targetLeagues as $league) {
+                $tsdbId = $this->resolveLeagueId($league);
+                $rounds = $this->getCurrentRounds($tsdbId);
+                $lastRound = $rounds['last_completed'];
+
+                $startRound = max(1, $lastRound - $maxRoundsBack + 1);
+
+                for ($r = $lastRound; $r >= $startRound; $r--) {
+                    $events = $this->getEventsForRound($tsdbId, $r);
+
+                    foreach ($events as $e) {
+                        $status = strtolower(trim($e['strStatus'] ?? ''));
+                        $isFinished = in_array($status, [
+                            'match finished',
+                            'finished',
+                            'ft',
+                            'aet',
+                            'after extra time',
+                            'after pen',
+                            'penalties',
+                        ]);
+                        if ($isFinished) {
+                            $allFixtures[] = $e;
+                        }
                     }
                 }
             }
@@ -370,8 +413,8 @@ class FootballApiService
         usort(
             $allFixtures,
             fn($a, $b) =>
-            strtotime($b['strTimestamp'] ?? $b['dateEvent'] ?? '0')
-            - strtotime($a['strTimestamp'] ?? $a['dateEvent'] ?? '0')
+            strtotime($b['strTimestamp'] ?? ($b['dateEvent'] . ' ' . ($b['strTime'] ?? '00:00:00')))
+            - strtotime($a['strTimestamp'] ?? ($a['dateEvent'] . ' ' . ($a['strTime'] ?? '00:00:00')))
         );
 
         $allFixtures = array_slice($allFixtures, 0, $limit);
@@ -381,7 +424,9 @@ class FootballApiService
 
     /**
      * Get all currently live fixtures.
-     * (Free tier doesn't have livescores; we check today's events for in-progress.)
+     *
+     * Free tier doesn't have livescores; we check today's events for in-progress.
+     * Premium tier uses the modern v2 livescore endpoint.
      */
     public function getLiveFixtures(): array
     {
@@ -389,6 +434,29 @@ class FootballApiService
         $ttl = $this->cacheTtl['live'] ?? 60;
 
         return $this->cacheRemember($cacheKey, $ttl, function () {
+            if ($this->isPremium()) {
+                $data = $this->get('livescore/soccer', [], 2);
+                $events = $data['livescore'] ?? [];
+                
+                if (empty($events)) {
+                    return [];
+                }
+
+                $tsdbLeagues = array_map(fn($id) => $this->resolveLeagueId($id), $this->leagues);
+                
+                // Filter to our leagues
+                $events = array_filter($events, function ($e) use ($tsdbLeagues) {
+                    return in_array((int) ($e['idLeague'] ?? 0), $tsdbLeagues);
+                });
+
+                return array_map(function($e) {
+                    $fixture = self::tsdbEventToFixture($e);
+                    $fixture['_raw'] = $e; // Store raw for event parsing
+                    return $fixture;
+                }, array_values($events));
+            }
+
+            // Free tier fallback: check eventsday for today's in-progress matches
             $today = now()->format('Y-m-d');
             $data = $this->get('eventsday.php', ['d' => $today, 's' => 'Soccer']);
 
@@ -430,6 +498,17 @@ class FootballApiService
         $ttl = $this->cacheTtl['fixture'] ?? 300;
 
         return $this->cacheRemember($cacheKey, $ttl, function () use ($fixtureId) {
+            // First check if it's currently live in our v2 livescore cache
+            if ($this->isPremium()) {
+                $live = $this->getLiveFixtures();
+                foreach ($live as $match) {
+                    if ($match['id'] === $fixtureId) {
+                        return $match['_raw'] ?? null;
+                    }
+                }
+            }
+
+            // Fallback to standard lookup
             $data = $this->get('lookupevent.php', ['id' => $fixtureId]);
             if ($data === null) {
                 return null;
@@ -453,6 +532,7 @@ class FootballApiService
      *
      * Parsed from the goal-detail & card-detail strings that
      * lookupevent.php returns (e.g. "45':Salah;90':Firmino;").
+     * Also supports v2 nested 'events' array.
      */
     public function getFixtureEvents(int $fixtureId): array
     {
@@ -738,9 +818,11 @@ class FootballApiService
     /**
      * Get all teams for a specific league.
      *
-     * Strategy: extract all unique teams from season events (eventsseason.php
+     * Free Strategy: extract all unique teams from season events (eventsseason.php
      * returns ~15 events → covers all 18-20 teams from home/away data).
      * Falls back to search_all_teams (limited to 10) when season data is empty.
+     *
+     * Premium Strategy: use search_all_teams.php directly as it returns all teams.
      */
     public function getTeamsByLeague(int $leagueId, ?string $season = null): array
     {
@@ -757,6 +839,20 @@ class FootballApiService
         $meta = self::LEAGUE_META[$leagueId] ?? null;
         $leagueName = $meta['name'] ?? null;
         $country = $meta['country'] ?? null;
+
+        // Premium: search_all_teams returns everything.
+        if ($this->isPremium() && $leagueName) {
+            $searchData = $this->get('search_all_teams.php', ['l' => $leagueName]);
+            $teams = [];
+            foreach ($searchData['teams'] ?? [] as $t) {
+                $teams[] = self::tsdbTeamToRaw($t);
+            }
+            if (!empty($teams)) {
+                usort($teams, fn($a, $b) => strcasecmp($a['team']['name'] ?? '', $b['team']['name'] ?? ''));
+                Cache::put($cacheKey, $teams, $ttl);
+                return $teams;
+            }
+        }
 
         // 1) search_all_teams: gives full team data (venue, founded, etc.)
         //    but limited to 10 results on the free tier.
@@ -1051,8 +1147,8 @@ class FootballApiService
                 usort(
                     $allEvents,
                     fn($a, $b) =>
-                    strtotime($b['strTimestamp'] ?? $b['dateEvent'] ?? '0')
-                    - strtotime($a['strTimestamp'] ?? $a['dateEvent'] ?? '0')
+                    strtotime($b['strTimestamp'] ?? ($b['dateEvent'] . ' ' . ($b['strTime'] ?? '00:00:00')))
+                    - strtotime($a['strTimestamp'] ?? ($a['dateEvent'] . ' ' . ($a['strTime'] ?? '00:00:00')))
                 );
             } elseif ($status === 'upcoming') {
                 // Each team plays 1 match per round; scan $limit+2 rounds forward
@@ -1087,8 +1183,8 @@ class FootballApiService
                 usort(
                     $allEvents,
                     fn($a, $b) =>
-                    strtotime($a['strTimestamp'] ?? $a['dateEvent'] ?? '0')
-                    - strtotime($b['strTimestamp'] ?? $b['dateEvent'] ?? '0')
+                    strtotime($a['strTimestamp'] ?? ($a['dateEvent'] . ' ' . ($a['strTime'] ?? '00:00:00')))
+                    - strtotime($b['strTimestamp'] ?? ($b['dateEvent'] . ' ' . ($b['strTime'] ?? '00:00:00')))
                 );
             } else {
                 return [];
@@ -1102,11 +1198,56 @@ class FootballApiService
 
     /**
      * Get team statistics for a given league/season.
-     * TheSportsDB free tier doesn't have team stats – return null.
+     * Premium users can access detailed team statistics.
      */
     public function getTeamStatistics(int $teamId, int $leagueId, ?string $season = null): ?array
     {
-        return null; // Not available on free tier
+        if (!$this->isPremium()) {
+            return null;
+        }
+
+        $season = $season ?? $this->season;
+        $cacheKey = "tsdb:team_stats:{$teamId}:{$leagueId}:{$season}";
+        $ttl = $this->cacheTtl['statistics'] ?? 3600;
+
+        return $this->cacheRemember($cacheKey, $ttl, function () use ($teamId, $leagueId, $season) {
+            // Note: TheSportsDB doesn't have a single 'team statistics' endpoint
+            // that matches API-Football exactly. We'd usually aggregate from
+            // events or use lookup_all_players if looking for player-level stats.
+            // For now, we return a structured placeholder or aggregate if possible.
+            // Some statistics are available in the lookuptable.php response.
+            
+            $standings = $this->getStandings($leagueId, $season);
+            $teamRow = null;
+            
+            foreach ($standings as $group) {
+                foreach ($group as $row) {
+                    if ((int) ($row['idTeam'] ?? 0) === $teamId) {
+                        $teamRow = $row;
+                        break 2;
+                    }
+                }
+            }
+
+            if (!$teamRow) {
+                return null;
+            }
+
+            return [
+                'fixtures' => [
+                    'played' => (int) ($teamRow['intPlayed'] ?? 0),
+                    'wins' => (int) ($teamRow['intWin'] ?? 0),
+                    'draws' => (int) ($teamRow['intDraw'] ?? 0),
+                    'losses' => (int) ($teamRow['intLoss'] ?? 0),
+                ],
+                'goals' => [
+                    'for' => (int) ($teamRow['intGoalsFor'] ?? 0),
+                    'against' => (int) ($teamRow['intGoalsAgainst'] ?? 0),
+                ],
+                'form' => $teamRow['strForm'] ?? '',
+                'rank' => (int) ($teamRow['intRank'] ?? 0),
+            ];
+        });
     }
 
     // ── Data Normalisation ────────────────────────────────
@@ -1151,7 +1292,7 @@ class FootballApiService
             'status' => $status,
             'status_short' => $statusShort,
             'status_long' => $e['strStatus'] ?? 'Not Started',
-            'elapsed' => null,
+            'elapsed' => $e['strProgress'] ?? null,
             'league' => [
                 'id' => (int) ($e['idLeague'] ?? 0),
                 'name' => $e['strLeague'] ?? 'Unknown',
@@ -1492,6 +1633,11 @@ class FootballApiService
      */
     protected static function parseMatchEvents(array $e): array
     {
+        // Handle structured V2 events array if present
+        if (isset($e['events']) && is_array($e['events'])) {
+            return self::parseV2Events($e);
+        }
+
         $events = [];
         $homeId = (int) ($e['idHomeTeam'] ?? 0);
         $awayId = (int) ($e['idAwayTeam'] ?? 0);
@@ -1561,6 +1707,40 @@ class FootballApiService
         // Sort chronologically
         usort($events, fn($a, $b) => ($a['time'] ?? 0) - ($b['time'] ?? 0));
 
+        return $events;
+    }
+
+    /**
+     * Parse structured events from V2 livescore payload.
+     */
+    protected static function parseV2Events(array $e): array
+    {
+        $events = [];
+        $homeId = (int) ($e['idHomeTeam'] ?? 0);
+        $awayId = (int) ($e['idAwayTeam'] ?? 0);
+        $homeName = $e['strHomeTeam'] ?? 'Home';
+        $awayName = $e['strAwayTeam'] ?? 'Away';
+
+        foreach ($e['events'] ?? [] as $v2e) {
+            $side = strtolower($v2e['strTeam'] ?? '');
+            $teamId = ($side === 'home') ? $homeId : $awayId;
+            $teamName = ($side === 'home') ? $homeName : $awayName;
+            $type = $v2e['strEvent'] ?? '';
+            $detail = $v2e['strDetail'] ?? '';
+            
+            $events[] = [
+                'time' => (int) ($v2e['intTime'] ?? 0),
+                'team_id' => $teamId,
+                'team_name' => $teamName,
+                'type' => $type,
+                'detail' => $detail,
+                'player' => $v2e['strPlayer'] ?? 'Unknown',
+                'assist' => $v2e['strAssist'] ?? null,
+                'icon' => self::eventIcon($type, $detail),
+            ];
+        }
+
+        usort($events, fn($a, $b) => ($a['time'] ?? 0) - ($b['time'] ?? 0));
         return $events;
     }
 

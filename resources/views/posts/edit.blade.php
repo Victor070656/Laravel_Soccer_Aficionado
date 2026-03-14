@@ -24,7 +24,7 @@
                                 <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">{{ __('Current Media') }}</label>
                                 <div class="grid gap-2 {{ count($post->media) > 1 ? 'grid-cols-2' : '' }}">
                                     @foreach ($post->media as $media)
-                                        <img src="{{ asset('storage/' . $media) }}" alt="" class="rounded-xl w-full object-cover max-h-48">
+                                        <img src="{{ $media['url'] }}" alt="" class="rounded-xl w-full object-cover max-h-48">
                                     @endforeach
                                 </div>
                                 <p class="text-xs text-zinc-500 mt-1">{{ __('Media cannot be changed after posting.') }}</p>
