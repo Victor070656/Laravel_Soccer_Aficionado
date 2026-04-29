@@ -10,9 +10,10 @@
 
 @theme {
     --font-sans:
-        "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
-        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-        "Noto Color Emoji";
+        "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+        "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+    --font-display: "Lexend", ui-sans-serif, system-ui, sans-serif;
 
     --color-zinc-50: #fafafa;
     --color-zinc-100: #f5f5f5;
@@ -25,6 +26,53 @@
     --color-zinc-800: #262626;
     --color-zinc-900: #171717;
     --color-zinc-950: #0a0a0a;
+
+    --color-background: #131313;
+    --color-on-background: #e5e2e1;
+    --color-surface: #131313;
+    --color-surface-dim: #131313;
+    --color-surface-bright: #393939;
+    --color-surface-container-lowest: #0e0e0e;
+    --color-surface-container-low: #1c1b1b;
+    --color-surface-container: #201f1f;
+    --color-surface-container-high: #2a2a2a;
+    --color-surface-container-highest: #353534;
+    --color-on-surface: #e5e2e1;
+    --color-on-surface-variant: #c1c8c1;
+    --color-inverse-surface: #e5e2e1;
+    --color-inverse-on-surface: #313030;
+    --color-outline: #8b928c;
+    --color-outline-variant: #424843;
+    --color-surface-tint: #a9d0b5;
+
+    --color-primary: #a9d0b5;
+    --color-on-primary: #143724;
+    --color-primary-container: #0a2e1c;
+    --color-on-primary-container: #73977f;
+    --color-inverse-primary: #436650;
+
+    --color-secondary: #4ae176;
+    --color-on-secondary: #003915;
+    --color-secondary-container: #00b954;
+    --color-on-secondary-container: #004119;
+    --color-secondary-fixed: #6bff8f;
+    --color-secondary-fixed-dim: #4ae176;
+    --color-on-secondary-fixed: #002109;
+    --color-on-secondary-fixed-variant: #005321;
+
+    --color-tertiary: #f9bd22;
+    --color-on-tertiary: #402d00;
+    --color-tertiary-container: #352500;
+    --color-on-tertiary-container: #b58700;
+    --color-tertiary-fixed: #ffdf9f;
+    --color-tertiary-fixed-dim: #f9bd22;
+    --color-on-tertiary-fixed: #261a00;
+    --color-on-tertiary-fixed-variant: #5c4300;
+
+    --color-error: #ffb4ab;
+    --color-on-error: #690005;
+    --color-error-container: #93000a;
+    --color-on-error-container: #ffdad6;
 
     --color-accent: var(--color-neutral-800);
     --color-accent-content: var(--color-neutral-800);
@@ -258,14 +306,58 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 .glass-card {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(26, 26, 26, 0.82);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 .dark .glass-card {
-    background: rgba(39, 39, 42, 0.7);
+    background: rgba(26, 26, 26, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-edge {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.turf-pattern {
+    background-image: repeating-linear-gradient(
+        135deg,
+        transparent,
+        transparent 12px,
+        rgba(255, 255, 255, 0.018) 12px,
+        rgba(255, 255, 255, 0.018) 24px
+    );
+}
+
+.text-neon {
+    text-shadow:
+        0 0 10px rgba(74, 225, 118, 0.75),
+        0 0 24px rgba(74, 225, 118, 0.25);
+}
+
+.panel-surface {
+    background: rgba(26, 26, 26, 0.82);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.badge-live {
+    @apply rounded-full bg-secondary px-3 py-1 text-xs font-bold uppercase tracking-[0.28em] text-on-secondary shadow-[0_0_18px_rgba(74,225,118,0.28)];
+}
+
+.progress-match {
+    background: linear-gradient(90deg, #a9d0b5 0%, #4ae176 100%);
+}
+
+.surface-sheen {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.04),
+        rgba(255, 255, 255, 0.01)
+    );
 }
 
 /* ===== HOVER LIFT EFFECTS ===== */
@@ -333,7 +425,7 @@
 }
 
 [data-flux-label] {
-    @apply !mb-0 !leading-tight;
+    @apply mb-0! leading-tight!;
 }
 
 input:focus[data-flux-control],

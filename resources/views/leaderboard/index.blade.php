@@ -1,7 +1,7 @@
 <x-layouts::app :title="__('Leaderboard')">
     <div class="max-w-4xl mx-auto space-y-8 p-2 sm:p-4">
         {{-- Header --}}
-        <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-amber-600 via-yellow-500 to-orange-500 p-6 sm:p-8 text-white shadow-xl">
+        <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-tertiary via-tertiary/80 to-tertiary/60 p-6 sm:p-8 text-on-tertiary shadow-xl">
             <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=600&q=30'); background-size: cover; background-position: center;"></div>
             <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
             <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/3 -translate-x-1/4"></div>
@@ -10,7 +10,7 @@
                     <span class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center text-xl">🏆</span>
                     Leaderboard
                 </h1>
-                <p class="text-amber-100 text-sm sm:text-base">Top fans ranked by points. Earn points by engaging with the community.</p>
+                <p class="text-on-tertiary/70 text-sm sm:text-base">Top fans ranked by points. Earn points by engaging with the community.</p>
             </div>
         </div>
 
@@ -76,18 +76,18 @@
 
         {{-- Current User Rank --}}
         @if($currentRank)
-        <div class="rounded-2xl border-2 border-green-200 dark:border-green-800 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 p-5 shadow-sm">
+        <div class="rounded-2xl border-2 border-primary/30 dark:border-primary/40 bg-gradient-to-r from-primary/10 to-primary/5 dark:from-primary/15 dark:to-primary/10 p-5 shadow-sm">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <span class="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-700 dark:text-green-400 font-bold text-sm">
+                    <span class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-on-primary font-bold text-sm">
                         #{{ $currentRank }}
                     </span>
                     <div>
-                        <span class="font-bold text-zinc-900 dark:text-white">Your Ranking</span>
-                        <div class="text-xs text-zinc-500 dark:text-zinc-400">Keep engaging to climb higher!</div>
+                        <span class="font-bold text-on-surface">Your Ranking</span>
+                        <div class="text-xs text-on-surface-variant">Keep engaging to climb higher!</div>
                     </div>
                 </div>
-                <span class="text-xl font-black text-green-600 dark:text-green-400 tabular-nums">{{ number_format(auth()->user()->points ?? 0) }} pts</span>
+                <span class="text-xl font-black text-primary tabular-nums">{{ number_format(auth()->user()->points ?? 0) }} pts</span>
             </div>
         </div>
         @endif

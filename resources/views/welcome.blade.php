@@ -3,467 +3,399 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Soccer Aficionado - The Ultimate Football Fan Platform</title>
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
+    <title>Soccer Aficionado | Where Football Passion Meets the Digital World</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Lexend:wght@400;500;600;700;800;900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-white antialiased overflow-x-hidden">
+<body class="bg-background text-on-background antialiased overflow-x-hidden selection:bg-secondary selection:text-on-secondary">
+    <div class="relative min-h-screen turf-pattern bg-[radial-gradient(circle_at_top,rgba(74,225,118,0.12),transparent_35%),radial-gradient(circle_at_80%_20%,rgba(249,189,34,0.08),transparent_28%),linear-gradient(180deg,#0e0e0e_0%,#131313_38%,#0e0e0e_100%)]">
+        <div class="pointer-events-none absolute inset-0 opacity-25" style="background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 72px 72px;"></div>
+        <div class="pointer-events-none absolute inset-x-0 top-0 bg-[radial-gradient(circle_at_top,rgba(74,225,118,0.2),transparent_60%)]" style="height: 520px;"></div>
 
-    {{-- Nav --}}
-    <nav class="fixed top-0 inset-x-0 z-50 transition-all duration-300" id="main-nav">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6">
-            <div class="flex h-18 items-center justify-between rounded-b-2xl bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl border border-t-0 border-zinc-200/50 dark:border-zinc-800/50 px-6 shadow-lg shadow-zinc-900/5 dark:shadow-black/20">
-                <a href="/" class="flex items-center gap-3 font-bold text-lg group">
-                    <div class="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg shadow-green-500/25 group-hover:shadow-green-500/40 transition-all duration-300 group-hover:scale-110">
-                        <span class="text-xl">⚽</span>
+        <nav class="fixed inset-x-0 top-0 z-50 border-b border-outline-variant/40 bg-surface-container-low/85 backdrop-blur-xl glass-edge">
+            <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+                <a href="{{ route('home') }}" class="group flex items-center gap-3">
+                    <div class="flex h-11 w-11 items-center justify-center rounded-2xl border border-secondary/20 bg-secondary/10 text-xl shadow-[0_0_24px_rgba(74,225,118,0.25)] transition-transform group-hover:scale-105">
+                        <span class="material-symbols-outlined text-2xl text-secondary" style="font-variation-settings: 'FILL' 1;">sports_soccer</span>
                     </div>
-                    <span class="text-zinc-900 dark:text-white tracking-tight hidden sm:inline">Soccer <span class="gradient-text">Aficionado</span></span>
+                    <div class="leading-none">
+                        <div class="font-['Lexend'] text-lg font-black uppercase tracking-tight text-white">Soccer Aficionado</div>
+                        <div class="text-[11px] font-semibold uppercase tracking-[0.3em] text-on-surface-variant">Fan platform</div>
+                    </div>
                 </a>
 
-                {{-- Desktop Nav Links --}}
-                <div class="hidden md:flex items-center gap-1">
-                    <a href="{{ route('matches.index') }}" class="px-4 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-green-600 dark:hover:text-green-400 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-200">Matches</a>
-                    <a href="{{ route('clubs.index') }}" class="px-4 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-green-600 dark:hover:text-green-400 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-200">Clubs</a>
-                    <a href="{{ route('competitions.index') }}" class="px-4 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-green-600 dark:hover:text-green-400 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-200">Competitions</a>
+                <div class="hidden items-center gap-1 md:flex">
+                    <a href="{{ route('matches.live') }}" class="rounded-full px-4 py-2 text-sm font-semibold uppercase tracking-wide text-on-surface-variant transition hover:bg-white/5 hover:text-secondary">Live Scores</a>
+                    <a href="{{ route('clubs.index') }}" class="rounded-full px-4 py-2 text-sm font-semibold uppercase tracking-wide text-on-surface-variant transition hover:bg-white/5 hover:text-secondary">Clubs</a>
+                    <a href="{{ route('communities.index') }}" class="rounded-full px-4 py-2 text-sm font-semibold uppercase tracking-wide text-on-surface-variant transition hover:bg-white/5 hover:text-secondary">Communities</a>
+                    <a href="{{ route('polls.index') }}" class="rounded-full px-4 py-2 text-sm font-semibold uppercase tracking-wide text-on-surface-variant transition hover:bg-white/5 hover:text-secondary">Polls</a>
                 </div>
 
                 <div class="flex items-center gap-3">
                     @auth
-                        <a href="{{ url('/dashboard') }}" class="relative inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 px-6 py-2.5 text-sm text-white font-semibold hover:from-green-500 hover:to-emerald-400 transition-all duration-300 shadow-lg shadow-green-600/25 hover:shadow-green-500/40 hover:scale-105">
+                        <a href="{{ url('/dashboard') }}" class="inline-flex items-center gap-2 rounded-full bg-secondary px-5 py-3 text-sm font-black uppercase tracking-wider text-on-secondary shadow-[0_0_28px_rgba(74,225,118,0.28)] transition hover:scale-[1.02] hover:bg-secondary-fixed-dim">
                             Dashboard
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                            <span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">arrow_forward</span>
                         </a>
                     @else
-                        <a href="{{ route('login') }}" class="px-4 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-green-600 dark:hover:text-green-400 transition-colors">Sign in</a>
+                        <a href="{{ route('login') }}" class="hidden text-sm font-semibold uppercase tracking-wider text-on-surface-variant transition hover:text-white sm:inline-flex">Sign in</a>
                         @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="relative inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 px-6 py-2.5 text-sm text-white font-semibold hover:from-green-500 hover:to-emerald-400 transition-all duration-300 shadow-lg shadow-green-600/25 hover:shadow-green-500/40 hover:scale-105">
-                                Join Free
+                            <a href="{{ route('register') }}" class="inline-flex items-center gap-2 rounded-full bg-secondary px-5 py-3 text-sm font-black uppercase tracking-wider text-on-secondary shadow-[0_0_28px_rgba(74,225,118,0.28)] transition hover:scale-[1.02] hover:bg-secondary-fixed-dim">
+                                Join the Club
                             </a>
                         @endif
                     @endauth
-
-                    {{-- Mobile menu toggle --}}
-                    <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="md:hidden p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-                    </button>
                 </div>
             </div>
+        </nav>
 
-            {{-- Mobile Menu --}}
-            <div id="mobile-menu" class="hidden md:hidden mt-2 rounded-2xl bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/50 p-4 shadow-xl">
-                <div class="flex flex-col gap-1">
-                    <a href="{{ route('matches.index') }}" class="px-4 py-3 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-green-600 rounded-xl hover:bg-green-50 dark:hover:bg-green-900/20 transition">Matches</a>
-                    <a href="{{ route('clubs.index') }}" class="px-4 py-3 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-green-600 rounded-xl hover:bg-green-50 dark:hover:bg-green-900/20 transition">Clubs</a>
-                    <a href="{{ route('competitions.index') }}" class="px-4 py-3 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-green-600 rounded-xl hover:bg-green-50 dark:hover:bg-green-900/20 transition">Competitions</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+        @php
+            $heroMatch = $liveMatches->first() ?? $upcomingMatches->first();
+            $scoreLine = $heroMatch
+                ? (data_get($heroMatch, 'status_short') === 'FT'
+                    ? (data_get($heroMatch, 'home_score') . ' - ' . data_get($heroMatch, 'away_score'))
+                    : ((data_get($heroMatch, 'home_score') ?? 0) . ' - ' . (data_get($heroMatch, 'away_score') ?? 0)))
+                : null;
+            $scoreStatus = data_get($heroMatch, 'status_short') ?? ($upcomingMatches->isNotEmpty() ? 'UP NEXT' : 'NO FIXTURES');
+            $tickerMatches = $liveMatches->isNotEmpty() ? $liveMatches : $upcomingMatches;
+        @endphp
 
-    {{-- Hero Section --}}
-    <section class="relative min-h-screen flex items-center overflow-hidden">
-        {{-- Animated Background --}}
-        <div class="absolute inset-0">
-            <div class="absolute inset-0 bg-gradient-to-br from-green-50 via-emerald-50/50 to-zinc-50 dark:from-zinc-950 dark:via-emerald-950/20 dark:to-zinc-950"></div>
-            <div class="absolute top-20 left-[10%] text-6xl opacity-10 dark:opacity-5 animate-float">⚽</div>
-            <div class="absolute top-40 right-[15%] text-4xl opacity-10 dark:opacity-5 animate-float-reverse animation-delay-200">🏆</div>
-            <div class="absolute bottom-32 left-[20%] text-5xl opacity-10 dark:opacity-5 animate-float animation-delay-500">🥅</div>
-            <div class="absolute bottom-20 right-[25%] text-3xl opacity-10 dark:opacity-5 animate-float-reverse animation-delay-700">⭐</div>
-            <div class="absolute top-60 left-[60%] text-4xl opacity-10 dark:opacity-5 animate-float-slow animation-delay-300">🏟️</div>
-            <div class="absolute top-1/4 -left-32 w-96 h-96 bg-green-400/20 dark:bg-green-500/10 rounded-full blur-3xl animate-morph"></div>
-            <div class="absolute bottom-1/4 -right-32 w-96 h-96 bg-emerald-400/20 dark:bg-emerald-500/10 rounded-full blur-3xl animate-morph animation-delay-400"></div>
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-green-300/10 dark:bg-green-500/5 rounded-full blur-3xl"></div>
-            <div class="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]" style="background-image: radial-gradient(circle, #16a34a 1px, transparent 1px); background-size: 40px 40px;"></div>
-        </div>
-
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-32 pb-20 w-full">
-            <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-                {{-- Left: Text Content --}}
-                <div class="text-center lg:text-left">
-                    <div class="animate-fade-in-up">
-                        <div class="inline-flex items-center gap-2 rounded-full bg-green-100/80 dark:bg-green-900/30 backdrop-blur-sm px-5 py-2 text-sm font-medium text-green-700 dark:text-green-400 mb-8 border border-green-200/50 dark:border-green-800/50">
-                            <span class="relative flex h-2 w-2">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                            </span>
-                            The #1 Platform for Football Fans
-                        </div>
+        <section class="relative flex min-h-screen items-center overflow-hidden px-4 pt-28 sm:px-6 lg:px-8 lg:pt-36">
+            <div class="mx-auto grid w-full max-w-7xl gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+                <div class="relative z-10 max-w-3xl">
+                    <div class="mb-6 inline-flex items-center gap-3 rounded-full border border-secondary/20 bg-secondary/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.28em] text-secondary backdrop-blur-md animate-fade-in-up badge-live">
+                        <span class="h-2 w-2 rounded-full bg-secondary shadow-[0_0_14px_rgba(74,225,118,0.8)]"></span>
+                        The new season is live
                     </div>
 
-                    <h1 class="animate-fade-in-up animation-delay-200 text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1]">
-                        Where Football
-                        <span class="block mt-2">
-                            <span class="relative">
-                                <span class="gradient-text">Passion</span>
-                                <svg class="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 12" fill="none"><path d="M2 8C30 3 70 2 100 5C130 8 170 9 198 4" stroke="url(#paint)" stroke-width="3" stroke-linecap="round"/><defs><linearGradient id="paint" x1="0" y1="0" x2="200" y2="0"><stop stop-color="#16a34a"/><stop offset="1" stop-color="#059669"/></linearGradient></defs></svg>
-                            </span>
-                            Lives
-                        </span>
+                    <h1 class="font-['Lexend'] text-5xl font-black uppercase tracking-tighter text-white sm:text-6xl lg:text-7xl animate-fade-in-up animation-delay-200 text-neon">
+                        Where Football Passion <span class="text-secondary">Meets</span> the Digital World
                     </h1>
 
-                    <p class="animate-fade-in-up animation-delay-300 mt-8 text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                        Join thousands of passionate fans. Follow your favorite clubs, discuss live matches, vote in polls, earn badges, and connect with a global football community.
+                    <p class="mt-6 max-w-2xl text-lg leading-8 text-on-surface-variant sm:text-xl animate-fade-in-up animation-delay-300">
+                        Follow live matches, join club communities, vote in polls, and climb the leaderboard in a platform built for real football fans.
                     </p>
 
-                    <div class="animate-fade-in-up animation-delay-400 mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                    <div class="mt-10 flex flex-col gap-4 sm:flex-row animate-fade-in-up animation-delay-400">
                         @auth
-                            <a href="{{ url('/dashboard') }}" class="group relative inline-flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-green-600 to-emerald-500 px-8 py-4 text-white font-bold text-lg hover:from-green-500 hover:to-emerald-400 transition-all duration-300 shadow-xl shadow-green-600/25 hover:shadow-green-500/40 hover:scale-105">
+                            <a href="{{ url('/dashboard') }}" class="inline-flex items-center justify-center gap-3 rounded-2xl bg-secondary px-7 py-4 text-base font-black uppercase tracking-wider text-on-secondary shadow-[0_0_32px_rgba(74,225,118,0.3)] transition hover:scale-[1.02] hover:bg-secondary-fixed-dim">
                                 Go to Dashboard
-                                <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                                <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">arrow_forward</span>
                             </a>
                         @else
-                            <a href="{{ route('register') }}" class="group relative inline-flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-green-600 to-emerald-500 px-8 py-4 text-white font-bold text-lg hover:from-green-500 hover:to-emerald-400 transition-all duration-300 shadow-xl shadow-green-600/25 hover:shadow-green-500/40 hover:scale-105">
-                                Get Started Free
-                                <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                            <a href="{{ route('register') }}" class="inline-flex items-center justify-center gap-3 rounded-2xl bg-secondary px-7 py-4 text-base font-black uppercase tracking-wider text-on-secondary shadow-[0_0_32px_rgba(74,225,118,0.3)] transition hover:scale-[1.02] hover:bg-secondary-fixed-dim">
+                                Start Free
+                                <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">arrow_forward</span>
                             </a>
-                            <a href="{{ route('login') }}" class="inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 px-8 py-4 font-bold text-lg text-zinc-700 dark:text-zinc-300 hover:border-green-300 dark:hover:border-green-700 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50/50 dark:hover:bg-green-900/20 transition-all duration-300">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
-                                Sign In
+                            <a href="{{ route('matches.live') }}" class="inline-flex items-center justify-center gap-3 rounded-2xl border border-outline-variant/60 bg-surface-container-low/80 px-7 py-4 text-base font-bold uppercase tracking-wider text-on-background transition hover:border-secondary/40 hover:bg-surface-container-high">
+                                Explore Matches
                             </a>
                         @endauth
                     </div>
 
-                    {{-- Trust Indicators --}}
-                    <div class="animate-fade-in-up animation-delay-500 mt-12 flex items-center gap-6 justify-center lg:justify-start">
-                        <div class="flex -space-x-3">
-                            @foreach(['A','B','C','D','E'] as $i => $letter)
-                            <div class="w-10 h-10 rounded-full border-2 border-white dark:border-zinc-900 bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-white font-bold text-xs shadow-md" style="z-index: {{ 5 - $i }}">
-                                {{ $letter }}
+                    <div class="mt-10 grid gap-4 sm:grid-cols-3 animate-fade-in-up animation-delay-500">
+                        @php
+                            $headlineStats = [
+                                ['value' => \App\Models\User::count(), 'label' => 'Active fans'],
+                                ['value' => \App\Models\Club::count(), 'label' => 'Clubs tracked'],
+                                ['value' => \App\Models\Community::count(), 'label' => 'Communities'],
+                            ];
+                        @endphp
+                        @foreach ($headlineStats as $stat)
+                            <div class="rounded-2xl border border-outline-variant/40 bg-surface-container/80 p-5 backdrop-blur-md glass-edge">
+                                <div class="font-['Lexend'] text-3xl font-black text-white">{{ number_format($stat['value']) }}<span class="text-secondary">+</span></div>
+                                <div class="mt-1 text-xs font-bold uppercase tracking-[0.28em] text-on-surface-variant">{{ $stat['label'] }}</div>
                             </div>
-                            @endforeach
-                        </div>
-                        <div class="text-sm text-zinc-500 dark:text-zinc-400">
-                            <span class="font-bold text-zinc-900 dark:text-white">{{ number_format(\App\Models\User::count()) }}+</span> fans already joined
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Right: Visual Card Stack --}}
-                <div class="relative hidden lg:block">
-                    <div class="animate-scale-in animation-delay-300">
-                        <div class="relative rounded-3xl overflow-hidden shadow-2xl shadow-zinc-900/20 dark:shadow-black/40 border border-zinc-200/50 dark:border-zinc-700/50">
-                            <img fetchpriority="high" decoding="async" src="https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Zm9vdGJhbGwlMjBzdGFkaXVtfGVufDB8fDB8fHww" alt="Football Stadium" class="w-full h-[420px] object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                            <div class="absolute bottom-0 left-0 right-0 p-8">
-                                <div class="flex items-center gap-3 mb-3">
-                                    <span class="inline-flex items-center gap-1.5 bg-red-500/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full">
-                                        <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span></span>
-                                        LIVE
-                                    </span>
-                                    <span class="text-white/80 text-sm">Premier League</span>
-                                </div>
-                                <div class="flex items-center justify-between text-white">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-lg">⚽</div>
-                                        <span class="font-bold text-lg">Arsenal</span>
-                                    </div>
-                                    <span class="text-3xl font-bold">2 - 1</span>
-                                    <div class="flex items-center gap-3">
-                                        <span class="font-bold text-lg">Chelsea</span>
-                                        <div class="w-10 h-10 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-lg">⚽</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="absolute -top-6 -right-6 animate-float animation-delay-200">
-                            <div class="glass-card rounded-2xl p-4 shadow-xl w-48">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <div class="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center text-sm">🏆</div>
-                                    <span class="text-sm font-bold text-zinc-900 dark:text-white">Leaderboard</span>
-                                </div>
-                                <div class="space-y-1.5">
-                                    <div class="flex items-center justify-between text-xs"><span class="text-zinc-600 dark:text-zinc-400">1. Alex M.</span><span class="font-bold text-green-600">2,450 pts</span></div>
-                                    <div class="flex items-center justify-between text-xs"><span class="text-zinc-600 dark:text-zinc-400">2. Sarah K.</span><span class="font-bold text-green-600">2,180 pts</span></div>
-                                    <div class="flex items-center justify-between text-xs"><span class="text-zinc-600 dark:text-zinc-400">3. James W.</span><span class="font-bold text-green-600">1,920 pts</span></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="absolute -bottom-4 -left-6 animate-float-reverse animation-delay-500">
-                            <div class="glass-card rounded-2xl p-4 shadow-xl w-56">
-                                <div class="flex items-center gap-2 mb-3"><span class="text-sm">📊</span><span class="text-sm font-bold text-zinc-900 dark:text-white">Active Poll</span></div>
-                                <p class="text-xs text-zinc-600 dark:text-zinc-400 mb-2">Who'll win the Champions League?</p>
-                                <div class="space-y-1.5">
-                                    <div class="relative h-6 bg-zinc-100 dark:bg-zinc-700 rounded-full overflow-hidden">
-                                        <div class="absolute inset-y-0 left-0 bg-gradient-to-r from-green-500 to-emerald-400 rounded-full" style="width:45%"></div>
-                                        <span class="absolute inset-0 flex items-center px-3 text-xs font-medium">Man City — 45%</span>
-                                    </div>
-                                    <div class="relative h-6 bg-zinc-100 dark:bg-zinc-700 rounded-full overflow-hidden">
-                                        <div class="absolute inset-y-0 left-0 bg-gradient-to-r from-green-500/60 to-emerald-400/60 rounded-full" style="width:30%"></div>
-                                        <span class="absolute inset-0 flex items-center px-3 text-xs font-medium">Real Madrid — 30%</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="absolute top-1/2 -right-10 animate-bounce-subtle animation-delay-300">
-                            <div class="glass-card rounded-xl px-4 py-3 shadow-lg flex items-center gap-2">
-                                <span class="text-lg">🏅</span>
-                                <div>
-                                    <div class="text-xs font-bold text-zinc-900 dark:text-white">Badge Earned!</div>
-                                    <div class="text-[10px] text-zinc-500">Super Fan Unlocked</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-            <div class="w-6 h-10 rounded-full border-2 border-zinc-300 dark:border-zinc-600 flex justify-center pt-2">
-                <div class="w-1.5 h-3 rounded-full bg-zinc-400 dark:bg-zinc-500 animate-fade-in-down"></div>
-            </div>
-        </div>
-    </section>
-
-    {{-- Stats Section --}}
-    <section class="relative py-20 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-r from-green-600 via-emerald-600 to-green-700"></div>
-        <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600&q=30'); background-size: cover; background-position: center;"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-green-600/90 via-emerald-600/90 to-green-700/90"></div>
-        <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6">
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-                @php
-                    $stats = [
-                        ['count' => \App\Models\User::count(), 'label' => 'Active Fans', 'icon' => '👥', 'suffix' => '+'],
-                        ['count' => \App\Models\Club::count(), 'label' => 'Clubs Tracked', 'icon' => '🛡️', 'suffix' => '+'],
-                        ['count' => \App\Models\Community::count(), 'label' => 'Communities', 'icon' => '💬', 'suffix' => '+'],
-                        ['count' => \App\Models\Post::count(), 'label' => 'Fan Posts', 'icon' => '📝', 'suffix' => '+'],
-                    ];
-                @endphp
-                @foreach($stats as $stat)
-                <div class="text-center group">
-                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/15 backdrop-blur-sm mb-4 text-3xl group-hover:scale-110 transition-transform duration-300">{{ $stat['icon'] }}</div>
-                    <div class="text-4xl sm:text-5xl font-bold text-white mb-1">{{ number_format($stat['count']) }}{{ $stat['suffix'] }}</div>
-                    <div class="text-green-100 text-sm font-medium">{{ $stat['label'] }}</div>
-                </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
-
-    {{-- Features Section --}}
-    <section class="py-24 px-4 sm:px-6 relative">
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-green-100/30 dark:bg-green-900/10 rounded-full blur-3xl -z-10"></div>
-        <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-20">
-                <div class="inline-flex items-center gap-2 rounded-full bg-green-100 dark:bg-green-900/30 px-4 py-1.5 text-sm font-medium text-green-700 dark:text-green-400 mb-6">✨ Features</div>
-                <h2 class="text-4xl sm:text-5xl font-bold tracking-tight">Everything You Need<br><span class="gradient-text">As a Football Fan</span></h2>
-                <p class="mt-6 text-lg text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto">From live match tracking to community discussions, we've built every feature you need to enjoy the beautiful game.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-                @php
-                    $features = [
-                        ['icon' => '🏟️', 'title' => 'Live Matches', 'description' => 'Track live scores, match events, and real-time updates for all your favorite teams and competitions.', 'color' => 'from-red-500 to-orange-500', 'image' => 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&h=200&fit=crop&q=70'],
-                        ['icon' => '👥', 'title' => 'Fan Communities', 'description' => 'Join or create communities around your favorite clubs. Share posts, discuss tactics, and connect with fellow fans.', 'color' => 'from-blue-500 to-cyan-500', 'image' => 'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=400&h=200&fit=crop&q=70'],
-                        ['icon' => '📊', 'title' => 'Polls & Voting', 'description' => 'Vote on match predictions, player ratings, and hot takes. See how your opinions compare to the community.', 'color' => 'from-purple-500 to-pink-500', 'image' => 'https://images.unsplash.com/photo-1551958219-acbc608c6377?w=400&h=200&fit=crop&q=70'],
-                        ['icon' => '🏅', 'title' => 'Gamification', 'description' => 'Earn points for engaging, unlock badges, and climb the leaderboard. Show off your dedication!', 'color' => 'from-amber-500 to-yellow-500', 'image' => 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=400&h=200&fit=crop&q=70'],
-                        ['icon' => '⚽', 'title' => 'Club & Player Data', 'description' => 'Browse detailed club profiles, player stats, competition standings, and comprehensive football data.', 'color' => 'from-green-500 to-emerald-500', 'image' => 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400&h=200&fit=crop&q=70'],
-                        ['icon' => '📱', 'title' => 'Mobile App', 'description' => 'Full-featured Mobile App integration for you, with a modern interface.', 'color' => 'from-indigo-500 to-violet-500', 'image' => 'https://www.cnet.com/a/img/resize/06c0bcbaf54afd03068b35f9edca8a117a9e48ba/hub/2025/06/25/38a0e720-b9d3-4837-a652-39a044d16f9c/apple-sports-app-tennis-feature.jpg?auto=webp&fit=crop&height=675&width=1200'],
-                    ];
-                @endphp
-                @foreach($features as $feature)
-                <div class="group relative rounded-2xl overflow-hidden border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800/80 hover:border-green-300 dark:hover:border-green-700/60 transition-all duration-500 hover-lift">
-                    <div class="relative h-44 overflow-hidden">
-                        <img src="{{ $feature['image'] }}" alt="{{ $feature['title'] }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" decoding="async">
-                        <div class="absolute inset-0 bg-gradient-to-t from-white dark:from-zinc-800 via-transparent to-transparent"></div>
-                        <div class="absolute top-4 left-4">
-                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br {{ $feature['color'] }} flex items-center justify-center text-2xl shadow-lg">{{ $feature['icon'] }}</div>
-                        </div>
-                    </div>
-                    <div class="p-6 pt-2">
-                        <h3 class="font-bold text-xl text-zinc-900 dark:text-white mb-2 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">{{ $feature['title'] }}</h3>
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">{{ $feature['description'] }}</p>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
-
-    {{-- How It Works --}}
-    <section class="py-24 px-4 sm:px-6 bg-zinc-100/50 dark:bg-zinc-900/50">
-        <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-16">
-                <div class="inline-flex items-center gap-2 rounded-full bg-green-100 dark:bg-green-900/30 px-4 py-1.5 text-sm font-medium text-green-700 dark:text-green-400 mb-6">🚀 Get Started</div>
-                <h2 class="text-4xl sm:text-5xl font-bold tracking-tight">Three Steps to<br><span class="gradient-text">Football Heaven</span></h2>
-            </div>
-            <div class="grid md:grid-cols-3 gap-8 relative">
-                <div class="hidden md:block absolute top-16 left-[20%] right-[20%] h-0.5 bg-gradient-to-r from-green-300 via-emerald-400 to-green-300 dark:from-green-700 dark:via-emerald-600 dark:to-green-700"></div>
-                @php $steps = [['num'=>'01','title'=>'Create Account','desc'=>'Sign up in seconds. Set your favorite clubs and customize your profile.','icon'=>'✍️'],['num'=>'02','title'=>'Join Communities','desc'=>'Find and join fan communities. Follow matches, clubs, and fellow fans.','icon'=>'🤝'],['num'=>'03','title'=>'Engage & Earn','desc'=>'Post, comment, vote in polls, and earn points and badges for your passion.','icon'=>'🏆']]; @endphp
-                @foreach($steps as $step)
-                <div class="relative text-center group">
-                    <div class="relative z-10 inline-flex items-center justify-center w-32 h-32 rounded-3xl bg-white dark:bg-zinc-800 border-2 border-green-200 dark:border-green-800 shadow-xl shadow-green-500/10 mb-6 group-hover:scale-110 group-hover:border-green-400 dark:group-hover:border-green-600 transition-all duration-300">
-                        <span class="text-5xl">{{ $step['icon'] }}</span>
-                    </div>
-                    <div class="absolute -top-2 -right-2 z-20 w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 text-white text-sm font-bold flex items-center justify-center shadow-lg md:relative md:top-0 md:right-0 md:mx-auto md:-mt-12 md:mb-4">{{ $step['num'] }}</div>
-                    <h3 class="text-xl font-bold text-zinc-900 dark:text-white mb-2">{{ $step['title'] }}</h3>
-                    <p class="text-zinc-500 dark:text-zinc-400 max-w-xs mx-auto">{{ $step['desc'] }}</p>
-                </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
-
-    {{-- Live Experience --}}
-    <section class="py-24 px-4 sm:px-6 relative overflow-hidden">
-        <div class="absolute -bottom-32 -left-32 w-96 h-96 bg-green-200/30 dark:bg-green-900/20 rounded-full blur-3xl"></div>
-        <div class="absolute -top-32 -right-32 w-96 h-96 bg-emerald-200/30 dark:bg-emerald-900/20 rounded-full blur-3xl"></div>
-        <div class="relative max-w-7xl mx-auto">
-            <div class="grid lg:grid-cols-2 gap-16 items-center">
-                <div>
-                    <div class="inline-flex items-center gap-2 rounded-full bg-green-100 dark:bg-green-900/30 px-4 py-1.5 text-sm font-medium text-green-700 dark:text-green-400 mb-6">🔥 Live Experience</div>
-                    <h2 class="text-4xl sm:text-5xl font-bold tracking-tight mb-6">Never Miss a<br><span class="gradient-text">Moment</span></h2>
-                    <p class="text-lg text-zinc-500 dark:text-zinc-400 mb-8 leading-relaxed">Get real-time match updates, goal alerts, and instant notifications. Our live match center brings you closer to the action than ever before.</p>
-                    <div class="space-y-4">
-                        @foreach([['⚡','Real-time score updates & match events'],['📈','Detailed match statistics & analytics'],['💬','Live match discussion threads'],['🔔','Custom notification preferences']] as $item)
-                        <div class="flex items-center gap-4 group">
-                            <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">{{ $item[0] }}</div>
-                            <span class="text-zinc-700 dark:text-zinc-300 font-medium">{{ $item[1] }}</span>
-                        </div>
                         @endforeach
                     </div>
                 </div>
-                <div class="relative">
-                    <div class="rounded-3xl overflow-hidden shadow-2xl shadow-zinc-900/20 dark:shadow-black/40 border border-zinc-200/50 dark:border-zinc-700/50">
-                        <img src="https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=700&h=500&fit=crop&q=80" alt="Match Experience" class="w-full h-[400px] object-cover" loading="lazy" decoding="async">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent rounded-3xl"></div>
-                    </div>
-                    <div class="absolute -bottom-6 -left-6 sm:left-auto sm:-right-6 animate-float">
-                        <div class="glass-card rounded-2xl p-4 shadow-xl flex items-center gap-3 max-w-xs">
-                            <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white text-lg flex-shrink-0">⚽</div>
-                            <div>
-                                <div class="text-sm font-bold text-zinc-900 dark:text-white">GOAL! 🎉</div>
-                                <div class="text-xs text-zinc-500">Haaland scores in the 89th minute!</div>
+
+                <div class="relative z-10 animate-scale-in animation-delay-300">
+                    <div class="absolute -left-8 top-10 h-28 w-28 rounded-full bg-emerald-400/20 blur-3xl"></div>
+                    <div class="absolute -bottom-10 right-4 h-40 w-40 rounded-full bg-amber-400/15 blur-3xl"></div>
+
+                    <div class="overflow-hidden rounded-4xl border border-white/10 bg-[#0f1712]/90 shadow-[0_40px_120px_rgba(0,0,0,0.45)]">
+                        <div class="relative" style="height: 500px;">
+                            <img src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1400&q=80" alt="Floodlit football stadium" class="h-full w-full object-cover opacity-30 mix-blend-luminosity">
+                            <div class="absolute inset-0 bg-linear-to-t from-[#050c08] via-[#050c08]/80 to-transparent"></div>
+                            <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(74,225,118,0.22),transparent_55%)]"></div>
+
+                            <div class="absolute left-5 top-5 flex items-center gap-2 rounded-full border border-emerald-400/20 bg-[#07110b]/80 px-3 py-2 text-xs font-black uppercase tracking-[0.24em] text-emerald-300 backdrop-blur-md">
+                                <span class="h-2 w-2 rounded-full bg-emerald-300 shadow-[0_0_14px_rgba(74,225,118,0.8)]"></span>
+                                {{ $scoreStatus }}
+                            </div>
+
+                            <div class="absolute bottom-0 left-0 right-0 space-y-4 p-5 sm:p-6">
+                                <div class="rounded-3xl border border-white/10 bg-[#07110b]/85 p-5 backdrop-blur-xl">
+                                    <div class="flex items-center justify-between gap-4 text-xs font-bold uppercase tracking-[0.28em] text-white/45">
+                                        <span>{{ data_get($heroMatch, 'league_name', 'Live Match Center') }}</span>
+                                        <span>{{ data_get($heroMatch, 'status_short', 'UP NEXT') }}</span>
+                                    </div>
+                                    <div class="mt-5 flex items-center justify-between gap-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="flex h-16 w-16 items-center justify-center rounded-2xl border border-emerald-400/30 bg-emerald-400/10 font-['Lexend'] text-lg font-black text-white shadow-[0_0_16px_rgba(74,225,118,0.18)]">
+                                                {{ data_get($heroMatch, 'home_team.code') ?? \Illuminate\Support\Str::of(data_get($heroMatch, 'home_team.name', 'H'))->substr(0, 3)->upper() }}
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-bold uppercase tracking-wider text-white/70">{{ data_get($heroMatch, 'home_team.name', 'No match') }}</div>
+                                                <div class="text-4xl font-['Lexend'] font-black text-white">{{ $scoreLine ? \Illuminate\Support\Str::before($scoreLine, ' - ') : '—' }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="hidden h-16 w-px bg-white/10 sm:block"></div>
+                                        <div class="flex items-center gap-3 text-right">
+                                            <div>
+                                                <div class="text-sm font-bold uppercase tracking-wider text-white/50">{{ data_get($heroMatch, 'away_team.name', 'No match') }}</div>
+                                                <div class="text-4xl font-['Lexend'] font-black text-white/60">{{ $scoreLine ? \Illuminate\Support\Str::after($scoreLine, ' - ') : '—' }}</div>
+                                            </div>
+                                            <div class="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 bg-white/5 font-['Lexend'] text-lg font-black text-white/70">
+                                                {{ data_get($heroMatch, 'away_team.code') ?? \Illuminate\Support\Str::of(data_get($heroMatch, 'away_team.name', 'A'))->substr(0, 3)->upper() }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-5 h-2 overflow-hidden rounded-full bg-white/10">
+                                        <div class="h-full rounded-full bg-emerald-400" style="width: {{ $heroMatch && filled(data_get($heroMatch, 'home_score')) && filled(data_get($heroMatch, 'away_score')) && ((int) data_get($heroMatch, 'home_score') + (int) data_get($heroMatch, 'away_score')) > 0 ? max(8, min(92, round(((int) data_get($heroMatch, 'home_score') / max(1, ((int) data_get($heroMatch, 'home_score') + (int) data_get($heroMatch, 'away_score')))) * 100))) : 50 }}%;"></div>
+                                    </div>
+                                </div>
+
+                                <div class="grid gap-4 sm:grid-cols-2">
+                                    <div class="rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur-md">
+                                        <div class="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-white">
+                                            <span class="material-symbols-outlined text-amber-300" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+                                            Hall of Fame
+                                        </div>
+                                        <div class="space-y-2 text-sm text-white/70">
+                                            <div class="flex justify-between"><span>@GunnerSteve</span><span class="text-emerald-300">45,200 pts</span></div>
+                                            <div class="flex justify-between"><span>@BavarianKing</span><span class="text-emerald-300">42,850 pts</span></div>
+                                            <div class="flex justify-between"><span>@Milanista99</span><span class="text-emerald-300">39,100 pts</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur-md">
+                                        <div class="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-white">
+                                            <span class="material-symbols-outlined text-amber-300" style="font-variation-settings: 'FILL' 1;">forum</span>
+                                            Live Banter
+                                        </div>
+                                        <p class="text-sm leading-6 text-white/70">The press is working. That midfield shape is controlling the match, and the discussion is already flying.</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    {{-- Testimonials --}}
-    <section class="py-24 px-4 sm:px-6 bg-zinc-100/50 dark:bg-zinc-900/50">
-        <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl sm:text-5xl font-bold tracking-tight">Loved by <span class="gradient-text">Football Fans</span></h2>
-                <p class="mt-4 text-lg text-zinc-500 dark:text-zinc-400">See what our community members are saying.</p>
+        <section class="relative border-y border-white/8 bg-[#07110b]/85 px-4 py-5 sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl overflow-hidden">
+                @if ($tickerMatches->isNotEmpty())
+                    <div class="flex w-max items-center gap-8 whitespace-nowrap text-sm font-bold uppercase tracking-[0.24em] text-white/65 animate-marquee">
+                        @foreach ($tickerMatches->take(6) as $match)
+                            <span class="flex items-center gap-2">
+                                <span class="h-2 w-2 rounded-full {{ data_get($match, 'status_short') === 'FT' ? 'bg-amber-300' : 'bg-emerald-300' }}"></span>
+                                {{ \Illuminate\Support\Str::of(data_get($match, 'home_team.code') ?? data_get($match, 'home_team.name', 'H'))->substr(0, 3)->upper() }} {{ data_get($match, 'home_score', 0) }} - {{ data_get($match, 'away_score', 0) }} {{ \Illuminate\Support\Str::of(data_get($match, 'away_team.code') ?? data_get($match, 'away_team.name', 'A'))->substr(0, 3)->upper() }}
+                                <span class="{{ data_get($match, 'status_short') === 'FT' ? 'text-amber-300' : 'text-emerald-300' }}">{{ data_get($match, 'status_short', 'LIVE') }}</span>
+                            </span>
+                            <span class="text-white/20">•</span>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="text-sm font-bold uppercase tracking-[0.24em] text-white/45">
+                        No fixtures available right now.
+                    </div>
+                @endif
             </div>
-            <div class="grid md:grid-cols-3 gap-6">
-                @php $testimonials = [['name'=>'Marcus R.','role'=>'Arsenal Fan','text'=>"Best football community platform I've ever used. The live match tracking and community discussions are incredible!",'avatar'=>'M'],['name'=>'Sofia L.','role'=>'Barcelona Fan','text'=>'I love the gamification system! Earning badges and climbing the leaderboard keeps me engaged. The polls are my favorite feature.','avatar'=>'S'],['name'=>'James K.','role'=>'Liverpool Fan','text'=>'Finally a platform where real football discussions happen. The communities are vibrant and the match data is always up to date.','avatar'=>'J']]; @endphp
-                @foreach($testimonials as $t)
-                <div class="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-8 hover-lift">
-                    <div class="flex items-center gap-1 mb-4">
-                        @for($i = 0; $i < 5; $i++)<svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>@endfor
-                    </div>
-                    <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-6">{{ $t['text'] }}</p>
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-white font-bold text-sm">{{ $t['avatar'] }}</div>
-                        <div><div class="font-semibold text-sm text-zinc-900 dark:text-white">{{ $t['name'] }}</div><div class="text-xs text-zinc-500">{{ $t['role'] }}</div></div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
+        </section>
 
-    {{-- Ad Spot --}}
-    <div class="max-w-5xl mx-auto px-4 sm:px-6">
-        <x-ad-unit placement="welcome" />
-    </div>
-
-    {{-- CTA Section --}}
-    <section class="py-24 px-4 sm:px-6 relative overflow-hidden">
-        <div class="relative max-w-5xl mx-auto">
-            <div class="relative rounded-3xl overflow-hidden">
-                <div class="absolute inset-0">
-                    <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&h=600&fit=crop&q=70" alt="" class="w-full h-full object-cover" loading="lazy" decoding="async">
-                    <div class="absolute inset-0 bg-gradient-to-r from-green-900/95 via-emerald-800/90 to-green-900/95"></div>
-                </div>
-                <div class="relative z-10 px-8 sm:px-16 py-16 sm:py-20 text-center">
-                    <div class="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur px-4 py-1.5 text-sm font-medium text-green-200 mb-6">⚡ Join the Movement</div>
-                    <h2 class="text-4xl sm:text-5xl font-bold text-white mb-4 tracking-tight">Ready to Join the<br><span class="text-green-300">Global Football Community?</span></h2>
-                    <p class="text-lg text-green-100/80 mb-10 max-w-xl mx-auto">Sign up for free and start connecting with football fans worldwide. No credit card required.</p>
-                    @guest
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                        <a href="{{ route('register') }}" class="group inline-flex items-center justify-center gap-3 rounded-2xl bg-white text-green-700 px-10 py-4 font-bold text-lg hover:bg-green-50 transition-all duration-300 shadow-2xl shadow-black/20 hover:scale-105">
-                            Create Free Account
-                            <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-                        </a>
-                        <a href="{{ route('matches.index') }}" class="inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-white/30 text-white px-10 py-4 font-bold text-lg hover:bg-white/10 transition-all duration-300">Browse Matches</a>
+        <section class="px-4 py-20 sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl">
+                <div class="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                    <div>
+                        <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold uppercase tracking-[0.28em] text-white/60">Explore tribes</div>
+                        <h2 class="font-['Lexend'] text-4xl font-black uppercase tracking-tighter text-white sm:text-5xl">Find your <span class="text-emerald-300">people</span></h2>
+                        <p class="mt-4 max-w-2xl text-base leading-7 text-white/65 sm:text-lg">Join dedicated hubs for clubs, leagues, and fan culture. Debate, celebrate, and follow the season with people who care as much as you do.</p>
                     </div>
-                    @endguest
-                    @auth
-                    <a href="{{ url('/dashboard') }}" class="group inline-flex items-center justify-center gap-3 rounded-2xl bg-white text-green-700 px-10 py-4 font-bold text-lg hover:bg-green-50 transition-all duration-300 shadow-2xl shadow-black/20 hover:scale-105">
-                        Go to Dashboard
-                        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                    <a href="{{ route('clubs.index') }}" class="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-bold uppercase tracking-wider text-white transition hover:border-emerald-300/40 hover:bg-white/10">View all tribes</a>
+                </div>
+
+                <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-5">
+                    @php
+                        $tribes = [
+                            ['name' => 'Madrid', 'count' => '14.2k active', 'image' => 'https://images.unsplash.com/photo-1518091043644-c1d4457512c6?auto=format&fit=crop&w=900&q=80'],
+                            ['name' => 'Liverpool', 'count' => '28.5k active', 'image' => 'https://images.unsplash.com/photo-1508098682722-e99c643e89c9?auto=format&fit=crop&w=900&q=80', 'highlight' => true],
+                            ['name' => 'Milan', 'count' => '8.9k active', 'image' => 'https://images.unsplash.com/photo-1518091043644-c1d4457512c6?auto=format&fit=crop&w=900&q=80'],
+                            ['name' => 'Munich', 'count' => '11.4k active', 'image' => 'https://images.unsplash.com/photo-1486286701208-1d58e9338013?auto=format&fit=crop&w=900&q=80'],
+                        ];
+                    @endphp
+                    @foreach ($tribes as $tribe)
+                        <div class="group relative aspect-square overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/5">
+                            <img src="{{ $tribe['image'] }}" alt="{{ $tribe['name'] }} fans" class="h-full w-full object-cover transition duration-700 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-linear-to-t from-[#050c08] via-[#050c08]/70 to-transparent"></div>
+                            @if (!empty($tribe['highlight']))
+                                <div class="absolute right-4 top-4 rounded-full bg-emerald-300 px-3 py-1 text-[10px] font-black uppercase tracking-[0.24em] text-[#07110b]">Joined</div>
+                            @endif
+                            <div class="absolute inset-x-0 bottom-0 p-5">
+                                <h3 class="font-['Lexend'] text-2xl font-black uppercase tracking-tight text-white">{{ $tribe['name'] }}</h3>
+                                <p class="mt-1 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.24em] text-white/65">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-300"></span>
+                                    {{ $tribe['count'] }}
+                                </p>
+                            </div>
+                        </div>
+                    @endforeach
+
+                    <a href="{{ route('register') }}" class="group flex aspect-square flex-col items-center justify-center rounded-[1.75rem] border-2 border-dashed border-white/12 bg-white/3 p-6 text-center transition hover:border-emerald-300/50 hover:bg-white/6">
+                        <span class="material-symbols-outlined mb-3 text-5xl text-white/35 transition group-hover:text-emerald-300" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+                        <div class="font-['Lexend'] text-xl font-bold uppercase tracking-tight text-white">Discover more</div>
+                        <div class="mt-2 text-sm text-white/45">500+ clubs and leagues</div>
                     </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="px-4 py-20 sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+                <div class="rounded-4xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl sm:p-8">
+                    <div class="mb-6 flex items-center justify-between gap-4">
+                        <div>
+                            <div class="mb-3 inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.28em] text-amber-200">Hall of fame</div>
+                            <h2 class="font-['Lexend'] text-3xl font-black uppercase tracking-tighter text-white sm:text-4xl">Global top fans</h2>
+                        </div>
+                        <a href="{{ route('leaderboard') }}" class="hidden rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-black uppercase tracking-[0.28em] text-white/70 transition hover:border-emerald-300/40 hover:text-white md:inline-flex">Leaderboard</a>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4 rounded-2xl border border-amber-300/20 bg-amber-300/10 p-4">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-300 text-[#07110b] font-['Lexend'] text-xl font-black">1</div>
+                            <div class="flex-1">
+                                <div class="font-bold text-white">@GunnerSteve</div>
+                                <div class="text-sm text-white/55">Arsenal tribe • Tactician</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-['Lexend'] text-xl font-black text-white">45,200</div>
+                                <div class="text-[10px] font-bold uppercase tracking-[0.28em] text-emerald-300">pts</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-4 rounded-2xl border border-white/8 bg-[#07110b]/65 p-4">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/5 font-['Lexend'] text-xl font-black text-white/60">2</div>
+                            <div class="flex-1">
+                                <div class="font-bold text-white">@BavarianKing</div>
+                                <div class="text-sm text-white/55">Munich tribe • Predictor</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-['Lexend'] text-xl font-black text-white/85">42,850</div>
+                                <div class="text-[10px] font-bold uppercase tracking-[0.28em] text-white/45">pts</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-4 rounded-2xl border border-white/8 bg-[#07110b]/65 p-4">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/5 font-['Lexend'] text-xl font-black text-white/40">3</div>
+                            <div class="flex-1">
+                                <div class="font-bold text-white">@Milanista99</div>
+                                <div class="text-sm text-white/55">Milan tribe • Historian</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-['Lexend'] text-xl font-black text-white/85">39,100</div>
+                                <div class="text-[10px] font-bold uppercase tracking-[0.28em] text-white/45">pts</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-4xl border border-white/10 bg-[#07110b]/85 p-6 backdrop-blur-xl sm:p-8">
+                    <div class="mb-6 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-3xl text-emerald-300" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+                        <h3 class="font-['Lexend'] text-2xl font-black uppercase tracking-tighter text-white">Recent unlocks</h3>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        @php
+                            $unlockCards = [
+                                ['icon' => 'local_fire_department', 'title' => 'On fire', 'text' => '5 correct score predictions in a row', 'color' => 'text-amber-300'],
+                                ['icon' => 'record_voice_over', 'title' => 'Pundit', 'text' => '100+ upvotes on a tactical analysis', 'color' => 'text-emerald-300'],
+                                ['icon' => 'groups', 'title' => 'Ultra', 'text' => 'Active in tribe for 365 days straight', 'color' => 'text-sky-300'],
+                                ['icon' => 'lock', 'title' => 'Locked', 'text' => 'Keep participating to reveal', 'color' => 'text-white/45'],
+                            ];
+                        @endphp
+                        @foreach ($unlockCards as $card)
+                            <div class="rounded-2xl border border-white/8 bg-white/5 p-4 text-center transition hover:border-white/15">
+                                <span class="material-symbols-outlined text-4xl {{ $card['color'] }}" style="font-variation-settings: 'FILL' 1;">{{ $card['icon'] }}</span>
+                                <div class="mt-3 text-sm font-black uppercase tracking-[0.24em] text-white">{{ $card['title'] }}</div>
+                                <div class="mt-2 text-xs leading-5 text-white/55">{{ $card['text'] }}</div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="px-4 py-20 sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+                <div>
+                    <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold uppercase tracking-[0.28em] text-white/60">Trusted by the 12th man</div>
+                    <h2 class="font-['Lexend'] text-4xl font-black uppercase tracking-tighter text-white sm:text-5xl">Built for serious fans</h2>
+                    <div class="mt-8 grid gap-6 sm:grid-cols-2">
+                        <div>
+                            <div class="font-['Lexend'] text-5xl font-black text-white">{{ number_format(\App\Models\Post::count()) }}<span class="text-emerald-300">+</span></div>
+                            <div class="mt-2 text-sm font-bold uppercase tracking-[0.24em] text-white/45">Fan posts</div>
+                        </div>
+                        <div>
+                            <div class="font-['Lexend'] text-5xl font-black text-white">{{ number_format(\App\Models\Competition::count()) }}<span class="text-amber-300">+</span></div>
+                            <div class="mt-2 text-sm font-bold uppercase tracking-[0.24em] text-white/45">Competitions</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-4xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl sm:p-8">
+                    <span class="material-symbols-outlined mb-4 text-4xl text-amber-300" style="font-variation-settings: 'FILL' 1;">format_quote</span>
+                    <p class="text-xl leading-9 text-white/80 sm:text-2xl">"Finally, a platform that treats fans like analysts. The real-time data combined with community banter makes matchday feel alive again."</p>
+                    <div class="mt-8 flex items-center gap-4 border-t border-white/10 pt-6">
+                        <div class="h-14 w-14 overflow-hidden rounded-full border-2 border-emerald-300 bg-white/10">
+                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80" alt="User portrait" class="h-full w-full object-cover">
+                        </div>
+                        <div>
+                            <div class="font-['Lexend'] text-lg font-bold text-white">Sarah Jenkins</div>
+                            <div class="text-xs font-bold uppercase tracking-[0.28em] text-emerald-300">Founding fan</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        @guest
+        <section class="px-4 pb-20 sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl overflow-hidden rounded-[2.25rem] border border-white/10 bg-[linear-gradient(135deg,rgba(74,225,118,0.18),rgba(7,17,11,0.96)_55%,rgba(249,189,34,0.12))] p-8 sm:p-14">
+                <div class="max-w-3xl">
+                    <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.28em] text-white/70">Join the movement</div>
+                    <h2 class="font-['Lexend'] text-4xl font-black uppercase tracking-tighter text-white sm:text-6xl">Claim your spot on the terraces.</h2>
+                    <p class="mt-5 max-w-2xl text-lg leading-8 text-white/75">Create your account and start following matches, joining tribes, and earning badges with the rest of the fan base.</p>
+                    <div class="mt-8 flex flex-col gap-4 sm:flex-row">
+                        <a href="{{ route('register') }}" class="inline-flex items-center justify-center rounded-2xl bg-white px-7 py-4 text-base font-black uppercase tracking-wider text-[#07110b] transition hover:scale-[1.02] hover:bg-emerald-50">Create free account</a>
+                        <a href="{{ route('matches.live') }}" class="inline-flex items-center justify-center rounded-2xl border border-white/20 bg-white/5 px-7 py-4 text-base font-bold uppercase tracking-wider text-white transition hover:bg-white/10">Browse live matches</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        @endguest
+
+        <footer class="border-t border-white/10 bg-[#07110b] px-4 py-12 sm:px-6 lg:px-8">
+            <div class="mx-auto flex max-w-7xl flex-col gap-8 md:flex-row md:items-center md:justify-between">
+                <div>
+                    <div class="font-['Lexend'] text-lg font-black uppercase tracking-tight text-white">Soccer Aficionado</div>
+                    <p class="mt-2 max-w-xl text-sm leading-6 text-white/55">The ultimate platform for football fans worldwide. Track, discuss, and celebrate the beautiful game.</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-4 text-sm font-semibold uppercase tracking-wider text-white/55">
+                    <a href="{{ route('matches.index') }}" class="transition hover:text-white">Matches</a>
+                    <a href="{{ route('clubs.index') }}" class="transition hover:text-white">Clubs</a>
+                    <a href="{{ route('competitions.index') }}" class="transition hover:text-white">Competitions</a>
+                    @auth
+                        <a href="{{ route('leaderboard') }}" class="transition hover:text-white">Leaderboard</a>
+                    @else
+                        <a href="{{ route('login') }}" class="transition hover:text-white">Sign in</a>
                     @endauth
                 </div>
             </div>
-        </div>
-    </section>
-
-    {{-- Footer --}}
-    <footer class="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-                <div class="col-span-2 md:col-span-1">
-                    <a href="/" class="flex items-center gap-3 font-bold text-lg mb-4">
-                        <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg shadow-green-500/20"><span class="text-xl">⚽</span></div>
-                        <span class="text-zinc-900 dark:text-white">Soccer Aficionado</span>
-                    </a>
-                    <p class="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">The ultimate platform for football fans worldwide. Track, discuss, and celebrate the beautiful game.</p>
-                </div>
-                <div>
-                    <h4 class="font-bold text-sm text-zinc-900 dark:text-white mb-4 uppercase tracking-wider">Platform</h4>
-                    <ul class="space-y-3">
-                        <li><a href="{{ route('matches.index') }}" class="text-sm text-zinc-500 hover:text-green-600 dark:hover:text-green-400 transition-colors">Matches</a></li>
-                        <li><a href="{{ route('clubs.index') }}" class="text-sm text-zinc-500 hover:text-green-600 dark:hover:text-green-400 transition-colors">Clubs</a></li>
-                        <li><a href="{{ route('competitions.index') }}" class="text-sm text-zinc-500 hover:text-green-600 dark:hover:text-green-400 transition-colors">Competitions</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-sm text-zinc-900 dark:text-white mb-4 uppercase tracking-wider">Community</h4>
-                    <ul class="space-y-3">
-                        @auth
-                        <li><a href="{{ route('communities.index') }}" class="text-sm text-zinc-500 hover:text-green-600 dark:hover:text-green-400 transition-colors">Communities</a></li>
-                        <li><a href="{{ route('polls.index') }}" class="text-sm text-zinc-500 hover:text-green-600 dark:hover:text-green-400 transition-colors">Polls</a></li>
-                        <li><a href="{{ route('leaderboard') }}" class="text-sm text-zinc-500 hover:text-green-600 dark:hover:text-green-400 transition-colors">Leaderboard</a></li>
-                        @else
-                        <li><a href="{{ route('login') }}" class="text-sm text-zinc-500 hover:text-green-600 dark:hover:text-green-400 transition-colors">Sign In to Explore</a></li>
-                        @endauth
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-sm text-zinc-900 dark:text-white mb-4 uppercase tracking-wider">Account</h4>
-                    <ul class="space-y-3">
-                        @auth
-                        <li><a href="{{ url('/dashboard') }}" class="text-sm text-zinc-500 hover:text-green-600 dark:hover:text-green-400 transition-colors">Dashboard</a></li>
-                        @else
-                        <li><a href="{{ route('login') }}" class="text-sm text-zinc-500 hover:text-green-600 dark:hover:text-green-400 transition-colors">Sign In</a></li>
-                        <li><a href="{{ route('register') }}" class="text-sm text-zinc-500 hover:text-green-600 dark:hover:text-green-400 transition-colors">Create Account</a></li>
-                        @endauth
-                    </ul>
-                </div>
-            </div>
-            <div class="border-t border-zinc-200 dark:border-zinc-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div class="text-sm text-zinc-500">&copy; {{ date('Y') }} Soccer Aficionado. All rights reserved.</div>
-                <div class="flex items-center gap-2 text-sm text-zinc-400">Made with <span class="text-red-500">❤️</span> for football fans. By <a href="https://royalsolutions.com.ng" class="underline">Royal Solutions Technologies</a></div>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        const nav = document.getElementById('main-nav');
-        window.addEventListener('scroll', () => {
-            nav.classList.toggle('py-2', window.scrollY > 50);
-        });
-    </script>
+        </footer>
+    </div>
 </body>
 </html>

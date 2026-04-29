@@ -22,11 +22,18 @@ use App\Http\Controllers\Admin\MatchManagementController;
 use App\Http\Controllers\Admin\ModerationController;
 use App\Http\Controllers\Admin\PollManagementController;
 use App\Http\Controllers\Admin\UserManagementController;
+use App\Services\FootballApiService;
 use Illuminate\Support\Facades\Route;
 
 // ── Public Routes ──────────────────────────────────────
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', function (FootballApiService $api) {
+    $liveMatches = collect($api->getLiveFixtures())
+        ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
+
+    $upcomingMatches = collect($api->getUpcomingFixtures(8))
+        ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
+
+    return view('welcome', compact('liveMatches', 'upcomingMatches'));
 })->name('home');
 
 // Public browsing

@@ -1,18 +1,18 @@
 <x-layouts::app :title="$poll->title">
     <div class="max-w-3xl mx-auto space-y-6 p-2 sm:p-4">
         {{-- Poll Card --}}
-        <div class="rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 shadow-sm overflow-hidden">
+        <div class="rounded-2xl border border-outline-variant/20 dark:border-outline-variant/30 bg-surface-container dark:bg-surface-container shadow-sm overflow-hidden glass-edge">
             {{-- Poll Header --}}
-            <div class="px-6 py-5 border-b border-zinc-100 dark:border-zinc-700/60 bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-900/10 dark:to-purple-900/10">
+            <div class="px-6 py-5 border-b border-outline-variant/20 dark:border-outline-variant/30 bg-gradient-to-r from-primary/20 to-primary/10 dark:from-primary/25 dark:to-primary/15">
                 <div class="flex items-start justify-between gap-4">
                     <div class="flex-1">
                         <div class="flex flex-wrap items-center gap-2 mb-1.5">
                             <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full
                                 @switch($poll->type)
-                                    @case('motm') text-amber-700 bg-amber-100 dark:bg-amber-900/30 dark:text-amber-300 @break
-                                    @case('prediction') text-blue-700 bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 @break
-                                    @case('gotw') text-rose-700 bg-rose-100 dark:bg-rose-900/30 dark:text-rose-300 @break
-                                    @default text-violet-700 bg-violet-100 dark:bg-violet-900/30 dark:text-violet-300
+                                    @case('motm') text-tertiary bg-tertiary/20 dark:bg-tertiary/25 dark:text-tertiary @break
+                                    @case('prediction') text-secondary bg-secondary/20 dark:bg-secondary/25 dark:text-secondary @break
+                                    @case('gotw') text-secondary bg-secondary/20 dark:bg-secondary/25 dark:text-secondary @break
+                                    @default text-primary bg-primary/20 dark:bg-primary/25 dark:text-primary
                                 @endswitch
                             ">
                                 @switch($poll->type)
@@ -23,16 +23,16 @@
                                 @endswitch
                             </span>
                         </div>
-                        <h1 class="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white">{{ $poll->title }}</h1>
+                        <h1 class="text-xl sm:text-2xl font-bold text-on-surface">{{ $poll->title }}</h1>
                         @if($poll->description)
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1.5 leading-relaxed">{{ $poll->description }}</p>
+                        <p class="text-sm text-on-surface-variant mt-1.5 leading-relaxed">{{ $poll->description }}</p>
                         @endif
                         <div class="flex items-center gap-3 mt-2">
-                            <a href="{{ route('profiles.show', $poll->user) }}" class="inline-flex items-center gap-1.5 text-sm text-zinc-500 dark:text-zinc-400 hover:text-green-600 transition">
+                            <a href="{{ route('profiles.show', $poll->user) }}" class="inline-flex items-center gap-1.5 text-sm text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition">
                                 @if($poll->user->avatar)
                                 <img src="{{ $poll->user->avatar_url }}" alt="{{ $poll->user->name }}" class="w-5 h-5 rounded-full object-cover">
                                 @else
-                                <div class="w-5 h-5 rounded-full bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center text-white text-[10px] font-bold">{{ strtoupper(substr($poll->user->name, 0, 1)) }}</div>
+                                <div class="w-5 h-5 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-on-primary text-[10px] font-bold">{{ strtoupper(substr($poll->user->name, 0, 1)) }}</div>
                                 @endif
                                 {{ $poll->user->name }}
                             </a>
@@ -40,12 +40,12 @@
                         </div>
                     </div>
                     @if($poll->isOpen())
-                    <span class="flex-shrink-0 inline-flex items-center gap-1.5 rounded-full bg-green-100 dark:bg-green-900/30 px-3 py-1.5 text-xs font-semibold text-green-700 dark:text-green-300">
-                        <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                    <span class="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-primary/20 dark:bg-primary/25 px-3 py-1.5 text-xs font-semibold text-primary dark:text-primary">
+                        <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
                         Open
                     </span>
                     @else
-                    <span class="flex-shrink-0 inline-flex items-center rounded-full bg-zinc-100 dark:bg-zinc-700 px-3 py-1.5 text-xs font-semibold text-zinc-500 dark:text-zinc-400">Closed</span>
+                    <span class="shrink-0 inline-flex items-center rounded-full bg-surface-container-high dark:bg-surface-container-high px-3 py-1.5 text-xs font-semibold text-on-surface-variant dark:text-on-surface-variant">Closed</span>
                     @endif
                 </div>
             </div>
@@ -53,11 +53,11 @@
             <div class="p-6">
                 {{-- Linked Match --}}
                 @if($poll->match)
-                <a href="{{ route('matches.show', $poll->match) }}" class="flex items-center gap-3 mb-6 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 p-4 hover:bg-zinc-100 dark:hover:bg-zinc-700/40 transition border border-zinc-200/60 dark:border-zinc-700/40">
-                    <span class="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-lg">🏟️</span>
+                <a href="{{ route('matches.show', $poll->match) }}" class="flex items-center gap-3 mb-6 rounded-xl bg-surface-container-low dark:bg-surface-container-low p-4 hover:bg-surface-container dark:hover:bg-surface-container transition border border-outline-variant/20 dark:border-outline-variant/30">
+                    <span class="w-10 h-10 rounded-lg bg-primary/20 dark:bg-primary/25 flex items-center justify-center text-lg">🏟️</span>
                     <div class="flex-1">
-                        <span class="text-sm font-semibold text-zinc-700 dark:text-zinc-300">{{ $poll->match->homeClub->name }} vs {{ $poll->match->awayClub->name }}</span>
-                        <div class="text-xs text-zinc-400 dark:text-zinc-500">{{ $poll->match->kick_off->format('M d, Y H:i') }}</div>
+                        <span class="text-sm font-semibold text-on-surface dark:text-on-surface">{{ $poll->match->homeClub->name }} vs {{ $poll->match->awayClub->name }}</span>
+                        <div class="text-xs text-on-surface-variant dark:text-on-surface-variant">{{ $poll->match->kick_off->format('M d, Y H:i') }}</div>
                     </div>
                     <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
@@ -78,19 +78,19 @@
                     @endphp
 
                     @if($hasVoted || !$poll->isOpen())
-                    <div class="relative rounded-xl overflow-hidden {{ $isWinning ? 'ring-2 ring-violet-400 dark:ring-violet-500' : '' }}">
-                        <div class="absolute inset-0 bg-zinc-100 dark:bg-zinc-700/50"></div>
-                        <div class="absolute inset-y-0 left-0 {{ $isWinning ? 'bg-gradient-to-r from-violet-300 to-purple-300 dark:from-violet-700/60 dark:to-purple-700/60' : 'bg-gradient-to-r from-zinc-200 to-zinc-200 dark:from-zinc-600/50 dark:to-zinc-600/50' }} transition-all duration-1000 ease-out" style="width: {{ $pct }}%"></div>
+                    <div class="relative rounded-xl overflow-hidden {{ $isWinning ? 'ring-2 ring-primary dark:ring-primary' : '' }}">
+                        <div class="absolute inset-0 bg-surface-container-high dark:bg-surface-container-high"></div>
+                        <div class="absolute inset-y-0 left-0 {{ $isWinning ? 'bg-gradient-to-r from-primary/60 to-primary/40 dark:from-primary/50 dark:to-primary/30' : 'bg-gradient-to-r from-outline-variant/40 to-outline-variant/30 dark:from-outline-variant/30 dark:to-outline-variant/20' }} transition-all duration-1000 ease-out" style="width: {{ $pct }}%"></div>
                         <div class="relative flex items-center justify-between px-5 py-4">
                             <div class="flex items-center gap-2">
                                 @if($isWinning)
                                 <span class="text-sm">👑</span>
                                 @endif
-                                <span class="text-sm font-semibold text-zinc-900 dark:text-white">{{ $option->label }}</span>
+                                <span class="text-sm font-semibold text-on-surface dark:text-on-surface">{{ $option->label }}</span>
                             </div>
                             <div class="flex items-center gap-3">
-                                <span class="text-xs text-zinc-500 dark:text-zinc-400">{{ $option->votes_count }} votes</span>
-                                <span class="text-sm font-black {{ $isWinning ? 'text-violet-600 dark:text-violet-400' : 'text-zinc-900 dark:text-white' }} tabular-nums">{{ $pct }}%</span>
+                                <span class="text-xs text-on-surface-variant dark:text-on-surface-variant">{{ $option->votes_count }} votes</span>
+                                <span class="text-sm font-black {{ $isWinning ? 'text-primary dark:text-primary' : 'text-on-surface dark:text-on-surface' }} tabular-nums">{{ $pct }}%</span>
                             </div>
                         </div>
                     </div>
@@ -98,7 +98,7 @@
                     <form action="{{ route('polls.vote', $poll) }}" method="POST">
                         @csrf
                         <input type="hidden" name="poll_option_id" value="{{ $option->id }}">
-                        <button type="submit" class="w-full text-left rounded-xl border-2 border-zinc-200 dark:border-zinc-600 px-5 py-4 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:border-violet-500 hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-all hover:scale-[1.01] hover:shadow-md">
+                        <button type="submit" class="w-full text-left rounded-xl border-2 border-outline-variant/20 dark:border-outline-variant/30 px-5 py-4 text-sm font-semibold text-on-surface dark:text-on-surface hover:border-primary hover:bg-primary/10 dark:hover:bg-primary/15 transition-all hover:scale-[1.01] hover:shadow-md">
                             {{ $option->label }}
                         </button>
                     </form>
@@ -107,13 +107,13 @@
                 </div>
 
                 {{-- Footer --}}
-                <div class="flex items-center justify-between mt-6 pt-5 border-t border-zinc-100 dark:border-zinc-700/60">
+                <div class="flex items-center justify-between mt-6 pt-5 border-t border-outline-variant/20 dark:border-outline-variant/30">
                     <div class="flex items-center gap-2">
-                        <span class="w-7 h-7 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 text-xs">📊</span>
-                        <span class="text-sm font-medium text-zinc-600 dark:text-zinc-300">{{ $totalVotes }} total votes</span>
+                        <span class="w-7 h-7 rounded-lg bg-primary/20 dark:bg-primary/25 flex items-center justify-center text-primary text-xs">📊</span>
+                        <span class="text-sm font-medium text-on-surface dark:text-on-surface">{{ $totalVotes }} total votes</span>
                     </div>
                     @if($poll->closes_at)
-                    <span class="text-sm text-zinc-500 dark:text-zinc-400">{{ $poll->isOpen() ? 'Closes' : 'Closed' }} {{ $poll->closes_at->diffForHumans() }}</span>
+                    <span class="text-sm text-on-surface-variant dark:text-on-surface-variant">{{ $poll->isOpen() ? 'Closes' : 'Closed' }} {{ $poll->closes_at->diffForHumans() }}</span>
                     @endif
                 </div>
             </div>
@@ -121,7 +121,7 @@
 
         {{-- Back link --}}
         <div class="text-center pb-4">
-            <a href="{{ route('polls.index') }}" class="inline-flex items-center gap-2 text-sm text-green-600 hover:text-green-700 dark:text-green-400 font-medium transition hover:-translate-x-0.5">
+            <a href="{{ route('polls.index') }}" class="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 dark:text-primary font-medium transition hover:-translate-x-0.5">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                 Back to all polls
             </a>
