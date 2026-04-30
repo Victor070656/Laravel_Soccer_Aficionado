@@ -59,7 +59,20 @@ class MatchController extends Controller
 
         $statistics = $this->api->getFixtureStatistics($id);
 
-        return view('matches.show', compact('match', 'events', 'lineups', 'statistics'));
+        // Fetch H2H fixtures
+        $h2h = collect($this->api->getH2HFixtures($match->home_team['id'], $match->away_team['id']))
+            ->map(fn(array $f) => (object) FootballApiService::normaliseFixture($f));
+
+        // Fetch standings for the league
+        $rawStandings = $this->api->getStandings($match->league['id'], $match->season);
+        $standings = collect();
+        if (!empty($rawStandings)) {
+            $firstGroup = $rawStandings[0] ?? [];
+            $standings = collect($firstGroup)
+                ->map(fn(array $row) => (object) FootballApiService::normaliseStandingRow($row));
+        }
+
+        return view('matches.show', compact('match', 'events', 'lineups', 'statistics', 'h2h', 'standings'));
     }
 
     /**

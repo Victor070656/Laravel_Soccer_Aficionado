@@ -183,6 +183,65 @@
             </div>
         </div>
 
+        {{-- Highlights & Summary --}}
+        @if($match->video || $match->description)
+        <div class="grid gap-6 lg:grid-cols-2">
+            {{-- Highlights --}}
+            @if($match->video)
+            <div class="rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 shadow-sm overflow-hidden">
+                <div class="px-5 py-4 border-b border-zinc-100 dark:border-zinc-700/60 bg-gradient-to-r from-red-50 to-rose-50 dark:from-red-900/10 dark:to-rose-900/10">
+                    <h3 class="font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 text-sm">📺</span>
+                        Match Highlights
+                    </h3>
+                </div>
+                <div class="p-5">
+                    @if(str_contains($match->video, 'youtube.com') || str_contains($match->video, 'youtu.be'))
+                        @php
+                            $videoId = null;
+                            if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i', $match->video, $matches)) {
+                                $videoId = $matches[1];
+                            }
+                        @endphp
+                        @if($videoId)
+                        <div class="aspect-video rounded-xl overflow-hidden shadow-lg">
+                            <iframe class="w-full h-full" src="https://www.youtube.com/embed/{{ $videoId }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                        @else
+                        <a href="{{ $match->video }}" target="_blank" class="flex flex-col items-center justify-center aspect-video rounded-xl bg-zinc-100 dark:bg-zinc-700/30 border border-zinc-200 dark:border-zinc-700 transition hover:bg-zinc-200 dark:hover:bg-zinc-700 group">
+                            <span class="text-4xl group-hover:scale-110 transition duration-300">▶️</span>
+                            <span class="mt-2 text-sm font-medium text-zinc-500">Watch on YouTube</span>
+                        </a>
+                        @endif
+                    @else
+                    <a href="{{ $match->video }}" target="_blank" class="flex flex-col items-center justify-center aspect-video rounded-xl bg-zinc-100 dark:bg-zinc-700/30 border border-zinc-200 dark:border-zinc-700 transition hover:bg-zinc-200 dark:hover:bg-zinc-700 group">
+                        <span class="text-4xl group-hover:scale-110 transition duration-300">🎬</span>
+                        <span class="mt-2 text-sm font-medium text-zinc-500">Watch Highlights</span>
+                    </a>
+                    @endif
+                </div>
+            </div>
+            @endif
+
+            {{-- Summary --}}
+            @if($match->description)
+            <div class="rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 shadow-sm overflow-hidden">
+                <div class="px-5 py-4 border-b border-zinc-100 dark:border-zinc-700/60 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/10 dark:to-green-900/10">
+                    <h3 class="font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 text-sm">📝</span>
+                        Match Summary
+                    </h3>
+                </div>
+                <div class="p-5">
+                    <div class="prose dark:prose-invert max-w-none text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                        {!! nl2br(e($match->description)) !!}
+                    </div>
+                </div>
+            </div>
+            @endif
+        </div>
+        @endif
+
         {{-- Lineups --}}
         @if($lineups->isNotEmpty())
         <div class="grid gap-6 lg:grid-cols-2">
@@ -231,36 +290,266 @@
         @endif
 
         {{-- Additional Info --}}
-        @if($match->referee || $match->venue)
+        <div class="grid gap-6 lg:grid-cols-3">
+            {{-- Match Info --}}
+            <div class="lg:col-span-1 rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 shadow-sm overflow-hidden flex flex-col">
+                <div class="px-5 py-4 border-b border-zinc-100 dark:border-zinc-700/60 bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-900/10 dark:to-purple-900/10">
+                    <h3 class="font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 text-sm">ℹ️</span>
+                        Match Info
+                    </h3>
+                </div>
+                <div class="p-5 space-y-4 flex-1">
+                    @if($match->venue)
+                    <div class="flex items-center gap-3 rounded-xl bg-zinc-50 dark:bg-zinc-700/30 p-3 border border-zinc-100 dark:border-zinc-700/30">
+                        <span class="text-xl">🏟</span>
+                        <div class="min-w-0">
+                            <div class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Venue</div>
+                            <div class="text-sm font-semibold text-zinc-800 dark:text-zinc-200 truncate">{{ $match->venue }}</div>
+                        </div>
+                    </div>
+                    @endif
+                    
+                    @if($match->referee)
+                    <div class="flex items-center gap-3 rounded-xl bg-zinc-50 dark:bg-zinc-700/30 p-3 border border-zinc-100 dark:border-zinc-700/30">
+                        <span class="text-xl">⚖️</span>
+                        <div class="min-w-0">
+                            <div class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Referee</div>
+                            <div class="text-sm font-semibold text-zinc-800 dark:text-zinc-200 truncate">{{ $match->referee }}</div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if($match->spectators)
+                    <div class="flex items-center gap-3 rounded-xl bg-zinc-50 dark:bg-zinc-700/30 p-3 border border-zinc-100 dark:border-zinc-700/30">
+                        <span class="text-xl">👥</span>
+                        <div class="min-w-0">
+                            <div class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Attendance</div>
+                            <div class="text-sm font-semibold text-zinc-800 dark:text-zinc-200 truncate">{{ number_format($match->spectators) }}</div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if($match->season)
+                    <div class="flex items-center gap-3 rounded-xl bg-zinc-50 dark:bg-zinc-700/30 p-3 border border-zinc-100 dark:border-zinc-700/30">
+                        <span class="text-xl">📅</span>
+                        <div class="min-w-0">
+                            <div class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Season</div>
+                            <div class="text-sm font-semibold text-zinc-800 dark:text-zinc-200 truncate">{{ $match->season }}</div>
+                        </div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+
+            {{-- Head to Head --}}
+            <div class="lg:col-span-2 rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 shadow-sm overflow-hidden">
+                <div class="px-5 py-4 border-b border-zinc-100 dark:border-zinc-700/60 bg-gradient-to-r from-zinc-50 to-neutral-50 dark:from-zinc-900/10 dark:to-neutral-900/10 flex items-center justify-between">
+                    <h3 class="font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-900/30 flex items-center justify-center text-zinc-600 text-sm">🤜</span>
+                        Head to Head
+                    </h3>
+                    @if($h2h->isNotEmpty())
+                    @php
+                        $homeWins = $h2h->filter(fn($f) => ($f->home_team['id'] == $match->home_team['id'] && $f->home_team['winner']) || ($f->away_team['id'] == $match->home_team['id'] && $f->away_team['winner']))->count();
+                        $awayWins = $h2h->filter(fn($f) => ($f->home_team['id'] == $match->away_team['id'] && $f->home_team['winner']) || ($f->away_team['id'] == $match->away_team['id'] && $f->away_team['winner']))->count();
+                        $draws = $h2h->count() - $homeWins - $awayWins;
+                    @endphp
+                    <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider">
+                        <span class="text-green-600">{{ $homeWins }}W</span>
+                        <span class="text-zinc-400">{{ $draws }}D</span>
+                        <span class="text-blue-600">{{ $awayWins }}W</span>
+                    </div>
+                    @endif
+                </div>
+                <div class="p-5">
+                    @forelse($h2h as $fixture)
+                    <a href="{{ route('matches.show', $fixture->id) }}" class="flex items-center justify-between py-3 border-b border-zinc-100 dark:border-zinc-700/40 last:border-0 group hover:bg-zinc-50/50 dark:hover:bg-zinc-700/20 -mx-2 px-3 rounded-xl transition">
+                        <div class="flex items-center gap-4 flex-1">
+                            <div class="w-24 text-xs text-zinc-400 font-medium">{{ \Carbon\Carbon::parse($fixture->date)->format('M d, Y') }}</div>
+                            <div class="flex-1 flex items-center justify-center gap-3">
+                                <span class="flex-1 text-right text-sm font-semibold @if($fixture->home_team['winner']) text-green-600 dark:text-green-400 @endif">{{ $fixture->home_team['name'] }}</span>
+                                <span class="px-2 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-700 text-xs font-bold tabular-nums min-w-[3.5rem] text-center">{{ $fixture->home_score }} - {{ $fixture->away_score }}</span>
+                                <span class="flex-1 text-left text-sm font-semibold @if($fixture->away_team['winner']) text-green-600 dark:text-green-400 @endif">{{ $fixture->away_team['name'] }}</span>
+                            </div>
+                        </div>
+                        <span class="material-symbols-outlined text-zinc-300 group-hover:text-zinc-500 transition ml-4">chevron_right</span>
+                    </a>
+                    @empty
+                    <div class="rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-700 p-8 text-center">
+                        <p class="text-sm text-zinc-400">No previous matches found.</p>
+                    </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+
+        {{-- League Standings Snippet --}}
+        @if($standings->isNotEmpty())
         <div class="rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 shadow-sm overflow-hidden">
-            <div class="px-5 py-4 border-b border-zinc-100 dark:border-zinc-700/60 bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-900/10 dark:to-purple-900/10">
+            <div class="px-5 py-4 border-b border-zinc-100 dark:border-zinc-700/60 bg-gradient-to-r from-amber-50 to-amber-100/50 dark:from-amber-900/10 dark:to-amber-800/10">
                 <h3 class="font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-                    <span class="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 text-sm">ℹ️</span>
-                    Match Info
+                    <span class="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 text-sm">🏆</span>
+                    League Standings
                 </h3>
             </div>
-            <div class="p-5 grid gap-4 sm:grid-cols-2">
-                @if($match->referee)
-                <div class="flex items-center gap-3 rounded-xl bg-zinc-50 dark:bg-zinc-700/30 p-3">
-                    <span class="w-8 h-8 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center text-sm">🟨</span>
-                    <div>
-                        <div class="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Referee</div>
-                        <div class="text-sm font-medium text-zinc-800 dark:text-zinc-200">{{ $match->referee }}</div>
-                    </div>
-                </div>
-                @endif
-                @if($match->venue)
-                <div class="flex items-center gap-3 rounded-xl bg-zinc-50 dark:bg-zinc-700/30 p-3">
-                    <span class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-sm">🏟</span>
-                    <div>
-                        <div class="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Venue</div>
-                        <div class="text-sm font-medium text-zinc-800 dark:text-zinc-200">{{ $match->venue }}</div>
-                    </div>
-                </div>
-                @endif
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left border-collapse">
+                    <thead>
+                        <tr class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-100 dark:border-zinc-700/40">
+                            <th class="px-5 py-3 w-12 text-center">Pos</th>
+                            <th class="px-2 py-3">Team</th>
+                            <th class="px-2 py-3 text-center w-10">P</th>
+                            <th class="px-2 py-3 text-center w-10">W</th>
+                            <th class="px-2 py-3 text-center w-10">D</th>
+                            <th class="px-2 py-3 text-center w-10">L</th>
+                            <th class="px-2 py-3 text-center w-14">GD</th>
+                            <th class="px-5 py-3 text-center w-16">Pts</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-zinc-50 dark:divide-zinc-700/30">
+                        @foreach($standings as $row)
+                        @php
+                            $isMatchTeam = $row->team['id'] == $match->home_team['id'] || $row->team['id'] == $match->away_team['id'];
+                        @endphp
+                        <tr class="@if($isMatchTeam) bg-green-50/50 dark:bg-green-900/10 @endif group transition-colors hover:bg-zinc-50/50 dark:hover:bg-zinc-700/20">
+                            <td class="px-5 py-3 text-center font-mono text-xs @if($row->rank <= 4) text-blue-600 dark:text-blue-400 font-bold @elseif($row->rank >= 18) text-red-500 @else text-zinc-500 @endif">{{ $row->rank }}</td>
+                            <td class="px-2 py-3">
+                                <div class="flex items-center gap-3">
+                                    @if($row->team['logo'])
+                                    <img src="{{ $row->team['logo'] }}" alt="" class="h-5 w-5 object-contain">
+                                    @endif
+                                    <span class="font-medium @if($isMatchTeam) text-green-700 dark:text-green-400 font-bold @else text-zinc-700 dark:text-zinc-300 @endif">{{ $row->team['name'] }}</span>
+                                </div>
+                            </td>
+                            <td class="px-2 py-3 text-center text-zinc-500 tabular-nums">{{ $row->played }}</td>
+                            <td class="px-2 py-3 text-center text-zinc-500 tabular-nums">{{ $row->won }}</td>
+                            <td class="px-2 py-3 text-center text-zinc-500 tabular-nums">{{ $row->drawn }}</td>
+                            <td class="px-2 py-3 text-center text-zinc-500 tabular-nums">{{ $row->lost }}</td>
+                            <td class="px-2 py-3 text-center text-zinc-500 tabular-nums @if($row->goals_diff > 0) text-green-600 @elseif($row->goals_diff < 0) text-red-600 @endif">
+                                {{ $row->goals_diff > 0 ? '+' : '' }}{{ $row->goals_diff }}
+                            </td>
+                            <td class="px-5 py-3 text-center font-bold text-zinc-900 dark:text-white tabular-nums">{{ $row->points }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <div class="px-5 py-3 bg-zinc-50/50 dark:bg-zinc-900/20 border-t border-zinc-100 dark:border-zinc-700/40">
+                <a href="{{ route('competitions.show', $match->league['id']) }}" class="text-xs font-bold text-zinc-400 hover:text-green-600 dark:hover:text-green-400 flex items-center gap-1 uppercase tracking-wider transition">
+                    View Full Standings
+                    <span class="material-symbols-outlined text-xs">arrow_forward</span>
+                </a>
             </div>
         </div>
         @endif
+
+        {{-- Media Gallery --}}
+        @php
+            $gallery = array_filter([
+                ['type' => 'Poster', 'url' => $match->poster],
+                ['type' => 'Fanart', 'url' => $match->fanart],
+                ['type' => 'Banner', 'url' => $match->banner],
+                ['type' => 'Thumbnail', 'url' => $match->thumb],
+                ['type' => 'Square', 'url' => $match->square],
+            ], fn($item) => !empty($item['url']));
+        @endphp
+
+        @if(!empty($gallery))
+        <div class="rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 shadow-sm overflow-hidden">
+            <div class="px-5 py-4 border-b border-zinc-100 dark:border-zinc-700/60 bg-gradient-to-r from-sky-50 to-blue-50 dark:from-sky-900/10 dark:to-blue-900/10">
+                <h3 class="font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-sky-100 dark:bg-sky-900/30 flex items-center justify-center text-sky-600 text-sm">🖼️</span>
+                    Media Gallery
+                </h3>
+            </div>
+            <div class="p-5">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                    @foreach($gallery as $item)
+                    <a href="{{ $item['url'] }}" target="_blank" class="group relative aspect-square rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 shadow-sm transition hover:shadow-md hover:scale-[1.02] duration-300">
+                        <img loading="lazy" src="{{ $item['url'] }}" alt="{{ $item['type'] }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                        <div class="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
+                            <span class="text-[10px] font-bold text-white uppercase tracking-widest">{{ $item['type'] }}</span>
+                        </div>
+                    </a>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+        @endif
+
+        {{-- Prediction & Sharing --}}
+        <div class="grid gap-6 lg:grid-cols-3">
+            {{-- Match Prediction --}}
+            <div class="lg:col-span-2 rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 shadow-sm overflow-hidden">
+                <div class="px-5 py-4 border-b border-zinc-100 dark:border-zinc-700/60 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/10 dark:to-emerald-900/10 flex items-center justify-between">
+                    <h3 class="font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 text-sm">🎯</span>
+                        Match Prediction
+                    </h3>
+                    <span class="text-[10px] font-bold text-green-600 dark:text-green-400 uppercase tracking-widest">Community Vote</span>
+                </div>
+                <div class="p-6">
+                    <div class="mb-6 text-center">
+                        <p class="text-sm text-zinc-500 dark:text-zinc-400">Who do you think will win this match? Cast your vote and see what other fans think.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-4">
+                        <button class="flex flex-col items-center gap-3 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-700/30 border-2 border-transparent hover:border-green-500/50 hover:bg-green-50/50 dark:hover:bg-green-900/10 transition-all group">
+                            <span class="text-xs font-bold uppercase tracking-wider text-zinc-400 group-hover:text-green-600">{{ $match->home_team['name'] }}</span>
+                            <span class="text-2xl">🏠</span>
+                            <div class="w-full h-1.5 bg-zinc-200 dark:bg-zinc-600 rounded-full overflow-hidden">
+                                <div class="w-[45%] h-full bg-green-500"></div>
+                            </div>
+                            <span class="text-xs font-bold text-zinc-500">45%</span>
+                        </button>
+                        
+                        <button class="flex flex-col items-center gap-3 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-700/30 border-2 border-transparent hover:border-zinc-400/50 hover:bg-zinc-100 dark:hover:bg-zinc-700/50 transition-all group">
+                            <span class="text-xs font-bold uppercase tracking-wider text-zinc-400 group-hover:text-zinc-600">Draw</span>
+                            <span class="text-2xl">🤝</span>
+                            <div class="w-full h-1.5 bg-zinc-200 dark:bg-zinc-600 rounded-full overflow-hidden">
+                                <div class="w-[20%] h-full bg-zinc-400"></div>
+                            </div>
+                            <span class="text-xs font-bold text-zinc-500">20%</span>
+                        </button>
+
+                        <button class="flex flex-col items-center gap-3 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-700/30 border-2 border-transparent hover:border-blue-500/50 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all group">
+                            <span class="text-xs font-bold uppercase tracking-wider text-zinc-400 group-hover:text-blue-600">{{ $match->away_team['name'] }}</span>
+                            <span class="text-2xl">🚀</span>
+                            <div class="w-full h-1.5 bg-zinc-200 dark:bg-zinc-600 rounded-full overflow-hidden">
+                                <div class="w-[35%] h-full bg-blue-500"></div>
+                            </div>
+                            <span class="text-xs font-bold text-zinc-500">35%</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Social Share --}}
+            <div class="lg:col-span-1 rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 shadow-sm overflow-hidden flex flex-col">
+                <div class="px-5 py-4 border-b border-zinc-100 dark:border-zinc-700/60 bg-gradient-to-r from-blue-50 to-sky-50 dark:from-blue-900/10 dark:to-sky-900/10">
+                    <h3 class="font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 text-sm">📢</span>
+                        Share Match
+                    </h3>
+                </div>
+                <div class="p-6 flex-1 flex flex-col justify-center gap-4">
+                    <button onclick="window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent('Watching {{ $match->home_team['name'] }} vs {{ $match->away_team['name'] }} on Soccer Aficionado! #Football #SoccerAficionado'), '_blank')" class="flex items-center justify-center gap-3 w-full py-3 rounded-xl bg-zinc-900 dark:bg-black text-white font-bold text-sm transition hover:scale-[1.02] active:scale-[0.98]">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        Share on X
+                    </button>
+                    
+                    <button onclick="navigator.clipboard.writeText(window.location.href); alert('Match link copied to clipboard!');" class="flex items-center justify-center gap-3 w-full py-3 rounded-xl bg-zinc-100 dark:bg-zinc-700 text-zinc-900 dark:text-white font-bold text-sm transition hover:scale-[1.02] active:scale-[0.98]">
+                        <span class="material-symbols-outlined text-lg">link</span>
+                        Copy Match Link
+                    </button>
+
+                    <div class="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-700/60 text-center">
+                        <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Powered by TheSportsDB</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         {{-- Back link --}}
         <div class="text-center pb-4">

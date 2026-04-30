@@ -1,6 +1,6 @@
 <x-layouts::auth>
-    <div class="flex flex-col gap-6">
-        <x-auth-header :title="__('Create an account')" :description="__('Join the soccer community today')" />
+    <div class="flex flex-col gap-6 animate-fade-in-up">
+        <x-auth-header :title="__('Create Account')" :description="__('Join the global fan community today.')" />
 
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />
@@ -10,13 +10,15 @@
             <!-- Name -->
             <flux:input
                 name="name"
-                :label="__('Name')"
+                :label="__('Full Name')"
                 :value="old('name')"
                 type="text"
                 required
                 autofocus
                 autocomplete="name"
-                :placeholder="__('Full name')"
+                :placeholder="__('Your Name')"
+                icon="user"
+                class="uppercase tracking-widest !text-[10px] font-bold text-on-surface-variant"
             />
 
             <!-- Email Address -->
@@ -27,41 +29,56 @@
                 type="email"
                 required
                 autocomplete="email"
-                placeholder="email@example.com"
+                placeholder="name@stadium.com"
+                icon="envelope"
+                class="uppercase tracking-widest !text-[10px] font-bold text-on-surface-variant"
             />
 
-            <!-- Password -->
-            <flux:input
-                name="password"
-                :label="__('Password')"
-                type="password"
-                required
-                autocomplete="new-password"
-                :placeholder="__('Password')"
-                viewable
-            />
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Password -->
+                <flux:input
+                    name="password"
+                    :label="__('Password')"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                    :placeholder="__('••••••••')"
+                    icon="lock-closed"
+                    viewable
+                    class="uppercase tracking-widest !text-[10px] font-bold text-on-surface-variant"
+                />
 
-            <!-- Confirm Password -->
-            <flux:input
-                name="password_confirmation"
-                :label="__('Confirm password')"
-                type="password"
-                required
-                autocomplete="new-password"
-                :placeholder="__('Confirm password')"
-                viewable
-            />
+                <!-- Confirm Password -->
+                <flux:input
+                    name="password_confirmation"
+                    :label="__('Confirm')"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                    :placeholder="__('••••••••')"
+                    icon="shield-check"
+                    viewable
+                    class="uppercase tracking-widest !text-[10px] font-bold text-on-surface-variant"
+                />
+            </div>
 
-            <div class="flex items-center justify-end">
-                <flux:button type="submit" variant="primary" class="w-full !bg-gradient-to-r !from-primary !to-primary/80 hover:!from-primary/90 hover:!to-primary/70 !shadow-lg !shadow-primary/25" data-test="register-user-button">
-                    {{ __('Create account') }}
+            <div class="flex items-start gap-2 py-2">
+                <flux:checkbox id="terms" name="terms" required class="mt-1" />
+                <label for="terms" class="text-xs text-zinc-400 leading-relaxed">
+                    I agree to the <a class="text-white hover:underline" href="#">Terms of Service</a> and <a class="text-white hover:underline" href="#">Privacy Policy</a>.
+                </label>
+            </div>
+
+            <div class="flex items-center justify-end mt-4">
+                <flux:button type="submit" variant="primary" class="w-full h-14 !bg-[#bfff00] !text-[#0a2e1c] !font-display !text-lg !rounded-xl !shadow-[0_0_20px_rgba(191,255,0,0.2)] hover:shadow-[0_0_30px_rgba(191,255,0,0.4)] active:scale-[0.98] transition-all" data-test="register-user-button">
+                    {{ __('Create Account') }}
                 </flux:button>
             </div>
         </form>
 
-        <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-on-surface-variant">
+        <div class="text-center font-medium text-sm text-on-surface-variant pt-4">
             <span>{{ __('Already have an account?') }}</span>
-            <flux:link :href="route('login')" wire:navigate class="!text-primary hover:!text-primary/80">{{ __('Log in') }}</flux:link>
+            <flux:link :href="route('login')" wire:navigate class="!text-[#bfff00] hover:underline font-bold ml-1 uppercase tracking-wider">{{ __('Log in') }}</flux:link>
         </div>
     </div>
 </x-layouts::auth>

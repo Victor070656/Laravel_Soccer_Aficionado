@@ -45,15 +45,12 @@ class CompetitionController extends Controller
 
         $isCurrentSeason = $selectedSeason === $currentSeason;
 
-        // Build list of available seasons (current + 4 previous)
-        $currentYear = (int) explode('-', $currentSeason)[0];
-        $availableSeasons = [];
-        for ($y = $currentYear; $y >= $currentYear - 4; $y--) {
-            $season = $y . '-' . ($y + 1);
-            $availableSeasons[] = [
-                'value' => $season,
-                'label' => $y . '/' . substr((string) ($y + 1), -2),
-            ];
+        $availableSeasons = $this->api->getLeagueSeasons($id);
+        if (empty($availableSeasons)) {
+            $availableSeasons = [[
+                'value' => $currentSeason,
+                'label' => $this->api->seasonDisplay(),
+            ]];
         }
 
         // Standings (may be grouped) — use selected season

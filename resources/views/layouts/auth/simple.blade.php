@@ -2,44 +2,79 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
     <head>
         @include('partials.head')
+        <style>
+            .glass-surface {
+                background: rgba(26, 26, 26, 0.8);
+                backdrop-filter: blur(20px);
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                border-left: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            .stadium-overlay {
+                background: linear-gradient(to right, rgba(10, 46, 28, 0.9), rgba(5, 22, 14, 0.4));
+            }
+            .pitch-mesh {
+                background-image: radial-gradient(#bfff00 0.5px, transparent 0.5px);
+                background-size: 24px 24px;
+                opacity: 0.03;
+            }
+        </style>
     </head>
-    <body class="min-h-screen bg-white antialiased dark:bg-linear-to-b dark:from-neutral-950 dark:to-neutral-900 overflow-x-hidden">
-        <div class="flex min-h-svh">
-            {{-- Left decorative panel (hidden on mobile) --}}
-            <div class="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-green-600 via-emerald-600 to-teal-700 items-center justify-center p-12">
-                <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1508098682722-e99c643e7f0b?w=600&q=30'); background-size: cover; background-position: center;"></div>
-                <div class="absolute inset-0 bg-gradient-to-br from-green-600/90 via-emerald-600/90 to-teal-700/90"></div>
-                <div class="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
-                <div class="absolute bottom-0 left-0 w-72 h-72 bg-white/5 rounded-full translate-y-1/3 -translate-x-1/4"></div>
-                <div class="relative z-10 text-center">
-                    <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white/15 backdrop-blur-sm mb-8 text-5xl shadow-xl">⚽</div>
-                    <h2 class="text-4xl font-bold text-white mb-4">Soccer Aficionado</h2>
-                    <p class="text-green-100 text-lg max-w-md leading-relaxed">Join the ultimate football fan community. Track matches, earn badges, and connect with fans worldwide.</p>
-                    <div class="mt-10 flex items-center justify-center gap-6 text-green-100/80">
-                        <div class="text-center"><div class="text-2xl font-bold text-white">{{ number_format(\App\Models\User::count()) }}+</div><div class="text-xs mt-1">Fans</div></div>
-                        <div class="w-px h-10 bg-white/20"></div>
-                        <div class="text-center"><div class="text-2xl font-bold text-white">{{ \App\Models\Club::count() }}+</div><div class="text-xs mt-1">Clubs</div></div>
-                        <div class="w-px h-10 bg-white/20"></div>
-                        <div class="text-center"><div class="text-2xl font-bold text-white">{{ \App\Models\Community::count() }}+</div><div class="text-xs mt-1">Communities</div></div>
-                    </div>
+    <body class="bg-background text-on-background font-sans overflow-x-hidden">
+        <main class="flex min-h-screen w-full">
+            {{-- Left Panel: Hero Content --}}
+            <section class="relative hidden lg:flex lg:w-7/12 xl:w-8/12 flex-col justify-center items-start px-12 overflow-hidden">
+                <div class="absolute inset-0 z-0">
+                    <img alt="Stadium under lights" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFURR004hFfMbVxGaCy9t4XsY8opGK0-gBBOVsH9EKiIwf9MuqExHrX9nw2_CSz3JPGP5ofQOOGM4b5LuFyBYht6o4HDVb0SIt2mm2l4LSiSw7lnso2iAcM2Y0bhbE3xT3wxMaBM_XDIDs3yj4GyXCbTZcM2Pyd5nZCQnRi80Wxvh85uL-BMN5zAot2cALcuUZNZ_gTghhPCi3pSc52cV90wpO4IZs4ckWKcbLtOBZ3XFxDCrVDCapXzLsBPSBItzDOGq5vcAFNrk"/>
+                    <div class="absolute inset-0 stadium-overlay z-10"></div>
+                    <div class="absolute inset-0 pitch-mesh z-20"></div>
                 </div>
-            </div>
 
-            {{-- Right form panel --}}
-            <div class="flex-1 flex flex-col items-center justify-center gap-6 p-6 md:p-10 bg-white dark:bg-zinc-950">
-                <div class="flex w-full max-w-sm flex-col gap-2">
-                    <a href="{{ route('home') }}" class="flex flex-col items-center gap-3 font-medium mb-2" wire:navigate>
-                        <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 shadow-xl shadow-green-500/25 text-2xl">
-                            ⚽
+                <div class="relative z-30 max-w-2xl animate-fade-in-left">
+                    <header class="mb-8">
+                        <h1 class="text-5xl font-extrabold text-[#bfff00] uppercase tracking-tighter mb-2 font-display">
+                            Soccer Aficionado
+                        </h1>
+                        <div class="h-1 w-24 bg-secondary mb-6"></div>
+                        <p class="text-4xl font-bold text-white font-display">
+                            Join the Terraces.
+                        </p>
+                    </header>
+                    <p class="text-lg text-on-surface-variant max-w-lg mb-10 leading-relaxed">
+                        Experience the beautiful game with precision data, real-time scoreboards, and the raw energy of the global fan community. Your stadium seat awaits.
+                    </p>
+
+                    <div class="flex gap-6 animate-fade-in-up">
+                        <div class="glass-surface p-6 rounded-xl border border-white/5">
+                            <span class="block text-2xl font-bold text-[#bfff00] font-display">24/7</span>
+                            <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Live Coverage</span>
                         </div>
-                        <span class="text-lg font-bold text-zinc-900 dark:text-white lg:hidden">Soccer Aficionado</span>
-                    </a>
-                    <div class="flex flex-col gap-6">
-                        {{ $slot }}
+                        <div class="glass-surface p-6 rounded-xl border border-white/5">
+                            <span class="block text-2xl font-bold text-[#bfff00] font-display">500+</span>
+                            <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Global Leagues</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </section>
+
+            {{-- Right Panel: Form Panel --}}
+            <section class="w-full lg:w-5/12 xl:w-4/12 bg-surface-container-lowest flex flex-col justify-center items-center px-8 py-12 relative overflow-y-auto">
+                <div class="lg:hidden absolute top-8 left-8">
+                    <span class="text-2xl font-bold text-[#bfff00] uppercase tracking-tighter font-display">SA</span>
+                </div>
+
+                <div class="w-full max-w-md space-y-8">
+                    {{ $slot }}
+                </div>
+
+                <footer class="absolute bottom-0 w-full py-4 px-8 flex justify-between items-center bg-[#05160e]">
+                    <span class="text-[10px] font-display text-zinc-500 uppercase tracking-widest">© {{ date('Y') }} Soccer Aficionado</span>
+                    <div class="flex gap-4">
+                        <a class="text-[10px] font-display text-zinc-500 uppercase tracking-widest hover:text-[#bfff00] transition-colors" href="#">Terms</a>
+                        <a class="text-[10px] font-display text-zinc-500 uppercase tracking-widest hover:text-[#bfff00] transition-colors" href="#">Privacy</a>
+                    </div>
+                </footer>
+            </section>
+        </main>
         @fluxScripts
     </body>
 </html>

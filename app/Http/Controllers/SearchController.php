@@ -74,14 +74,19 @@ class SearchController extends Controller
         // Search matches via API – search all fixtures and filter by team name
         $matches = collect();
         if ($type === 'all' || $type === 'matches') {
-            $allFixtures = collect($this->api->getAllFixtures())
+            $result = $this->api->getAllFixtures();
+            $allFixtures = collect($result['data'] ?? [])
                 ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
 
             $matches = $allFixtures->filter(function ($fixture) use ($query) {
                 $q = mb_strtolower($query);
-                return str_contains(mb_strtolower($fixture->home_team ?? ''), $q)
-                    || str_contains(mb_strtolower($fixture->away_team ?? ''), $q)
-                    || str_contains(mb_strtolower($fixture->league ?? ''), $q);
+                $home = $fixture->home_team['name'] ?? '';
+                $away = $fixture->away_team['name'] ?? '';
+                $league = $fixture->league['name'] ?? '';
+
+                return str_contains(mb_strtolower($home), $q)
+                    || str_contains(mb_strtolower($away), $q)
+                    || str_contains(mb_strtolower($league), $q);
             })->take(10)->values();
         }
 

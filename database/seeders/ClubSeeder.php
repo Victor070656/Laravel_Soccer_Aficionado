@@ -36,11 +36,20 @@ class ClubSeeder extends Seeder
 
             // Ligue 1
             ['name' => 'Paris Saint-Germain', 'short_name' => 'PSG', 'country' => 'France', 'city' => 'Paris', 'stadium' => 'Parc des Princes', 'founded_year' => 1970, 'description' => 'French giants dominating Ligue 1.'],
+            ['name' => 'Marseille', 'short_name' => 'OM', 'country' => 'France', 'city' => 'Marseille', 'stadium' => 'Orange Vélodrome', 'founded_year' => 1899, 'description' => 'Only French club to win the Champions League.'],
 
-            // Other
+            // Other European
             ['name' => 'Ajax', 'short_name' => 'AJA', 'country' => 'Netherlands', 'city' => 'Amsterdam', 'stadium' => 'Johan Cruyff Arena', 'founded_year' => 1900, 'description' => 'Dutch club famous for total football and youth development.'],
+            ['name' => 'PSV Eindhoven', 'short_name' => 'PSV', 'country' => 'Netherlands', 'city' => 'Eindhoven', 'stadium' => 'Philips Stadion', 'founded_year' => 1913, 'description' => 'Successful Dutch club with European history.'],
+            ['name' => 'Feyenoord', 'short_name' => 'FEY', 'country' => 'Netherlands', 'city' => 'Rotterdam', 'stadium' => 'De Kuip', 'founded_year' => 1908, 'description' => 'Rotterdam-based club with a rich history.'],
             ['name' => 'Benfica', 'short_name' => 'BEN', 'country' => 'Portugal', 'city' => 'Lisbon', 'stadium' => 'Estádio da Luz', 'founded_year' => 1904, 'description' => 'One of the big three Portuguese clubs.'],
             ['name' => 'Porto', 'short_name' => 'POR', 'country' => 'Portugal', 'city' => 'Porto', 'stadium' => 'Estádio do Dragão', 'founded_year' => 1893, 'description' => 'Champions League winners from Portugal.'],
+            ['name' => 'Sporting CP', 'short_name' => 'SCP', 'country' => 'Portugal', 'city' => 'Lisbon', 'stadium' => 'Estádio José Alvalade', 'founded_year' => 1906, 'description' => 'Renowned for its youth academy.'],
+            ['name' => 'AS Roma', 'short_name' => 'ROM', 'country' => 'Italy', 'city' => 'Rome', 'stadium' => 'Stadio Olimpico', 'founded_year' => 1927, 'description' => 'Historic club from the Italian capital.'],
+
+            // MLS
+            ['name' => 'Inter Miami', 'short_name' => 'MIA', 'country' => 'USA', 'city' => 'Miami', 'stadium' => 'Chase Stadium', 'founded_year' => 2018, 'description' => 'Global sensation with legendary players.'],
+            ['name' => 'LA Galaxy', 'short_name' => 'LAG', 'country' => 'USA', 'city' => 'Los Angeles', 'stadium' => 'Dignity Health Sports Park', 'founded_year' => 1994, 'description' => 'One of the most decorated clubs in MLS.'],
         ];
 
         foreach ($clubs as $clubData) {

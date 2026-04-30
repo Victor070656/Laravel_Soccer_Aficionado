@@ -1,11 +1,12 @@
 <x-layouts::auth>
-    <div class="flex flex-col gap-6">
-        <div class="text-center">
-            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 dark:from-primary/25 dark:to-primary/15 mb-4">
-                <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+    <div class="flex flex-col gap-6 animate-fade-in-up">
+        <div class="text-center lg:text-left mb-2">
+            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#bfff00]/10 mb-4">
+                <span class="material-symbols-outlined text-3xl text-[#bfff00]">lock_reset</span>
             </div>
         </div>
-        <x-auth-header :title="__('Reset password')" :description="__('Choose a strong new password for your account')" />
+        
+        <x-auth-header :title="__('Set New Password')" :description="__('Choose a strong new password for your account.')" />
 
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />
@@ -23,33 +24,40 @@
                 type="email"
                 required
                 autocomplete="email"
+                placeholder="name@stadium.com"
+                icon="envelope"
+                class="uppercase tracking-widest !text-[10px] font-bold text-on-surface-variant"
             />
 
             <!-- Password -->
             <flux:input
                 name="password"
-                :label="__('Password')"
+                :label="__('New Password')"
                 type="password"
                 required
                 autocomplete="new-password"
-                :placeholder="__('Password')"
+                :placeholder="__('••••••••')"
+                icon="lock-closed"
                 viewable
+                class="uppercase tracking-widest !text-[10px] font-bold text-on-surface-variant"
             />
 
             <!-- Confirm Password -->
             <flux:input
                 name="password_confirmation"
-                :label="__('Confirm password')"
+                :label="__('Confirm new password')"
                 type="password"
                 required
                 autocomplete="new-password"
-                :placeholder="__('Confirm password')"
+                :placeholder="__('••••••••')"
+                icon="lock-closed"
                 viewable
+                class="uppercase tracking-widest !text-[10px] font-bold text-on-surface-variant"
             />
 
-            <div class="flex items-center justify-end">
-                <flux:button type="submit" variant="primary" class="w-full !bg-gradient-to-r !from-primary !to-primary/80 hover:!from-primary/90 hover:!to-primary/70 !shadow-lg !shadow-primary/25" data-test="reset-password-button">
-                    {{ __('Reset password') }}
+            <div class="flex items-center justify-end mt-4">
+                <flux:button type="submit" variant="primary" class="w-full h-14 !bg-[#bfff00] !text-[#0a2e1c] !font-display !text-lg !rounded-xl !shadow-[0_0_20px_rgba(191,255,0,0.2)] hover:shadow-[0_0_30px_rgba(191,255,0,0.4)] active:scale-[0.98] transition-all" data-test="reset-password-button">
+                    {{ __('Update Password') }}
                 </flux:button>
             </div>
         </form>

@@ -25,12 +25,6 @@ class DashboardController extends Controller
             ->feed($user)
             ->paginate(20);
 
-        $liveMatches = collect($this->api->getLiveFixtures())
-            ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
-
-        $upcomingMatches = collect($this->api->getUpcomingFixtures(5))
-            ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
-
         $activePolls = Poll::with('options')
             ->active()
             ->latest()
@@ -47,8 +41,6 @@ class DashboardController extends Controller
 
         return view('dashboard', compact(
             'feed',
-            'liveMatches',
-            'upcomingMatches',
             'activePolls',
             'trendingPosts',
             'favoriteClubs'
