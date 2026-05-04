@@ -1,3 +1,4 @@
+<div>
 @if($liveMatches->isNotEmpty())
 <div class="rounded-2xl bg-gradient-to-r from-secondary/10 to-secondary/5 dark:from-secondary/20 dark:to-secondary/10 p-5 sm:p-6 border border-secondary/30 dark:border-secondary/20 shadow-lg shadow-secondary/5">
     <div class="flex items-center gap-3 mb-4">
@@ -41,8 +42,22 @@
                     {{ ucfirst(str_replace('_', ' ', $match->status)) }}@if($match->elapsed) · {{ $match->elapsed }}'@endif
                 </span>
             </div>
+
+            {{-- Events Ticker --}}
+            @if(isset($match->events) && $match->events->count())
+            <div class="mt-4 pt-3 border-t border-outline-variant/20 dark:border-outline-variant/30 space-y-1.5">
+                @foreach($match->events->take(2) as $event)
+                <div class="flex items-center gap-2 text-[10px] text-on-surface-variant">
+                    <span class="font-mono text-primary w-6">{{ $event->time }}'</span>
+                    <span>{{ $event->icon }}</span>
+                    <span class="truncate font-medium">{{ $event->player['name'] }}</span>
+                </div>
+                @endforeach
+            </div>
+            @endif
         </a>
         @endforeach
     </div>
 </div>
 @endif
+</div>
