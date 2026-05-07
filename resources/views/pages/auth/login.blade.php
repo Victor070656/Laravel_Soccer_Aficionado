@@ -29,7 +29,7 @@
                 <div class="flex justify-between items-center mb-[-32px] relative z-10 px-1">
                     <label class="opacity-0 pointer-events-none">Password</label>
                     @if (Route::has('password.request'))
-                        <flux:link class="text-xs font-bold !text-[#bfff00] hover:underline uppercase tracking-wider" :href="route('password.request')" wire:navigate>
+                        <flux:link class="text-xs font-bold text-primary-container hover:underline uppercase tracking-wider" :href="route('password.request')" wire:navigate>
                             {{ __('Forgot?') }}
                         </flux:link>
                     @endif
@@ -51,7 +51,7 @@
             <flux:checkbox name="remember" :label="__('Remember this device')" :checked="old('remember')" class="!text-on-surface" />
 
             <div class="flex items-center justify-end">
-                <flux:button variant="primary" type="submit" class="w-full h-14 !bg-[#bfff00] !text-[#0a2e1c] !font-display !text-lg !rounded-xl !shadow-[0_0_20px_rgba(191,255,0,0.2)] hover:shadow-[0_0_30px_rgba(191,255,0,0.4)] active:scale-[0.98] transition-all" data-test="login-button">
+                <flux:button variant="primary" type="submit" class="w-full h-14 font-display text-lg rounded-xl shadow-lg shadow-primary-container/20 hover:bg-primary-container/90 active:scale-[0.98] transition-all" data-test="login-button">
                     {{ __('Login') }}
                 </flux:button>
             </div>
@@ -60,7 +60,7 @@
         @if (Route::has('register'))
             <div class="text-center font-medium text-sm text-on-surface-variant pt-4">
                 <span>{{ __('Don\'t have an account?') }}</span>
-                <flux:link :href="route('register')" wire:navigate class="!text-[#bfff00] hover:underline font-bold ml-1 uppercase tracking-wider">{{ __('Join the League') }}</flux:link>
+                <flux:link :href="route('register')" wire:navigate class="text-primary-container hover:underline font-bold ml-1 uppercase tracking-wider">{{ __('Join the League') }}</flux:link>
             </div>
         @endif
     </div>

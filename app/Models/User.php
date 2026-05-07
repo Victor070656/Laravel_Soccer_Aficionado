@@ -30,7 +30,12 @@ class User extends Authenticatable
         'bio',
         'avatar',
         'country',
+        'state',
         'timezone',
+        'favorite_player_id',
+        'favorite_coach',
+        'football_personality',
+        'points',
         'is_banned',
         'banned_at',
         'ban_reason',
@@ -75,6 +80,11 @@ class User extends Authenticatable
     public function favoriteClubs(): BelongsToMany
     {
         return $this->belongsToMany(Club::class)->withPivot('is_primary')->withTimestamps();
+    }
+
+    public function favoritePlayer(): BelongsTo
+    {
+        return $this->belongsTo(Player::class, 'favorite_player_id');
     }
 
     public function posts(): HasMany

@@ -19,6 +19,10 @@ class GamificationService
         'share_created' => 5,
         'community_joined' => 5,
         'follow_gained' => 2,
+        'match_prediction_correct' => 20,
+        'debate_won' => 15,
+        'club_loyalty_milestone' => 50,
+        'matchday_checkin' => 5,
     ];
 
     /**

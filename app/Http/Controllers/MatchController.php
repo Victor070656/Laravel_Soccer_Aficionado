@@ -55,6 +55,22 @@ class MatchController extends Controller
     }
 
     /**
+     * Show the match room for live banter and reactions.
+     */
+    public function room(int $id)
+    {
+        $raw = $this->api->getFixture($id);
+
+        if (!$raw) {
+            abort(404, 'Match not found.');
+        }
+
+        $match = (object) FootballApiService::normaliseFixture($raw);
+
+        return view('matches.room', compact('match'));
+    }
+
+    /**
      * Currently live fixtures.
      */
     public function live()

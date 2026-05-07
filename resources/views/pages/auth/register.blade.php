@@ -64,13 +64,13 @@
 
             <div class="flex items-start gap-2 py-2">
                 <flux:checkbox id="terms" name="terms" required class="mt-1" />
-                <label for="terms" class="text-xs text-zinc-400 leading-relaxed">
-                    I agree to the <a class="text-white hover:underline" href="#">Terms of Service</a> and <a class="text-white hover:underline" href="#">Privacy Policy</a>.
+                <label for="terms" class="text-xs text-on-surface-variant leading-relaxed">
+                    I agree to the <a class="text-primary-container hover:underline" href="#">Terms of Service</a> and <a class="text-primary-container hover:underline" href="#">Privacy Policy</a>.
                 </label>
             </div>
 
             <div class="flex items-center justify-end mt-4">
-                <flux:button type="submit" variant="primary" class="w-full h-14 !bg-[#bfff00] !text-[#0a2e1c] !font-display !text-lg !rounded-xl !shadow-[0_0_20px_rgba(191,255,0,0.2)] hover:shadow-[0_0_30px_rgba(191,255,0,0.4)] active:scale-[0.98] transition-all" data-test="register-user-button">
+                <flux:button type="submit" variant="primary" class="w-full h-14 font-display text-lg rounded-xl shadow-lg shadow-primary-container/20 hover:bg-primary-container/90 active:scale-[0.98] transition-all" data-test="register-user-button">
                     {{ __('Create Account') }}
                 </flux:button>
             </div>
@@ -78,7 +78,7 @@
 
         <div class="text-center font-medium text-sm text-on-surface-variant pt-4">
             <span>{{ __('Already have an account?') }}</span>
-            <flux:link :href="route('login')" wire:navigate class="!text-[#bfff00] hover:underline font-bold ml-1 uppercase tracking-wider">{{ __('Log in') }}</flux:link>
+            <flux:link :href="route('login')" wire:navigate class="text-primary-container hover:underline font-bold ml-1 uppercase tracking-wider">{{ __('Log in') }}</flux:link>
         </div>
     </div>
 </x-layouts::auth>

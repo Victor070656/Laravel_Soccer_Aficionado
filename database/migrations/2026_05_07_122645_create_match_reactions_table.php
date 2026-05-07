@@ -1,0 +1,33 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('match_reactions', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedInteger('match_id'); // API fixture ID
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->string('emoji', 10); // e.g., "⚽", "🔥", "💚"
+            $table->timestamps();
+
+            $table->index('match_id');
+            $table->index('user_id');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('match_reactions');
+    }
+};

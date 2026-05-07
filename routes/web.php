@@ -40,6 +40,7 @@ Route::get('/', function (FootballApiService $api) {
 Route::get('/matches', [MatchController::class, 'index'])->name('matches.index');
 Route::get('/matches/live', [MatchController::class, 'live'])->name('matches.live');
 Route::get('/matches/{id}', [MatchController::class, 'show'])->name('matches.show')->where('id', '[0-9]+');
+Route::get('/matches/{id}/room', [MatchController::class, 'room'])->name('matches.room')->where('id', '[0-9]+');
 
 Route::get('/clubs', [ClubController::class, 'index'])->name('clubs.index');
 Route::get('/clubs/{id}', [ClubController::class, 'show'])->name('clubs.show')->where('id', '[0-9]+');
@@ -55,6 +56,8 @@ Route::get('/search', SearchController::class)->name('search');
 Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
+    Route::get('/feed', [\App\Http\Controllers\FeedController::class, 'index'])->name('feed');
+    Route::get('/trending', [\App\Http\Controllers\TrendingController::class, 'index'])->name('trending');
 
     // Posts
     Route::get('/posts', [PostController::class, 'index'])->name('posts.index');

@@ -24,6 +24,9 @@ class Community extends Model
         'rules',
         'members_count',
         'is_active',
+        'country',
+        'state',
+        'region',
     ];
 
     protected function casts(): array

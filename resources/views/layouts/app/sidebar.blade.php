@@ -3,8 +3,8 @@
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen bg-surface dark:bg-surface-container">
-        <flux:sidebar sticky collapsible="mobile" class="border-e border-outline-variant/40 bg-surface-container-low dark:bg-surface-container-low">
+    <body class="min-h-screen bg-surface">
+        <flux:sidebar sticky collapsible="mobile" class="border-e border-outline-variant/40 bg-surface-container-low">
             <flux:sidebar.header>
                 <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
                 <flux:sidebar.collapse class="lg:hidden" />
@@ -157,11 +157,15 @@
                 </flux:menu>
             </flux:dropdown>
             @else
-            <a href="{{ route('login') }}" class="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white">Login</a>
+            <a href="{{ route('login') }}" class="text-sm font-medium text-on-surface hover:text-primary-container">Login</a>
             @endauth
         </flux:header>
 
         {{ $slot }}
+
+        <!-- Bottom Navigation (Mobile Only) -->
+        <livewire:match.nav-count />
+        <x-bottom-nav />
 
         @fluxScripts
     </body>
