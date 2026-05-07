@@ -1,4 +1,4 @@
-<div>
+<div wire:poll.30s>
 @if($liveMatches->isNotEmpty())
 <div class="rounded-2xl bg-gradient-to-r from-secondary/10 to-secondary/5 dark:from-secondary/20 dark:to-secondary/10 p-5 sm:p-6 border border-secondary/30 dark:border-secondary/20 shadow-lg shadow-secondary/5">
     <div class="flex items-center gap-3 mb-4">

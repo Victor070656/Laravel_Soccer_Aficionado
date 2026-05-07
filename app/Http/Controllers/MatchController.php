@@ -51,28 +51,7 @@ class MatchController extends Controller
 
         $match = (object) FootballApiService::normaliseFixture($raw);
 
-        $events = collect($this->api->getFixtureEvents($id))
-            ->map(fn(array $e) => (object) FootballApiService::normaliseEvent($e));
-
-        $lineups = collect($this->api->getFixtureLineups($id))
-            ->map(fn(array $l) => (object) FootballApiService::normaliseLineup($l));
-
-        $statistics = $this->api->getFixtureStatistics($id);
-
-        // Fetch H2H fixtures
-        $h2h = collect($this->api->getH2HFixtures($match->home_team['id'], $match->away_team['id']))
-            ->map(fn(array $f) => (object) FootballApiService::normaliseFixture($f));
-
-        // Fetch standings for the league
-        $rawStandings = $this->api->getStandings($match->league['id'], $match->season);
-        $standings = collect();
-        if (!empty($rawStandings)) {
-            $firstGroup = $rawStandings[0] ?? [];
-            $standings = collect($firstGroup)
-                ->map(fn(array $row) => (object) FootballApiService::normaliseStandingRow($row));
-        }
-
-        return view('matches.show', compact('match', 'events', 'lineups', 'statistics', 'h2h', 'standings'));
+        return view('matches.show', compact('match'));
     }
 
     /**
@@ -80,17 +59,6 @@ class MatchController extends Controller
      */
     public function live()
     {
-        $rawFixtures = $this->api->getLiveFixtures();
-
-        $matches = collect($rawFixtures)
-            ->map(function (array $raw) {
-                $match = (object) FootballApiService::normaliseFixture($raw);
-                // Attach recent events for each live match
-                $match->events = collect($this->api->getFixtureEvents($match->id))
-                    ->map(fn(array $e) => (object) FootballApiService::normaliseEvent($e));
-                return $match;
-            });
-
-        return view('matches.live', compact('matches'));
+        return view('matches.live');
     }
 }
