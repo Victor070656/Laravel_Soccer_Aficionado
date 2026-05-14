@@ -2,6 +2,22 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
     <head>
         @include('partials.head')
+        <style>
+            .glass-surface {
+                background: rgba(26, 26, 26, 0.8);
+                backdrop-filter: blur(20px);
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                border-left: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            .stadium-overlay {
+                background: linear-gradient(to right, rgba(10, 46, 28, 0.9), rgba(5, 22, 14, 0.4));
+            }
+            .pitch-mesh {
+                background-image: radial-gradient(#bfff00 0.5px, transparent 0.5px);
+                background-size: 24px 24px;
+                opacity: 0.03;
+            }
+        </style>
     </head>
     <body class="bg-background text-on-background font-sans overflow-x-hidden">
         <main class="flex min-h-screen w-full">
@@ -15,7 +31,7 @@
 
                 <div class="relative z-30 max-w-2xl animate-fade-in-left">
                     <header class="mb-8">
-                        <h1 class="text-5xl font-extrabold text-primary-container uppercase tracking-tighter mb-2 font-display">
+                        <h1 class="text-5xl font-extrabold text-[#bfff00] uppercase tracking-tighter mb-2 font-display">
                             Soccer Aficionado
                         </h1>
                         <div class="h-1 w-24 bg-secondary mb-6"></div>
@@ -29,12 +45,12 @@
 
                     <div class="flex gap-6 animate-fade-in-up">
                         <div class="glass-surface p-6 rounded-xl border border-white/5">
-                            <span class="block text-2xl font-bold text-primary-container font-display">24/7</span>
-                            <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Live Coverage</span>
+                            <span class="block text-2xl font-bold text-[#bfff00] font-display">24/7</span>
+                            <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Live Coverage</span>
                         </div>
                         <div class="glass-surface p-6 rounded-xl border border-white/5">
-                            <span class="block text-2xl font-bold text-primary-container font-display">500+</span>
-                            <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Global Leagues</span>
+                            <span class="block text-2xl font-bold text-[#bfff00] font-display">500+</span>
+                            <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Global Leagues</span>
                         </div>
                     </div>
                 </div>
@@ -43,18 +59,18 @@
             {{-- Right Panel: Form Panel --}}
             <section class="w-full lg:w-5/12 xl:w-4/12 bg-surface-container-lowest flex flex-col justify-center items-center px-8 py-12 relative overflow-y-auto">
                 <div class="lg:hidden absolute top-8 left-8">
-                    <span class="text-2xl font-bold text-primary-container uppercase tracking-tighter font-display">SA</span>
+                    <span class="text-2xl font-bold text-[#bfff00] uppercase tracking-tighter font-display">SA</span>
                 </div>
 
                 <div class="w-full max-w-md space-y-8">
                     {{ $slot }}
                 </div>
 
-                <footer class="absolute bottom-0 w-full py-4 px-8 flex justify-between items-center bg-surface-container">
-                    <span class="text-[10px] font-display text-on-surface-variant uppercase tracking-widest">© {{ date('Y') }} Soccer Aficionado</span>
+                <footer class="absolute bottom-0 w-full py-4 px-8 flex justify-between items-center bg-[#05160e]">
+                    <span class="text-[10px] font-display text-zinc-500 uppercase tracking-widest">© {{ date('Y') }} Soccer Aficionado</span>
                     <div class="flex gap-4">
-                        <a class="text-[10px] font-display text-on-surface-variant uppercase tracking-widest hover:text-primary-container transition-colors" href="#">Terms</a>
-                        <a class="text-[10px] font-display text-on-surface-variant uppercase tracking-widest hover:text-primary-container transition-colors" href="#">Privacy</a>
+                        <a class="text-[10px] font-display text-zinc-500 uppercase tracking-widest hover:text-[#bfff00] transition-colors" href="#">Terms</a>
+                        <a class="text-[10px] font-display text-zinc-500 uppercase tracking-widest hover:text-[#bfff00] transition-colors" href="#">Privacy</a>
                     </div>
                 </footer>
             </section>
