@@ -1,14 +1,21 @@
 @import "tailwindcss";
 @import "../../vendor/livewire/flux/dist/flux.css";
 
-@source '../views';
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../vendor/livewire/flux-pro/stubs/**/*.blade.php';
-@source '../../vendor/livewire/flux/stubs/**/*.blade.php';
+@source "../views";
+@source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
+@source "../../vendor/livewire/flux-pro/stubs/**/*.blade.php";
+@source "../../vendor/livewire/flux/stubs/**/*.blade.php";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+    /* ===== BREAKPOINTS ===== */
+    --breakpoint-sm: 640px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 1024px;
+    --breakpoint-xl: 1280px;
+    --breakpoint-2xl: 1536px;
+
     /* ===== FONT FAMILIES ===== */
     --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
         "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -100,6 +107,9 @@
     --color-on-error: #690005;
     --color-error-container: #93000a;
     --color-on-error-container: #ffdad6;
+
+    /* Explicitly define gray for preflight/base styles */
+    --color-gray-200: var(--color-outline-variant);
 }
 
 @layer base {
@@ -524,6 +534,15 @@
 }
 
 /* ===== FLUX OVERRIDES ===== */
+
+/* Fix vertical text rendering issue – force horizontal writing mode and reset transforms for typical text elements */
+
+h1, h2, h3, h4, h5, h6, p, .text-body-lg, .text-body-md, .text-label-bold, .text-label-sm, .text-display-xl, .text-headline-lg, .text-headline-md {
+  writing-mode: horizontal-tb !important;
+  transform: none !important;
+  white-space: normal !important;
+}
+
 [data-flux-field]:not(ui-radio, ui-checkbox) {
     @apply grid gap-2;
 }
@@ -552,4 +571,215 @@ select:focus[data-flux-control] {
         rgba(0, 230, 57, 0.05),
         rgba(0, 255, 65, 0.1)
     );
+}
+
+/* ===== ENHANCED GLASSMORPHISM UTILITIES (Digital Stadium Phase 2) ===== */
+
+/* Floodlight Glow: Active/Priority Elements */
+.floodlight-glow {
+    box-shadow: 
+        0 0 16px rgba(0, 255, 65, 0.15),
+        inset 0 0 8px rgba(0, 255, 65, 0.05);
+}
+.floodlight-glow:hover {
+    box-shadow: 
+        0 0 24px rgba(0, 255, 65, 0.2),
+        inset 0 0 8px rgba(0, 255, 65, 0.08);
+}
+
+/* Subtle Floodlight Glow: Secondary emphasis */
+.floodlight-glow-sm {
+    box-shadow: 0 0 8px rgba(0, 255, 65, 0.1);
+}
+.floodlight-glow-sm:hover {
+    box-shadow: 0 0 12px rgba(0, 255, 65, 0.15);
+}
+
+/* Live Match Card: Pulse with Pitch Green border */
+.card-live {
+    border: 1.5px solid var(--color-primary-container);
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Stadium Badge: Neon appearance */
+.badge-stadium {
+    background: var(--color-primary-container);
+    color: var(--color-on-primary-container);
+    box-shadow: 0 0 12px rgba(0, 255, 65, 0.3);
+}
+
+/* Enhanced Glass Card with active border */
+.glass-card-active {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 255, 65, 0.3);
+    box-shadow: 0 0 16px rgba(0, 255, 65, 0.1);
+}
+
+/* ===== BUTTON UTILITIES ===== */
+
+/* Primary Button: Pitch Green with gradient */
+.btn-primary {
+    background: linear-gradient(to bottom, var(--color-primary-container), #00dd38);
+    color: var(--color-on-primary-container);
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-lg);
+    transition: all 0.2s ease;
+    border: none;
+}
+.btn-primary:hover {
+    background: linear-gradient(to bottom, #00ff41, #00dd38);
+    filter: brightness(1.1);
+    box-shadow: 0 0 16px rgba(0, 255, 65, 0.3);
+}
+.btn-primary:focus {
+    outline: none;
+    ring: 2px var(--color-primary-container);
+    ring-offset: 2px var(--color-surface);
+    box-shadow: 0 0 16px rgba(0, 255, 65, 0.2);
+}
+
+/* Secondary Button: Glassmorphic */
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: var(--color-on-surface);
+    border: 1px solid var(--color-on-surface);
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-lg);
+    transition: all 0.2s ease;
+}
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--color-primary-container);
+    color: var(--color-primary-container);
+}
+.btn-secondary:focus {
+    outline: none;
+    border-color: var(--color-primary-container);
+    box-shadow: 0 0 12px rgba(0, 255, 65, 0.2);
+}
+
+/* ===== INPUT UTILITIES ===== */
+
+/* Recessed Input Field */
+.input-recessed {
+    background: rgba(10, 12, 16, 0.8);
+    border: none;
+    border-bottom: 1px solid var(--color-on-surface);
+    padding: 0.75rem 1rem;
+    color: var(--color-on-surface);
+    transition: all 0.2s ease;
+}
+.input-recessed::placeholder {
+    color: rgba(229, 226, 225, 0.4);
+}
+.input-recessed:focus {
+    outline: none;
+    border-bottom: 2px solid var(--color-primary-container);
+    box-shadow: 
+        0 4px 0 rgba(0, 255, 65, 0.1),
+        inset 0 0 8px rgba(0, 255, 65, 0.05);
+}
+
+/* ===== BADGE UTILITIES ===== */
+
+/* Pill Badge with glassmorphism */
+.badge-pill {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-full);
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-on-surface);
+    display: inline-block;
+}
+.badge-pill.active {
+    background: rgba(0, 255, 65, 0.15);
+    border-color: var(--color-primary-container);
+    color: var(--color-primary-container);
+}
+
+/* ===== PITCH VISUALIZER BASE ===== */
+
+/* Tactical pitch grid (foundation) */
+.pitch-grid {
+    background: 
+        linear-gradient(0deg, transparent 24%, rgba(0, 255, 65, 0.05) 25%, rgba(0, 255, 65, 0.05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 65, 0.05) 75%, rgba(0, 255, 65, 0.05) 76%, transparent 77%, transparent),
+        linear-gradient(90deg, transparent 24%, rgba(0, 255, 65, 0.05) 25%, rgba(0, 255, 65, 0.05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 65, 0.05) 75%, rgba(0, 255, 65, 0.05) 76%, transparent 77%, transparent);
+    background-size: 50px 50px;
+    border: 2px solid rgba(0, 255, 65, 0.2);
+    border-radius: var(--radius-lg);
+}
+
+/* ===== LIVE SCORE TICKER ===== */
+
+.live-ticker {
+    background: rgba(10, 12, 16, 0.95);
+    border-top: 2px solid var(--color-primary-container);
+    border-bottom: 2px solid var(--color-primary-container);
+    padding: 0.5rem 0;
+    overflow: hidden;
+}
+.live-ticker-content {
+    animation: scroll-left 30s linear infinite;
+    white-space: nowrap;
+    color: var(--color-on-surface);
+    font-weight: 600;
+}
+
+@keyframes scroll-left {
+    0% {
+        transform: translateX(100%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+/* ===== SENTIMENT METER ===== */
+
+.sentiment-meter {
+    display: flex;
+    height: 8px;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+.sentiment-meter-positive {
+    background: linear-gradient(90deg, var(--color-primary-container), var(--color-primary-fixed));
+    flex: var(--sentiment-percentage, 50%);
+    transition: flex 0.3s ease;
+}
+
+/* ===== RESPONSIVE CONTAINER ===== */
+
+.container-stadium {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-gutter);
+}
+
+@media (max-width: 768px) {
+    .container-stadium {
+        padding: 0 var(--spacing-sm);
+    }
+}
+
+/* ===== UTILITY: GLASSMORPHIC OVERLAY ===== */
+
+.overlay-glass {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 12, 16, 0.7);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 40;
 }

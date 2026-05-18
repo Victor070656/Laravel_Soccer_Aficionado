@@ -15,10 +15,14 @@ new class extends Component {
     use ProfileValidationRules, WithFileUploads;
 
     public string $name = '';
+    public string $username = '';
     public string $email = '';
     public string $bio = '';
     public string $country = '';
+    public string $state = '';
     public string $timezone = '';
+    public string $football_personality = '';
+    public string $favorite_coach = '';
     public $avatar = null;
     public ?string $currentAvatar = null;
 
@@ -29,10 +33,14 @@ new class extends Component {
     {
         $user = Auth::user();
         $this->name = $user->name;
+        $this->username = $user->username ?? '';
         $this->email = $user->email;
         $this->bio = $user->bio ?? '';
         $this->country = $user->country ?? '';
+        $this->state = $user->state ?? '';
         $this->timezone = $user->timezone ?? '';
+        $this->football_personality = $user->football_personality ?? '';
+        $this->favorite_coach = $user->favorite_coach ?? '';
         $this->currentAvatar = $user->avatar;
     }
 
@@ -45,7 +53,13 @@ new class extends Component {
 
         $validated = $this->validate(array_merge(
             $this->profileRules($user->id),
-            ['avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,gif,webp', 'max:2048']],
+            [
+                'username' => ['required', 'string', 'max:50', 'alpha_dash', Rule::unique('users')->ignore($user->id)],
+                'state' => ['nullable', 'string', 'max:100'],
+                'football_personality' => ['nullable', 'string', 'max:100'],
+                'favorite_coach' => ['nullable', 'string', 'max:100'],
+                'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,gif,webp', 'max:2048'],
+            ],
         ));
 
         if ($this->avatar) {
@@ -119,96 +133,131 @@ new class extends Component {
 
     <flux:heading class="sr-only">{{ __('Profile Settings') }}</flux:heading>
 
-    <x-pages::settings.layout :heading="__('Profile')" :subheading="__('Update your profile information, avatar, and bio')">
-        <form wire:submit="updateProfileInformation" class="my-6 w-full space-y-6">
-            {{-- Avatar --}}
-            <div>
-                <flux:label class="mb-2">{{ __('Profile Photo') }}</flux:label>
-                <div class="flex items-center gap-4">
-                    <div class="w-16 h-16 rounded-full overflow-hidden bg-green-500/20 flex items-center justify-center text-xl font-bold text-green-700 dark:text-green-400">
-                        @if ($avatar)
-                            <img src="{{ $avatar->temporaryUrl() }}" class="w-full h-full object-cover" alt="Preview">
-                        @elseif ($currentAvatar)
-                            <img src="{{ asset('storage/' . $currentAvatar) }}" class="w-full h-full object-cover" alt="Avatar">
-                        @else
-                            {{ Auth::user()->initials() }}
-                        @endif
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <input type="file" wire:model="avatar" accept="image/*" class="text-sm text-zinc-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-green-50 file:text-green-700 hover:file:bg-green-100 dark:file:bg-green-900/30 dark:file:text-green-400" />
+    <x-pages::settings.layout :heading="__('Profile')" :subheading="__('Update your profile information, avatar, and football identity')">
+        <form wire:submit="updateProfileInformation" class="my-6 w-full space-y-8">
+            {{-- Section: Identity --}}
+            <div class="space-y-6">
+                <div class="flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-800 pb-2">
+                    <flux:icon icon="user-circle" variant="mini" class="text-green-600" />
+                    <flux:heading size="sm" class="font-black uppercase tracking-widest text-zinc-500">{{ __('Public Identity') }}</flux:heading>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-6 items-start">
+                    {{-- Avatar --}}
+                    <div class="flex-shrink-0">
+                        <flux:label class="mb-2">{{ __('Photo') }}</flux:label>
+                        <div class="relative group">
+                            <div class="w-24 h-24 rounded-2xl overflow-hidden bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center text-3xl font-black text-green-700 dark:text-green-400 border-2 border-green-500/10 shadow-inner">
+                                @if ($avatar)
+                                    <img src="{{ $avatar->temporaryUrl() }}" class="w-full h-full object-cover" alt="Preview">
+                                @elseif ($currentAvatar)
+                                    <img src="{{ asset('storage/' . $currentAvatar) }}" class="w-full h-full object-cover" alt="Avatar">
+                                @else
+                                    {{ Auth::user()->initials() }}
+                                @endif
+                            </div>
+                            <label class="absolute -bottom-2 -right-2 p-1.5 bg-white dark:bg-zinc-800 rounded-lg shadow-lg border border-zinc-200 dark:border-zinc-700 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors">
+                                <flux:icon icon="camera" variant="mini" class="text-zinc-500" />
+                                <input type="file" wire:model="avatar" accept="image/*" class="hidden" />
+                            </label>
+                        </div>
                         @if ($currentAvatar)
-                            <button type="button" wire:click="removeAvatar" class="text-xs text-red-500 hover:text-red-700 text-left">{{ __('Remove photo') }}</button>
+                            <button type="button" wire:click="removeAvatar" class="mt-4 text-[10px] uppercase font-black tracking-widest text-red-500 hover:text-red-700 transition-colors">{{ __('Remove') }}</button>
                         @endif
+                        @error('avatar') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="flex-1 space-y-4 w-full">
+                        <flux:input wire:model="name" :label="__('Display Name')" type="text" required autocomplete="name" placeholder="Your full name" />
+                        <flux:input wire:model="username" :label="__('Username')" type="text" required autocomplete="username" placeholder="Unique username" prefix="@" />
                     </div>
                 </div>
-                @error('avatar') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
             </div>
 
-            <flux:input wire:model="name" :label="__('Name')" type="text" required autofocus autocomplete="name" />
+            {{-- Section: Contact & Bio --}}
+            <div class="space-y-6">
+                <div class="flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-800 pb-2">
+                    <flux:icon icon="envelope" variant="mini" class="text-green-600" />
+                    <flux:heading size="sm" class="font-black uppercase tracking-widest text-zinc-500">{{ __('Contact & Bio') }}</flux:heading>
+                </div>
 
-            <div>
-                <flux:input wire:model="email" :label="__('Email')" type="email" required autocomplete="email" />
+                <div class="space-y-4">
+                    <flux:input wire:model="email" :label="__('Email Address')" type="email" required autocomplete="email" />
 
-                @if ($this->hasUnverifiedEmail)
-                    <div>
-                        <flux:text class="mt-4">
-                            {{ __('Your email address is unverified.') }}
-
-                            <flux:link class="text-sm cursor-pointer" wire:click.prevent="resendVerificationNotification">
-                                {{ __('Click here to re-send the verification email.') }}
-                            </flux:link>
-                        </flux:text>
-
-                        @if (session('status') === 'verification-link-sent')
-                            <flux:text class="mt-2 font-medium !dark:text-green-400 !text-green-600">
-                                {{ __('A new verification link has been sent to your email address.') }}
+                    @if ($this->hasUnverifiedEmail)
+                        <div class="p-3 rounded-lg bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800">
+                            <flux:text class="text-xs text-amber-800 dark:text-amber-400">
+                                {{ __('Your email is unverified.') }}
+                                <flux:link class="text-xs font-bold cursor-pointer underline" wire:click.prevent="resendVerificationNotification">
+                                    {{ __('Resend verification email') }}
+                                </flux:link>
                             </flux:text>
-                        @endif
-                    </div>
-                @endif
+                            @if (session('status') === 'verification-link-sent')
+                                <flux:text class="mt-1 text-[10px] font-bold text-green-600 dark:text-green-400 uppercase">
+                                    {{ __('Verification link sent!') }}
+                                </flux:text>
+                            @endif
+                        </div>
+                    @endif
+
+                    <flux:textarea wire:model="bio" :label="__('Short Bio')" rows="3" maxlength="500" placeholder="{{ __('Tell the community about your passion for football...') }}" />
+                </div>
             </div>
 
-            {{-- Bio --}}
-            <div>
-                <flux:label class="mb-1">{{ __('Bio') }}</flux:label>
-                <textarea wire:model="bio" rows="3" maxlength="500"
-                    class="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:border-green-500 focus:ring-green-500"
-                    placeholder="{{ __('Tell us about yourself...') }}"></textarea>
-                <p class="text-xs text-zinc-500 mt-1">{{ __('Max 500 characters') }}</p>
-                @error('bio') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            {{-- Section: Football Identity --}}
+            <div class="space-y-6">
+                <div class="flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-800 pb-2">
+                    <flux:icon icon="bolt" variant="mini" class="text-green-600" />
+                    <flux:heading size="sm" class="font-black uppercase tracking-widest text-zinc-500">{{ __('Football Identity') }}</flux:heading>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <flux:input wire:model="football_personality" :label="__('Football Personality')" placeholder="e.g. Tactical Analyst, Ultras, Casual Viewer" />
+                    <flux:input wire:model="favorite_coach" :label="__('Favorite Coach')" placeholder="e.g. Pep Guardiola, Jose Mourinho" />
+                </div>
             </div>
 
-            {{-- Country --}}
-            <flux:input wire:model="country" :label="__('Country')" type="text" placeholder="e.g. United Kingdom" autocomplete="country-name" />
+            {{-- Section: Location & Timezone --}}
+            <div class="space-y-6">
+                <div class="flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-800 pb-2">
+                    <flux:icon icon="globe-americas" variant="mini" class="text-green-600" />
+                    <flux:heading size="sm" class="font-black uppercase tracking-widest text-zinc-500">{{ __('Location & Time') }}</flux:heading>
+                </div>
 
-            {{-- Timezone --}}
-            <div>
-                <flux:label class="mb-1">{{ __('Timezone') }}</flux:label>
-                <select wire:model="timezone"
-                    class="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:border-green-500 focus:ring-green-500">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <flux:input wire:model="country" :label="__('Country')" type="text" placeholder="e.g. United Kingdom" autocomplete="country-name" />
+                    <flux:input wire:model="state" :label="__('City / State')" type="text" placeholder="e.g. London" />
+                </div>
+
+                <flux:select wire:model="timezone" :label="__('Timezone')">
                     <option value="">{{ __('Select timezone') }}</option>
                     @foreach(timezone_identifiers_list() as $tz)
                         <option value="{{ $tz }}">{{ $tz }}</option>
                     @endforeach
-                </select>
-                @error('timezone') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                </flux:select>
             </div>
 
-            <div class="flex items-center gap-4">
-                <div class="flex items-center justify-end">
-                    <flux:button variant="primary" type="submit" class="w-full !bg-gradient-to-r !from-green-600 !to-emerald-600 hover:!from-green-500 hover:!to-emerald-500 !shadow-lg !shadow-green-500/25" data-test="update-profile-button">
-                        {{ __('Save') }}
+            {{-- Footer Actions --}}
+            <div class="flex items-center justify-between pt-6 border-t border-zinc-100 dark:border-zinc-800">
+                <div class="flex items-center gap-4">
+                    <flux:button variant="primary" type="submit" class="!bg-gradient-to-r !from-green-600 !to-emerald-600 hover:!from-green-500 hover:!to-emerald-500 !shadow-lg !shadow-green-500/25 px-8" data-test="update-profile-button">
+                        {{ __('Save Changes') }}
                     </flux:button>
-                </div>
 
-                <x-action-message class="me-3" on="profile-updated">
-                    {{ __('Saved.') }}
-                </x-action-message>
+                    <x-action-message on="profile-updated">
+                        <span class="text-green-600 font-bold text-sm flex items-center gap-1">
+                            <flux:icon icon="check-circle" variant="mini" />
+                            {{ __('Saved successfully.') }}
+                        </span>
+                    </x-action-message>
+                </div>
             </div>
         </form>
 
         @if ($this->showDeleteUser)
-            <livewire:pages::settings.delete-user-form />
+            <div class="mt-12 pt-12 border-t border-red-100 dark:border-red-900/20">
+                <livewire:pages::settings.delete-user-form />
+            </div>
         @endif
     </x-pages::settings.layout>
 </section>

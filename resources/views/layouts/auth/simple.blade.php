@@ -29,7 +29,7 @@
                     <div class="absolute inset-0 pitch-mesh z-20"></div>
                 </div>
 
-                <div class="relative z-30 max-w-2xl animate-fade-in-left">
+                <div class="relative z-30 animate-fade-in-left">
                     <header class="mb-8">
                         <h1 class="text-5xl font-extrabold text-[#bfff00] uppercase tracking-tighter mb-2 font-display">
                             Soccer Aficionado
@@ -39,7 +39,7 @@
                             Join the Terraces.
                         </p>
                     </header>
-                    <p class="text-lg text-on-surface-variant max-w-lg mb-10 leading-relaxed">
+                    <p class="text-lg text-on-surface-variant max-w-4xl mb-10 leading-relaxed">
                         Experience the beautiful game with precision data, real-time scoreboards, and the raw energy of the global fan community. Your stadium seat awaits.
                     </p>
 
@@ -62,7 +62,7 @@
                     <span class="text-2xl font-bold text-[#bfff00] uppercase tracking-tighter font-display">SA</span>
                 </div>
 
-                <div class="w-full max-w-md space-y-8">
+                <div class="w-full space-y-8">
                     {{ $slot }}
                 </div>
 

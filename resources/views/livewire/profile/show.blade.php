@@ -47,19 +47,19 @@
                         <div class="flex flex-wrap gap-4 text-label-sm text-on-surface-variant mb-4">
                             @if($user->football_personality)
                                 <span class="flex items-center gap-1">
-                                    <flux:icon sparkles class="h-4 w-4 text-primary-container"/>
+                                    <flux:icon icon="sparkles" class="h-4 w-4 text-primary-container"/>
                                     {{ $user->football_personality }}
                                 </span>
                             @endif
                             @if($user->country)
                                 <span class="flex items-center gap-1">
-                                    <flux:icon map-pin class="h-4 w-4"/>
+                                    <flux:icon icon="map-pin" class="h-4 w-4"/>
                                     {{ $user->country }}@if($user->state), {{ $user->state }}@endif
                                 </span>
                             @endif
                             @if($primaryClub)
                                 <span class="flex items-center gap-1">
-                                    <flux:icon shield-check class="h-4 w-4 text-primary-container"/>
+                                    <flux:icon icon="shield-check" class="h-4 w-4 text-primary-container"/>
                                     {{ $primaryClub->name }} Fan
                                 </span>
                             @endif
@@ -116,7 +116,7 @@
                                      class="h-12 w-12 rounded-lg object-cover">
                             @else
                                 <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-surface-container-high">
-                                    <flux:icon user class="h-6 w-6 text-on-surface-variant"/>
+                                    <flux:icon icon="user" class="h-6 w-6 text-on-surface-variant"/>
                                 </div>
                             @endif
                             <div>
@@ -133,7 +133,7 @@
                     @if($user->favorite_coach)
                         <div class="flex items-center gap-3 p-3 bg-surface-container/30 rounded-lg">
                             <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-surface-container-high">
-                                <flux:icon academic-cap class="h-6 w-6 text-on-surface-variant"/>
+                                <flux:icon icon="academic-cap" class="h-6 w-6 text-on-surface-variant"/>
                             </div>
                             <div>
                                 <div class="text-label-bold text-on-surface">Favorite Coach</div>
@@ -150,7 +150,7 @@
             <!-- Matchday Activity -->
             <div class="glass-card rounded-xl p-6">
                 <h3 class="text-headline-md text-on-surface mb-4 flex items-center gap-2">
-                    <flux:icon bolt class="h-5 w-5 text-primary-container"/>
+                    <flux:icon icon="bolt" class="h-5 w-5 text-primary-container"/>
                     Matchday Activity
                 </h3>
                 <div class="text-center py-4">
@@ -165,7 +165,7 @@
             <!-- Fan Ranking -->
             <div class="glass-card rounded-xl p-6">
                 <h3 class="text-headline-md text-on-surface mb-4 flex items-center gap-2">
-                    <flux:icon trophy class="h-5 w-5 text-primary-container"/>
+                    <flux:icon icon="trophy" class="h-5 w-5 text-primary-container"/>
                     Fan Ranking
                 </h3>
                 <div class="text-center py-4">
@@ -182,7 +182,7 @@
             <!-- Achievements/Badges -->
             <div class="glass-card rounded-xl p-6">
                 <h3 class="text-headline-md text-on-surface mb-4 flex items-center gap-2">
-                    <flux:icon star class="h-5 w-5 text-primary-container"/>
+                    <flux:icon icon="star" class="h-5 w-5 text-primary-container"/>
                     Achievements
                 </h3>
                 <div class="flex flex-wrap gap-2">
@@ -205,7 +205,7 @@
             <!-- Recent Posts -->
             <div class="glass-card rounded-xl p-6">
                 <h3 class="text-headline-md text-on-surface mb-4 flex items-center gap-2">
-                    <flux:icon document-text class="h-5 w-5 text-primary-container"/>
+                    <flux:icon icon="document-text" class="h-5 w-5 text-primary-container"/>
                     Recent Posts
                 </h3>
                 <div class="space-y-3">
@@ -227,7 +227,7 @@
             <!-- Recent Comments -->
             <div class="glass-card rounded-xl p-6">
                 <h3 class="text-headline-md text-on-surface mb-4 flex items-center gap-2">
-                    <flux:icon chat-bubble-bottom-center class="h-5 w-5 text-primary-container"/>
+                    <flux:icon icon="chat-bubble-bottom-center" class="h-5 w-5 text-primary-container"/>
                     Recent Comments
                 </h3>
                 <div class="space-y-3">
@@ -251,7 +251,7 @@
         @if($topCommunities && $topCommunities->count() > 0)
             <div class="mt-6 glass-card rounded-xl p-6">
                 <h3 class="text-headline-md text-on-surface mb-4 flex items-center gap-2">
-                    <flux:icon user-group class="h-5 w-5 text-primary-container"/>
+                    <flux:icon icon="user-group" class="h-5 w-5 text-primary-container"/>
                     Top Communities
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -262,7 +262,7 @@
                                 <img src="{{ $community->logo_url }}" alt="{{ $community->name }}" class="h-10 w-10 rounded-lg object-contain">
                             @else
                                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-container-high">
-                                    <flux:icon user-group class="h-5 w-5 text-on-surface-variant"/>
+                                    <flux:icon icon="user-group" class="h-5 w-5 text-on-surface-variant"/>
                                 </div>
                             @endif
                             <div>

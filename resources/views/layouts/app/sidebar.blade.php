@@ -164,7 +164,7 @@
         {{ $slot }}
 
         <!-- Bottom Navigation (Mobile Only) -->
-        <livewire:match.nav-count />
+        <livewire:matches.nav-count />
         <x-bottom-nav />
 
         @fluxScripts

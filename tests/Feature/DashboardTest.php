@@ -24,4 +24,16 @@ class DashboardTest extends TestCase
         $response = $this->get(route('dashboard'));
         $response->assertOk();
     }
+
+    public function test_usernames_are_automatically_generated_on_creation(): void
+    {
+        $user = User::create([
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+            'password' => 'password',
+        ]);
+
+        $this->assertNotNull($user->username);
+        $this->assertEquals('john-doe', $user->username);
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -68,6 +69,43 @@ class User extends Authenticatable
             'is_banned' => 'boolean',
             'banned_at' => 'datetime',
         ];
+    }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (User $user) {
+            if (!$user->username) {
+                $user->username = static::generateUniqueUsername($user->name);
+            }
+        });
+    }
+
+    /**
+     * Generate a unique username from a name.
+     */
+    public static function generateUniqueUsername(string $name): string
+    {
+        $username = Str::slug($name);
+
+        if (empty($username)) {
+            $username = 'user-' . Str::random(8);
+        }
+
+        if (User::where('username', $username)->exists()) {
+            $username .= '-' . Str::random(5);
+        }
+
+        // Ensure it stays unique even after appending random chars
+        $count = 0;
+        while (User::where('username', $username)->exists() && $count < 10) {
+            $username .= Str::random(1);
+            $count++;
+        }
+
+        return $username;
     }
 
     // ── Relationships ──────────────────────────────────────
@@ -214,5 +252,20 @@ class User extends Authenticatable
             ->take(2)
             ->map(fn($word) => Str::substr($word, 0, 1))
             ->implode('');
+    }
+
+    public function getNextRankPoints(): int
+    {
+        $points = $this->points ?? 0;
+
+        return match(true) {
+            $points < 100 => 100,
+            $points < 500 => 500,
+            $points < 1000 => 1000,
+            $points < 2500 => 2500,
+            $points < 5000 => 5000,
+            $points < 10000 => 10000,
+            default => 0,
+        };
     }
 }

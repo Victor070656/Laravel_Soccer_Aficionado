@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Services\FootballApiService;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -24,6 +26,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+
+        View::composer('components.bottom-nav', function ($view) {
+            $api = app(FootballApiService::class);
+            $liveMatches = $api->getLiveFixtures();
+            $view->with('liveMatchCount', count($liveMatches));
+        });
     }
 
     /**
