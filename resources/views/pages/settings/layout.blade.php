@@ -19,7 +19,7 @@
         <flux:heading size="lg" class="!text-xl !font-bold">{{ $heading ?? '' }}</flux:heading>
         <flux:subheading class="mt-1">{{ $subheading ?? '' }}</flux:subheading>
 
-        <div class="mt-6 w-full max-w-lg">
+        <div class="mt-6 w-full">
             {{ $slot }}
         </div>
     </div>
