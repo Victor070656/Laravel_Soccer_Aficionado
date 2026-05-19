@@ -68,7 +68,7 @@ class ClubSeeder extends Seeder
                     'jersey_number' => $i + 1,
                 ], [
                     'name' => $playerName,
-                    'slug' => Str::slug($playerName) . '-' . ($club->id * 100 + $i),
+                    'slug' => Str::slug($playerName).'-'.($club->id * 100 + $i),
                     'nationality' => $nationalities[array_rand($nationalities)],
                     'date_of_birth' => fake()->dateTimeBetween('-35 years', '-18 years'),
                     'height_cm' => rand(170, 195),

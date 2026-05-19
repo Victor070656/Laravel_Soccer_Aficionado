@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AdApiController;
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClubApiController;
 use App\Http\Controllers\Api\CommunityApiController;
 use App\Http\Controllers\Api\CompetitionApiController;

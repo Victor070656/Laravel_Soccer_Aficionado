@@ -43,7 +43,7 @@ class Post extends Model
         return Attribute::make(
             get: function (mixed $value) {
                 $paths = is_string($value) ? json_decode($value, true) : $value;
-                if (!$paths || !is_array($paths)) {
+                if (! $paths || ! is_array($paths)) {
                     return null;
                 }
 
@@ -57,13 +57,13 @@ class Post extends Model
 
                     return [
                         'id' => $index + 1,
-                        'url' => asset('storage/' . $path),
+                        'url' => asset('storage/'.$path),
                         'type' => in_array($ext, ['mp4', 'webm', 'mov']) ? 'video' : 'image',
                         'thumbnail' => null,
                     ];
                 })->all();
             },
-            set: fn($value) => is_array($value) ? json_encode($value) : $value,
+            set: fn ($value) => is_array($value) ? json_encode($value) : $value,
         );
     }
 

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
 use App\Models\Poll;
+use App\Models\Post;
 use App\Services\FootballApiService;
 use Illuminate\Http\Request;
 
@@ -11,8 +11,7 @@ class DashboardController extends Controller
 {
     public function __construct(
         protected FootballApiService $api,
-    ) {
-    }
+    ) {}
 
     public function __invoke(Request $request)
     {

@@ -44,7 +44,7 @@ class AuthController extends BaseApiController
 
         $user = User::where('email', $validated['email'])->first();
 
-        if (!$user || !Hash::check($validated['password'], $user->password)) {
+        if (! $user || ! Hash::check($validated['password'], $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
@@ -121,13 +121,14 @@ class AuthController extends BaseApiController
                             ];
                         }
                     } catch (\Throwable $e) {
-                        \Illuminate\Support\Facades\Log::warning("Failed to process club API team ID {$apiTeamId}: " . $e->getMessage());
+                        \Illuminate\Support\Facades\Log::warning("Failed to process club API team ID {$apiTeamId}: ".$e->getMessage());
+
                         continue;
                     }
                 }
                 $user->favoriteClubs()->sync($syncData);
             } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('Failed to sync favorite clubs: ' . $e->getMessage());
+                \Illuminate\Support\Facades\Log::error('Failed to sync favorite clubs: '.$e->getMessage());
             }
         }
 

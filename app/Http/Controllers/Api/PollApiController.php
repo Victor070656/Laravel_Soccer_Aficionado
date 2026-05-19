@@ -11,8 +11,7 @@ class PollApiController extends BaseApiController
 {
     public function __construct(
         protected GamificationService $gamification,
-    ) {
-    }
+    ) {}
 
     public function index()
     {
@@ -30,6 +29,7 @@ class PollApiController extends BaseApiController
             $poll->user_vote = $vote?->poll_option_id ?? null;
             $poll->created_by = $poll->user;
             $poll->options->each(fn ($opt) => $opt->setRelation('poll', $poll));
+
             return $poll;
         });
 
@@ -38,7 +38,7 @@ class PollApiController extends BaseApiController
 
     public function show(Poll $poll)
     {
-        $poll->load(['options' => fn($q) => $q->orderByDesc('votes_count'), 'user', 'match.homeClub', 'match.awayClub']);
+        $poll->load(['options' => fn ($q) => $q->orderByDesc('votes_count'), 'user', 'match.homeClub', 'match.awayClub']);
 
         $userVote = null;
         if (auth('sanctum')->check()) {
@@ -58,7 +58,7 @@ class PollApiController extends BaseApiController
     {
         $user = $request->user();
 
-        if (!$poll->isOpen()) {
+        if (! $poll->isOpen()) {
             return $this->error('This poll is closed.', 422);
         }
 

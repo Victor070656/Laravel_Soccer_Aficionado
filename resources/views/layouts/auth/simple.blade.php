@@ -24,7 +24,9 @@
             {{-- Left Panel: Hero Content --}}
             <section class="relative hidden lg:flex lg:w-7/12 xl:w-8/12 flex-col justify-center items-start px-12 overflow-hidden">
                 <div class="absolute inset-0 z-0">
-                    <img alt="Stadium under lights" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFURR004hFfMbVxGaCy9t4XsY8opGK0-gBBOVsH9EKiIwf9MuqExHrX9nw2_CSz3JPGP5ofQOOGM4b5LuFyBYht6o4HDVb0SIt2mm2l4LSiSw7lnso2iAcM2Y0bhbE3xT3wxMaBM_XDIDs3yj4GyXCbTZcM2Pyd5nZCQnRi80Wxvh85uL-BMN5zAot2cALcuUZNZ_gTghhPCi3pSc52cV90wpO4IZs4ckWKcbLtOBZ3XFxDCrVDCapXzLsBPSBItzDOGq5vcAFNrk"/>
+                    <video autoplay muted loop playsinline class="h-full w-full object-cover">
+                        <source src="{{ asset('assets/soca.mp4') }}" type="video/mp4">
+                    </video>
                     <div class="absolute inset-0 stadium-overlay z-10"></div>
                     <div class="absolute inset-0 pitch-mesh z-20"></div>
                 </div>

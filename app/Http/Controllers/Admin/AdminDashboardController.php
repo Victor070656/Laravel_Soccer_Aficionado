@@ -10,7 +10,6 @@ use App\Models\Poll;
 use App\Models\Post;
 use App\Models\Report;
 use App\Models\User;
-use Illuminate\Http\Request;
 
 class AdminDashboardController extends Controller
 {
@@ -28,7 +27,7 @@ class AdminDashboardController extends Controller
             'new_users_today' => User::whereDate('created_at', today())->count(),
             'pending_posts' => Post::where('is_approved', false)->count(),
             'pending_comments' => Comment::where('is_approved', false)->count(),
-            'active_polls' => Poll::where('is_active', true)->where(fn($q) => $q->whereNull('closes_at')->orWhere('closes_at', '>', now()))->count(),
+            'active_polls' => Poll::where('is_active', true)->where(fn ($q) => $q->whereNull('closes_at')->orWhere('closes_at', '>', now()))->count(),
         ];
 
         $recentReports = Report::with(['reporter', 'reportable'])

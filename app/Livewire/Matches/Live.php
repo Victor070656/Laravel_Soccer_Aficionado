@@ -28,12 +28,13 @@ class Live extends Component
                 $match = (object) FootballApiService::normaliseFixture($raw);
                 // Attach events for each live match
                 $match->events = collect($api->getFixtureEvents($match->id))
-                    ->map(fn(array $e) => (object) FootballApiService::normaliseEvent($e));
+                    ->map(fn (array $e) => (object) FootballApiService::normaliseEvent($e));
+
                 return $match;
             });
 
         return view('livewire.matches.live', [
-            'liveMatches' => $liveMatches
+            'liveMatches' => $liveMatches,
         ]);
     }
 }

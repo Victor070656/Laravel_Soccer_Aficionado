@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Communities;
 
-use App\Models\Club;
 use App\Models\Community;
 use App\Models\Post;
 use Livewire\Component;
@@ -41,7 +40,7 @@ class Show extends Component
 
     public function join()
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return;
         }
 

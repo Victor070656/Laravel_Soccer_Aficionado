@@ -13,8 +13,8 @@ class ModerationController extends Controller
 {
     public function __construct(
         protected NotificationService $notifications,
-    ) {
-    }
+    ) {}
+
     public function reports(Request $request)
     {
         $query = Report::with(['reporter', 'reportable', 'reviewer']);

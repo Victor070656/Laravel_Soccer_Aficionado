@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\FootballApiService;
-use Illuminate\Http\Request;
 
 /**
  * Admin management for competitions sourced from TheSportsDB API.
@@ -16,8 +15,7 @@ class CompetitionManagementController extends Controller
 {
     public function __construct(
         protected FootballApiService $api,
-    ) {
-    }
+    ) {}
 
     /**
      * List all configured competitions from the API.
@@ -25,7 +23,7 @@ class CompetitionManagementController extends Controller
     public function index()
     {
         $competitions = collect($this->api->getLeaguesFull())
-            ->map(fn(array $l) => (object) $l);
+            ->map(fn (array $l) => (object) $l);
 
         return view('admin.competitions.index', compact('competitions') + [
             'seasonDisplay' => $this->api->seasonDisplay(),
@@ -39,7 +37,7 @@ class CompetitionManagementController extends Controller
     {
         $league = $this->api->getLeague($id);
 
-        if (!$league) {
+        if (! $league) {
             abort(404, 'Competition not found.');
         }
 
@@ -48,23 +46,23 @@ class CompetitionManagementController extends Controller
         // Standings
         $rawStandings = $this->api->getStandings($id);
         $standings = collect();
-        if (!empty($rawStandings)) {
+        if (! empty($rawStandings)) {
             $firstGroup = $rawStandings[0] ?? [];
             $standings = collect($firstGroup)
-                ->map(fn(array $row) => (object) FootballApiService::normaliseStandingRow($row));
+                ->map(fn (array $row) => (object) FootballApiService::normaliseStandingRow($row));
         }
 
         // Teams
         $teams = collect($this->api->getTeamsByLeague($id))
-            ->map(fn(array $raw) => (object) FootballApiService::normaliseTeam($raw));
+            ->map(fn (array $raw) => (object) FootballApiService::normaliseTeam($raw));
 
         // Upcoming matches
         $upcomingMatches = collect($this->api->getUpcomingFixtures(10, $id))
-            ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
+            ->map(fn (array $raw) => (object) FootballApiService::normaliseFixture($raw));
 
         // Recent results
         $recentResults = collect($this->api->getFinishedFixtures(10, $id))
-            ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
+            ->map(fn (array $raw) => (object) FootballApiService::normaliseFixture($raw));
 
         return view('admin.competitions.show', compact('competition', 'standings', 'teams', 'upcomingMatches', 'recentResults') + [
             'seasonDisplay' => $this->api->seasonDisplay(),

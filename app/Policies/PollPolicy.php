@@ -19,7 +19,7 @@ class PollPolicy
 
     public function create(User $user): bool
     {
-        return !$user->is_banned;
+        return ! $user->is_banned;
     }
 
     public function update(User $user, Poll $poll): bool

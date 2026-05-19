@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Community;
-use App\Models\Club;
 use Illuminate\Http\Request;
 
 class CommunityManagementController extends Controller
@@ -28,7 +27,7 @@ class CommunityManagementController extends Controller
 
     public function toggleActive(Community $community)
     {
-        $community->update(['is_active' => !$community->is_active]);
+        $community->update(['is_active' => ! $community->is_active]);
 
         $status = $community->is_active ? 'activated' : 'deactivated';
 

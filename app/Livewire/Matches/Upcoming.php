@@ -24,10 +24,10 @@ class Upcoming extends Component
     public function render(FootballApiService $api)
     {
         $upcomingMatches = collect($api->getUpcomingFixtures(5))
-            ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
+            ->map(fn (array $raw) => (object) FootballApiService::normaliseFixture($raw));
 
         return view('livewire.matches.upcoming', [
-            'upcomingMatches' => $upcomingMatches
+            'upcomingMatches' => $upcomingMatches,
         ]);
     }
 }

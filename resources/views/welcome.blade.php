@@ -64,7 +64,12 @@
         @endphp
 
         <section class="relative flex min-h-screen items-center overflow-hidden px-4 pt-28 sm:px-6 lg:px-8 lg:pt-36">
-            <div class="mx-auto grid w-full max-w-7xl gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+            <video autoplay muted loop playsinline class="absolute inset-0 h-full w-full object-cover" style="z-index: 0;">
+                <source src="{{ asset('assets/soca.mp4') }}" type="video/mp4">
+            </video>
+            <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80" style="z-index: 1;"></div>
+            <div class="pointer-events-none absolute inset-0 opacity-20" style="background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 72px 72px; z-index: 2;"></div>
+            <div class="mx-auto grid w-full max-w-7xl gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:items-center relative" style="z-index: 3;">
                 <div class="relative z-10 max-w-3xl">
                     <div class="mb-6 inline-flex items-center gap-3 rounded-full border border-secondary/20 bg-secondary/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.28em] text-secondary backdrop-blur-md animate-fade-in-up badge-live">
                         <span class="h-2 w-2 rounded-full bg-secondary shadow-[0_0_14px_rgba(74,225,118,0.8)]"></span>

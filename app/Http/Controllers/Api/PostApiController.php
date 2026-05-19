@@ -9,7 +9,6 @@ use App\Models\Post;
 use App\Services\GamificationService;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class PostApiController extends BaseApiController
 {
@@ -18,11 +17,7 @@ class PostApiController extends BaseApiController
     public function __construct(
         protected GamificationService $gamification,
         protected NotificationService $notifications,
-    ) {
-    }
-
-
-
+    ) {}
 
     public function index(Request $request)
     {
@@ -54,7 +49,7 @@ class PostApiController extends BaseApiController
         $post->load([
             'user',
             'community',
-            'comments' => fn($q) => $q->with(['user', 'replies.user'])->where('is_approved', true)->latest(),
+            'comments' => fn ($q) => $q->with(['user', 'replies.user'])->where('is_approved', true)->latest(),
         ]);
         $post->loadCount(['likes', 'comments', 'shares']);
 
@@ -81,8 +76,8 @@ class PostApiController extends BaseApiController
         $post = $request->user()->posts()->create([
             'body' => $validated['body'],
             'community_id' => $validated['community_id'] ?? null,
-            'type' => !empty($mediaPaths) ? 'image' : 'text',
-            'media' => !empty($mediaPaths) ? $mediaPaths : null,
+            'type' => ! empty($mediaPaths) ? 'image' : 'text',
+            'media' => ! empty($mediaPaths) ? $mediaPaths : null,
         ]);
 
         $this->extractAndSaveMentions($validated['body'], $post);
@@ -97,7 +92,7 @@ class PostApiController extends BaseApiController
 
     public function destroy(Request $request, Post $post)
     {
-        if ($post->user_id !== $request->user()->id && !$request->user()->isAdmin()) {
+        if ($post->user_id !== $request->user()->id && ! $request->user()->isAdmin()) {
             return $this->error('Unauthorized.', 403);
         }
 
@@ -153,7 +148,7 @@ class PostApiController extends BaseApiController
 
     public function update(Request $request, Post $post)
     {
-        if ($post->user_id !== $request->user()->id && !$request->user()->isAdmin()) {
+        if ($post->user_id !== $request->user()->id && ! $request->user()->isAdmin()) {
             return $this->error('Unauthorized.', 403);
         }
 
@@ -193,11 +188,11 @@ class PostApiController extends BaseApiController
 
     public function pin(Request $request, Post $post)
     {
-        if (!$request->user()->isAdmin()) {
+        if (! $request->user()->isAdmin()) {
             return $this->error('Unauthorized.', 403);
         }
 
-        $post->update(['is_pinned' => !$post->is_pinned]);
+        $post->update(['is_pinned' => ! $post->is_pinned]);
 
         $status = $post->is_pinned ? 'pinned' : 'unpinned';
 
@@ -206,7 +201,7 @@ class PostApiController extends BaseApiController
 
     public function deleteComment(Request $request, Comment $comment)
     {
-        if ($comment->user_id !== $request->user()->id && !$request->user()->isAdmin()) {
+        if ($comment->user_id !== $request->user()->id && ! $request->user()->isAdmin()) {
             return $this->error('Unauthorized.', 403);
         }
 

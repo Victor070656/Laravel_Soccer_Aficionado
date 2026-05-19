@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Poll;
 use App\Models\FootballMatch;
+use App\Models\Poll;
 use Illuminate\Http\Request;
 
 class PollManagementController extends Controller
@@ -20,8 +20,8 @@ class PollManagementController extends Controller
 
         if ($request->filled('status')) {
             match ($request->status) {
-                'active' => $query->where('is_active', true)->where(fn($q) => $q->whereNull('closes_at')->orWhere('closes_at', '>', now())),
-                'closed' => $query->where(fn($q) => $q->where('is_active', false)->orWhere('closes_at', '<=', now())),
+                'active' => $query->where('is_active', true)->where(fn ($q) => $q->whereNull('closes_at')->orWhere('closes_at', '>', now())),
+                'closed' => $query->where(fn ($q) => $q->where('is_active', false)->orWhere('closes_at', '<=', now())),
                 default => null,
             };
         }

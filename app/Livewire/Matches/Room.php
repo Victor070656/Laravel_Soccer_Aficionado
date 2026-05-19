@@ -10,8 +10,11 @@ use Livewire\Component;
 class Room extends Component
 {
     public int $matchId;
+
     public string $newComment = '';
+
     public array $availableEmojis = [];
+
     public array $recentEmojiStorm = [];
 
     public function mount(int $id): void
@@ -24,13 +27,13 @@ class Room extends Component
     {
         $raw = $api->getFixture($this->matchId);
 
-        if (!$raw) {
+        if (! $raw) {
             abort(404, 'Match not found.');
         }
 
         $match = (object) FootballApiService::normaliseFixture($raw);
         $events = collect($api->getFixtureEvents($this->matchId))
-            ->map(fn(array $e) => (object) FootballApiService::normaliseEvent($e));
+            ->map(fn (array $e) => (object) FootballApiService::normaliseEvent($e));
 
         // Local comments and reactions
         $comments = MatchComment::where('match_id', $this->matchId)
@@ -50,15 +53,15 @@ class Room extends Component
             ->where('created_at', '>=', now()->subSeconds(5))
             ->get()
             ->groupBy('emoji')
-            ->map(fn($group) => $group->count())
+            ->map(fn ($group) => $group->count())
             ->sortDesc()
             ->take(3)
             ->toArray();
 
         // Heat meter: comments + reactions in last 60 seconds
         $heatCount = MatchComment::where('match_id', $this->matchId)
-                ->where('created_at', '>=', now()->subSeconds(60))
-                ->count()
+            ->where('created_at', '>=', now()->subSeconds(60))
+            ->count()
             + MatchAction::where('match_id', $this->matchId)
                 ->where('created_at', '>=', now()->subSeconds(60))
                 ->count();
@@ -102,7 +105,7 @@ class Room extends Component
             'newComment' => 'required|string|max:280',
         ]);
 
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return;
         }
 
@@ -118,7 +121,7 @@ class Room extends Component
 
     public function react(string $emoji)
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return;
         }
 

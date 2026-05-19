@@ -2,24 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
-use App\Models\Comment;
-use App\Models\Like;
-use App\Models\Share;
 use App\Concerns\ExtractsMentions;
+use App\Models\Comment;
+use App\Models\Post;
 use App\Services\GamificationService;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
     use ExtractsMentions;
+
     public function __construct(
         protected GamificationService $gamification,
         protected NotificationService $notifications,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request)
     {
@@ -39,7 +36,7 @@ class PostController extends Controller
         $post->load([
             'user',
             'community',
-            'comments' => fn($q) => $q->with(['user', 'replies.user'])->where('is_approved', true)->latest(),
+            'comments' => fn ($q) => $q->with(['user', 'replies.user'])->where('is_approved', true)->latest(),
         ]);
 
         return view('posts.show', compact('post'));
@@ -65,8 +62,8 @@ class PostController extends Controller
         $post = $request->user()->posts()->create([
             'body' => $validated['body'],
             'community_id' => $validated['community_id'] ?? null,
-            'type' => !empty($mediaPaths) ? 'image' : 'text',
-            'media' => !empty($mediaPaths) ? $mediaPaths : null,
+            'type' => ! empty($mediaPaths) ? 'image' : 'text',
+            'media' => ! empty($mediaPaths) ? $mediaPaths : null,
         ]);
 
         $this->extractAndSaveMentions($validated['body'], $post);
@@ -177,7 +174,7 @@ class PostController extends Controller
     {
         $this->authorize('pin', $post);
 
-        $post->update(['is_pinned' => !$post->is_pinned]);
+        $post->update(['is_pinned' => ! $post->is_pinned]);
 
         $status = $post->is_pinned ? 'pinned' : 'unpinned';
 

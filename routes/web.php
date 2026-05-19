@@ -1,5 +1,15 @@
 <?php
 
+use App\Http\Controllers\Admin\AdManagementController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AnalyticsController;
+use App\Http\Controllers\Admin\ClubManagementController;
+use App\Http\Controllers\Admin\CommunityManagementController;
+use App\Http\Controllers\Admin\CompetitionManagementController;
+use App\Http\Controllers\Admin\MatchManagementController;
+use App\Http\Controllers\Admin\ModerationController;
+use App\Http\Controllers\Admin\PollManagementController;
+use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\CompetitionController;
@@ -12,26 +22,16 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SearchController;
-use App\Http\Controllers\Admin\AdManagementController;
-use App\Http\Controllers\Admin\AdminDashboardController;
-use App\Http\Controllers\Admin\AnalyticsController;
-use App\Http\Controllers\Admin\ClubManagementController;
-use App\Http\Controllers\Admin\CommunityManagementController;
-use App\Http\Controllers\Admin\CompetitionManagementController;
-use App\Http\Controllers\Admin\MatchManagementController;
-use App\Http\Controllers\Admin\ModerationController;
-use App\Http\Controllers\Admin\PollManagementController;
-use App\Http\Controllers\Admin\UserManagementController;
 use App\Services\FootballApiService;
 use Illuminate\Support\Facades\Route;
 
 // ── Public Routes ──────────────────────────────────────
 Route::get('/', function (FootballApiService $api) {
     $liveMatches = collect($api->getLiveFixtures())
-        ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
+        ->map(fn (array $raw) => (object) FootballApiService::normaliseFixture($raw));
 
     $upcomingMatches = collect($api->getUpcomingFixtures(8))
-        ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
+        ->map(fn (array $raw) => (object) FootballApiService::normaliseFixture($raw));
 
     return view('welcome', compact('liveMatches', 'upcomingMatches'));
 })->name('home');
@@ -170,7 +170,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 // ── Ad Click Tracking ──────────────────────────────────
 Route::post('/ad/{ad}/click', function (\App\Models\Ad $ad) {
     $ad->increment('click_count');
+
     return response()->noContent();
 })->name('ad.click');
 
-require __DIR__ . '/settings.php';
+require __DIR__.'/settings.php';

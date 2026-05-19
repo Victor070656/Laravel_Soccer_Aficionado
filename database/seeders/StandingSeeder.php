@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Club;
 use App\Models\Competition;
 use App\Models\Standing;
 use Illuminate\Database\Seeder;
@@ -39,7 +38,7 @@ class StandingSeeder extends Seeder
                         'goals_against' => $goalsAgainst,
                         'goal_difference' => $goalsFor - $goalsAgainst,
                         'points' => ($won * 3) + $drawn,
-                        'form' => collect(array_map(fn() => collect(['W', 'D', 'L'])->random(), range(1, 5)))->implode(''),
+                        'form' => collect(array_map(fn () => collect(['W', 'D', 'L'])->random(), range(1, 5)))->implode(''),
                     ]
                 );
                 $position++;

@@ -97,6 +97,7 @@ class Club extends Model
                 'founded_year' => $team['founded'] ?? null,
                 'is_active' => true,
             ]);
+
             return $club;
         }
 
@@ -115,6 +116,7 @@ class Club extends Model
                 'founded_year' => $team['founded'] ?? null,
                 'is_active' => true,
             ]);
+
             return $club;
         }
 
@@ -134,7 +136,7 @@ class Club extends Model
 
     public function getLogoUrlAttribute(): ?string
     {
-        if (!$this->logo) {
+        if (! $this->logo) {
             return null;
         }
 
@@ -143,7 +145,7 @@ class Club extends Model
             return $this->logo;
         }
 
-        return asset('storage/' . $this->logo);
+        return asset('storage/'.$this->logo);
     }
 
     public function getAllMatches()

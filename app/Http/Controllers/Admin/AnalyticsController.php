@@ -11,7 +11,6 @@ use App\Models\Post;
 use App\Models\Report;
 use App\Models\User;
 use App\Models\Vote;
-use Illuminate\Support\Facades\DB;
 
 class AnalyticsController extends Controller
 {

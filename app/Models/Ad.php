@@ -35,7 +35,7 @@ class Ad extends Model
      */
     public function getImageUrlAttribute(): string
     {
-        return asset('storage/' . $this->image);
+        return asset('storage/'.$this->image);
     }
 
     /**
@@ -43,7 +43,7 @@ class Ad extends Model
      */
     public function isRunning(): bool
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return false;
         }
 

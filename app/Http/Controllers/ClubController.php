@@ -9,8 +9,7 @@ class ClubController extends Controller
 {
     public function __construct(
         protected FootballApiService $api,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request)
     {
@@ -20,7 +19,7 @@ class ClubController extends Controller
         );
 
         $teams = collect($allTeams)
-            ->map(fn(array $raw) => (object) FootballApiService::normaliseTeam($raw));
+            ->map(fn (array $raw) => (object) FootballApiService::normaliseTeam($raw));
 
         // Simple pagination
         $page = max(1, (int) $request->input('page', 1));
@@ -28,7 +27,7 @@ class ClubController extends Controller
         $total = $teams->count();
         $paginatedTeams = $teams->slice(($page - 1) * $perPage, $perPage)->values();
 
-        $leagues = collect($this->api->getLeagues())->map(fn(array $l) => (object) $l);
+        $leagues = collect($this->api->getLeagues())->map(fn (array $l) => (object) $l);
 
         return view('clubs.index', [
             'clubs' => $paginatedTeams,
@@ -48,7 +47,7 @@ class ClubController extends Controller
     {
         $raw = $this->api->getTeam($id);
 
-        if (!$raw) {
+        if (! $raw) {
             abort(404, 'Club not found.');
         }
 
@@ -56,15 +55,15 @@ class ClubController extends Controller
 
         // Squad
         $squad = collect($this->api->getTeamSquad($id))
-            ->map(fn(array $p) => (object) FootballApiService::normaliseSquadPlayer($p));
+            ->map(fn (array $p) => (object) FootballApiService::normaliseSquadPlayer($p));
 
         // Recent results
         $recentMatches = collect($this->api->getTeamFixtures($id, 'finished', 5))
-            ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
+            ->map(fn (array $raw) => (object) FootballApiService::normaliseFixture($raw));
 
         // Upcoming matches
         $upcomingMatches = collect($this->api->getTeamFixtures($id, 'upcoming', 5))
-            ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
+            ->map(fn (array $raw) => (object) FootballApiService::normaliseFixture($raw));
 
         return view('clubs.show', compact('club', 'squad', 'recentMatches', 'upcomingMatches'));
     }

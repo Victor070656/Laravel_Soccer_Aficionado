@@ -13,7 +13,6 @@ trait ExtractsMentions
      *
      * @param  string  $text  The text to extract mentions from
      * @param  Model  $mentionable  The model being mentioned in (Post or Comment)
-     * @return void
      */
     protected function extractAndSaveMentions(string $text, Model $mentionable): void
     {

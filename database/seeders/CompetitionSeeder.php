@@ -98,7 +98,7 @@ class CompetitionSeeder extends Seeder
             $clubNames = $data['clubs'];
             unset($data['clubs']);
 
-            $competition = Competition::firstOrCreate(['name' => $data['name'], 'season' => $data['season']], array_merge($data, ['slug' => Str::slug($data['name'] . '-' . $data['season'])]));
+            $competition = Competition::firstOrCreate(['name' => $data['name'], 'season' => $data['season']], array_merge($data, ['slug' => Str::slug($data['name'].'-'.$data['season'])]));
 
             $clubs = Club::whereIn('name', $clubNames)->pluck('id');
             $competition->clubs()->syncWithoutDetaching($clubs);

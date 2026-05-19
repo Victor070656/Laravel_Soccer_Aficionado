@@ -65,12 +65,12 @@ class Community extends Model
 
     public function getAvatarUrlAttribute(): ?string
     {
-        return $this->avatar ? asset('storage/' . $this->avatar) : null;
+        return $this->avatar ? asset('storage/'.$this->avatar) : null;
     }
 
     public function getBannerUrlAttribute(): ?string
     {
-        return $this->banner ? asset('storage/' . $this->banner) : null;
+        return $this->banner ? asset('storage/'.$this->banner) : null;
     }
 
     public function isModerator(User $user): bool

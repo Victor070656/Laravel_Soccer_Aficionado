@@ -15,8 +15,8 @@ class Show extends Component
             'favoriteClubs',
             'favoritePlayer.club',
             'badges',
-            'posts' => fn($query) => $query->latest()->limit(5),
-            'comments' => fn($query) => $query->latest()->limit(5),
+            'posts' => fn ($query) => $query->latest()->limit(5),
+            'comments' => fn ($query) => $query->latest()->limit(5),
             'followers',
             'following',
             'communities',
@@ -65,7 +65,7 @@ class Show extends Component
             ->where('created_at', '>=', now()->subDays(30))
             ->whereIn('type', ['match_view', 'match_reaction', 'prediction'])
             ->get()
-            ->groupBy(fn($activity) => $activity->created_at->toDateString())
+            ->groupBy(fn ($activity) => $activity->created_at->toDateString())
             ->count();
     }
 

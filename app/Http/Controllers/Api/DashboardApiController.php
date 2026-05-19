@@ -14,8 +14,7 @@ class DashboardApiController extends BaseApiController
 
     public function __construct(
         protected FootballApiService $api,
-    ) {
-    }
+    ) {}
 
     public function __invoke(Request $request)
     {
@@ -29,12 +28,12 @@ class DashboardApiController extends BaseApiController
             ->paginate(20);
 
         $liveMatches = array_map(
-            fn(array $raw) => FootballApiService::normaliseFixture($raw),
+            fn (array $raw) => FootballApiService::normaliseFixture($raw),
             $this->api->getLiveFixtures(),
         );
 
         $upcomingMatches = array_map(
-            fn(array $raw) => FootballApiService::normaliseFixture($raw),
+            fn (array $raw) => FootballApiService::normaliseFixture($raw),
             $this->api->getUpcomingFixtures(5),
         );
 
@@ -51,6 +50,7 @@ class DashboardApiController extends BaseApiController
             $poll->user_vote = $vote?->poll_option_id ?? null;
             $poll->created_by = $poll->user;
             $poll->options->each(fn ($opt) => $opt->setRelation('poll', $poll));
+
             return $poll;
         });
 

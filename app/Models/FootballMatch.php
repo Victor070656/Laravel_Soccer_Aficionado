@@ -112,7 +112,7 @@ class FootballMatch extends Model
 
     public function getWinner(): ?Club
     {
-        if (!$this->isFinished() || $this->home_score === $this->away_score) {
+        if (! $this->isFinished() || $this->home_score === $this->away_score) {
             return null;
         }
 

@@ -12,8 +12,7 @@ class ProfileController extends Controller
     public function __construct(
         protected GamificationService $gamification,
         protected NotificationService $notifications,
-    ) {
-    }
+    ) {}
 
     public function show(User $user)
     {

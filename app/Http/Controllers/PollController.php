@@ -11,8 +11,7 @@ class PollController extends Controller
 {
     public function __construct(
         protected GamificationService $gamification,
-    ) {
-    }
+    ) {}
 
     public function index()
     {
@@ -26,7 +25,7 @@ class PollController extends Controller
 
     public function show(Poll $poll)
     {
-        $poll->load(['options' => fn($q) => $q->orderByDesc('votes_count'), 'user', 'match.homeClub', 'match.awayClub']);
+        $poll->load(['options' => fn ($q) => $q->orderByDesc('votes_count'), 'user', 'match.homeClub', 'match.awayClub']);
 
         $userVote = null;
         if (auth()->check()) {
@@ -71,7 +70,7 @@ class PollController extends Controller
     {
         $user = $request->user();
 
-        if (!$poll->isOpen()) {
+        if (! $poll->isOpen()) {
             return back()->with('error', 'This poll is closed.');
         }
 

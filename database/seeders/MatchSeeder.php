@@ -2,12 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Club;
 use App\Models\Competition;
 use App\Models\FootballMatch;
 use App\Models\MatchEvent;
-use Illuminate\Database\Seeder;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
 
 class MatchSeeder extends Seeder
 {
@@ -17,8 +16,9 @@ class MatchSeeder extends Seeder
 
         foreach ($competitions as $competition) {
             $clubs = $competition->clubs;
-            if ($clubs->count() < 2)
+            if ($clubs->count() < 2) {
                 continue;
+            }
 
             // Create some past matches
             for ($i = 0; $i < min(8, $clubs->count()); $i++) {

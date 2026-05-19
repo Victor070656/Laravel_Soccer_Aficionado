@@ -4,7 +4,6 @@ namespace App\Livewire\Trending;
 
 use App\Models\Club;
 use App\Models\Post;
-use App\Models\User;
 use Illuminate\Support\Collection;
 use Livewire\Component;
 
@@ -33,8 +32,8 @@ class Index extends Component
             ->approved()
             ->where(function ($q) {
                 $q->where('type', 'tactical_opinion')
-                  ->orWhere('type', 'banter')
-                  ->orWhere('type', 'player_comparison');
+                    ->orWhere('type', 'banter')
+                    ->orWhere('type', 'player_comparison');
             })
             ->where('created_at', '>=', now()->subDays(2))
             ->orderByDesc('likes_count')
@@ -92,7 +91,7 @@ class Index extends Component
 
         foreach ($recentPosts as $body) {
             preg_match_all('/#(\w+)/', $body, $matches);
-            if (!empty($matches[1])) {
+            if (! empty($matches[1])) {
                 foreach ($matches[1] as $tag) {
                     $tag = strtolwer($tag);
                     $hashtags[$tag] = ($hashtags[$tag] ?? 0) + 1;
@@ -111,7 +110,7 @@ class Index extends Component
 
         foreach ($defaults as $tag => $count) {
             $tagLower = strtolwer(substr($tag, 1));
-            if (!isset($hashtags[$tagLower])) {
+            if (! isset($hashtags[$tagLower])) {
                 $hashtags[$tagLower] = $count;
             }
         }
@@ -120,7 +119,7 @@ class Index extends Component
 
         return collect($hashtags)->take(10)->map(function ($count, $tag) {
             return [
-                'tag' => '#' . ucfirst($tag),
+                'tag' => '#'.ucfirst($tag),
                 'count' => $count,
                 'trend' => $count > 300 ? 'hot' : ($count > 100 ? 'rising' : 'normal'),
             ];

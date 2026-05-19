@@ -3,8 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\Club;
-use App\Models\Community;
 use App\Models\Comment;
+use App\Models\Community;
+use App\Models\FootballMatch;
 use App\Models\Like;
 use App\Models\Poll;
 use App\Models\PollOption;
@@ -12,7 +13,6 @@ use App\Models\Post;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Vote;
-use App\Models\FootballMatch;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -35,8 +35,9 @@ class UserSeeder extends Seeder
             'bio' => 'Platform administrator',
             'points' => 500,
         ]);
-        if ($adminRole)
+        if ($adminRole) {
             $admin->roles()->syncWithoutDetaching([$adminRole->id]);
+        }
 
         // Create demo user
         $demo = User::firstOrCreate(['email' => 'fan@soccer-aficionado.com'], [
@@ -48,8 +49,9 @@ class UserSeeder extends Seeder
             'bio' => 'Passionate about football! ⚽',
             'points' => 150,
         ]);
-        if ($userRole)
+        if ($userRole) {
             $demo->roles()->syncWithoutDetaching([$userRole->id]);
+        }
 
         // Create additional users
         $users = collect([$admin, $demo]);
@@ -57,17 +59,18 @@ class UserSeeder extends Seeder
         $countries = ['Brazil', 'France', 'Italy', 'England', 'Japan', 'Egypt', 'Argentina', 'Germany', 'Nigeria', 'India'];
 
         foreach ($names as $i => $name) {
-            $user = User::firstOrCreate(['email' => strtolower(str_replace(' ', '.', $name)) . '@example.com'], [
+            $user = User::firstOrCreate(['email' => strtolower(str_replace(' ', '.', $name)).'@example.com'], [
                 'name' => $name,
                 'username' => strtolower(str_replace(' ', '', $name)),
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
                 'country' => $countries[$i],
-                'bio' => 'Football fan from ' . $countries[$i],
+                'bio' => 'Football fan from '.$countries[$i],
                 'points' => rand(10, 300),
             ]);
-            if ($userRole)
+            if ($userRole) {
                 $user->roles()->syncWithoutDetaching([$userRole->id]);
+            }
             $users->push($user);
         }
 
@@ -206,13 +209,13 @@ class UserSeeder extends Seeder
             $poll = Poll::create([
                 'user_id' => $users->random()->id,
                 'match_id' => $match->id,
-                'title' => 'Who will win: ' . $match->homeClub->name . ' vs ' . $match->awayClub->name . '?',
+                'title' => 'Who will win: '.$match->homeClub->name.' vs '.$match->awayClub->name.'?',
                 'closes_at' => $match->kick_off,
             ]);
 
-            $opt1 = PollOption::create(['poll_id' => $poll->id, 'label' => $match->homeClub->name . ' Win', 'votes_count' => 0]);
+            $opt1 = PollOption::create(['poll_id' => $poll->id, 'label' => $match->homeClub->name.' Win', 'votes_count' => 0]);
             $opt2 = PollOption::create(['poll_id' => $poll->id, 'label' => 'Draw', 'votes_count' => 0]);
-            $opt3 = PollOption::create(['poll_id' => $poll->id, 'label' => $match->awayClub->name . ' Win', 'votes_count' => 0]);
+            $opt3 = PollOption::create(['poll_id' => $poll->id, 'label' => $match->awayClub->name.' Win', 'votes_count' => 0]);
 
             $options = collect([$opt1, $opt2, $opt3]);
             $voters = $users->random(rand(3, 8));

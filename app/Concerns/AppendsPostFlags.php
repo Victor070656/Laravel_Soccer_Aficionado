@@ -32,6 +32,7 @@ trait AppendsPostFlags
 
         if ($posts instanceof LengthAwarePaginator) {
             $posts->getCollection()->transform($addFlags);
+
             return $posts;
         }
 

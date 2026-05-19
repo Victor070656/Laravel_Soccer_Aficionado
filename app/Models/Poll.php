@@ -30,12 +30,11 @@ class Poll extends Model
         ];
     }
 
-
     protected $appends = ['is_closed'];
 
     public function getIsClosedAttribute(): bool
     {
-        return !$this->isOpen();
+        return ! $this->isOpen();
     }
 
     public function user(): BelongsTo
@@ -60,7 +59,7 @@ class Poll extends Model
 
     public function isOpen(): bool
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return false;
         }
 

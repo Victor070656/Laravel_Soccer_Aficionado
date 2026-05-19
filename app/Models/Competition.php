@@ -50,7 +50,7 @@ class Competition extends Model
 
     public function getLogoUrlAttribute(): ?string
     {
-        return $this->logo ? asset('storage/' . $this->logo) : null;
+        return $this->logo ? asset('storage/'.$this->logo) : null;
     }
 
     public function currentStandings(?string $season = null)

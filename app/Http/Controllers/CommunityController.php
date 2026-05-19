@@ -12,8 +12,7 @@ class CommunityController extends Controller
     public function __construct(
         protected GamificationService $gamification,
         protected NotificationService $notifications,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request)
     {
@@ -103,7 +102,7 @@ class CommunityController extends Controller
     {
         $user = $request->user();
 
-        if (!$user->isMemberOf($community)) {
+        if (! $user->isMemberOf($community)) {
             return back()->with('info', 'You are not a member.');
         }
 

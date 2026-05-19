@@ -18,8 +18,7 @@ class MatchManagementController extends Controller
 {
     public function __construct(
         protected FootballApiService $api,
-    ) {
-    }
+    ) {}
 
     /**
      * Browse matches from the API with filtering.
@@ -38,10 +37,10 @@ class MatchManagementController extends Controller
         ]);
 
         $matches = collect($result['data'] ?? [])
-            ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
+            ->map(fn (array $raw) => (object) FootballApiService::normaliseFixture($raw));
 
         $leagues = collect($this->api->getLeagues())
-            ->map(fn(array $l) => (object) $l);
+            ->map(fn (array $l) => (object) $l);
 
         return view('admin.matches.index', compact('matches', 'leagues', 'result'));
     }
@@ -53,7 +52,7 @@ class MatchManagementController extends Controller
     {
         $raw = $this->api->getFixture($id);
 
-        if (!$raw) {
+        if (! $raw) {
             abort(404, 'Match not found.');
         }
 
@@ -113,7 +112,7 @@ class MatchManagementController extends Controller
     {
         $leagueId = $request->input('league_id');
 
-        if (!$leagueId) {
+        if (! $leagueId) {
             return back()->with('error', 'Please select a league to sync teams from.');
         }
 

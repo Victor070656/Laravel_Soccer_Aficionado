@@ -17,8 +17,7 @@ class CommunityApiController extends BaseApiController
     public function __construct(
         protected GamificationService $gamification,
         protected NotificationService $notifications,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request)
     {
@@ -79,7 +78,7 @@ class CommunityApiController extends BaseApiController
     {
         $user = $request->user();
 
-        if (!$user->isMemberOf($community)) {
+        if (! $user->isMemberOf($community)) {
             return $this->error('Not a member.', 422);
         }
 

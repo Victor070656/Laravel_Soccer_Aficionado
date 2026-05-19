@@ -57,7 +57,7 @@ class Player extends Model
 
     public function getPhotoUrlAttribute(): ?string
     {
-        return $this->photo ? asset('storage/' . $this->photo) : null;
+        return $this->photo ? asset('storage/'.$this->photo) : null;
     }
 
     public function getAgeAttribute(): ?int

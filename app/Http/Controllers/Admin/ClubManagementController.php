@@ -17,8 +17,7 @@ class ClubManagementController extends Controller
 {
     public function __construct(
         protected FootballApiService $api,
-    ) {
-    }
+    ) {}
 
     /**
      * Browse all clubs from the API, showing sync status.
@@ -29,13 +28,13 @@ class ClubManagementController extends Controller
         $country = $request->input('country');
 
         $apiTeams = collect($this->api->getAllTeams(search: $search, country: $country))
-            ->map(fn(array $raw) => (object) FootballApiService::normaliseTeam($raw));
+            ->map(fn (array $raw) => (object) FootballApiService::normaliseTeam($raw));
 
         // Get local club records to show sync status
         $localClubApiIds = Club::pluck('api_team_id')->filter()->toArray();
 
         $leagues = collect($this->api->getLeagues())
-            ->map(fn(array $l) => (object) $l);
+            ->map(fn (array $l) => (object) $l);
 
         return view('admin.clubs.index', compact('apiTeams', 'localClubApiIds', 'leagues'));
     }
@@ -47,7 +46,7 @@ class ClubManagementController extends Controller
     {
         $raw = $this->api->getTeam($id);
 
-        if (!$raw) {
+        if (! $raw) {
             abort(404, 'Club not found.');
         }
 
@@ -55,7 +54,7 @@ class ClubManagementController extends Controller
 
         // Squad from API
         $squad = collect($this->api->getTeamSquad($id))
-            ->map(fn(array $p) => (object) FootballApiService::normaliseSquadPlayer($p));
+            ->map(fn (array $p) => (object) FootballApiService::normaliseSquadPlayer($p));
 
         // Check local sync status
         $localClub = Club::where('api_team_id', $id)->first();
@@ -70,7 +69,7 @@ class ClubManagementController extends Controller
     {
         $raw = $this->api->getTeam($id);
 
-        if (!$raw) {
+        if (! $raw) {
             return back()->with('error', 'Could not fetch club from API.');
         }
 
@@ -87,7 +86,7 @@ class ClubManagementController extends Controller
     {
         $leagueId = $request->input('league_id');
 
-        if (!$leagueId) {
+        if (! $leagueId) {
             return back()->with('error', 'Please select a league.');
         }
 
@@ -108,9 +107,9 @@ class ClubManagementController extends Controller
      */
     public function toggleActive(Club $club)
     {
-        $club->update(['is_active' => !$club->is_active]);
+        $club->update(['is_active' => ! $club->is_active]);
 
-        return back()->with('success', "{$club->name} " . ($club->is_active ? 'activated' : 'deactivated') . '.');
+        return back()->with('success', "{$club->name} ".($club->is_active ? 'activated' : 'deactivated').'.');
     }
 
     /**

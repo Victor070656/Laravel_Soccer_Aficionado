@@ -9,13 +9,12 @@ class CompetitionController extends Controller
 {
     public function __construct(
         protected FootballApiService $api,
-    ) {
-    }
+    ) {}
 
     public function index()
     {
         $competitions = collect($this->api->getLeaguesFull())
-            ->map(fn(array $l) => (object) $l);
+            ->map(fn (array $l) => (object) $l);
 
         return view('competitions.index', [
             'competitions' => $competitions,
@@ -28,7 +27,7 @@ class CompetitionController extends Controller
     {
         $league = $this->api->getLeague($id);
 
-        if (!$league) {
+        if (! $league) {
             abort(404, 'Competition not found.');
         }
 
@@ -39,7 +38,7 @@ class CompetitionController extends Controller
         $selectedSeason = $request->query('season', $currentSeason);
 
         // Validate season format (e.g. "2024-2025")
-        if (!preg_match('/^\d{4}-\d{4}$/', $selectedSeason)) {
+        if (! preg_match('/^\d{4}-\d{4}$/', $selectedSeason)) {
             $selectedSeason = $currentSeason;
         }
 
@@ -56,10 +55,10 @@ class CompetitionController extends Controller
         // Standings (may be grouped) — use selected season
         $rawStandings = $this->api->getStandings($id, $selectedSeason);
         $standings = collect();
-        if (!empty($rawStandings)) {
+        if (! empty($rawStandings)) {
             $firstGroup = $rawStandings[0] ?? [];
             $standings = collect($firstGroup)
-                ->map(fn(array $row) => (object) FootballApiService::normaliseStandingRow($row));
+                ->map(fn (array $row) => (object) FootballApiService::normaliseStandingRow($row));
         }
 
         // Upcoming fixtures & recent results only make sense for the current season
@@ -67,20 +66,20 @@ class CompetitionController extends Controller
         $recentResults = collect();
         if ($isCurrentSeason) {
             $upcomingMatches = collect($this->api->getUpcomingFixtures(10, $id))
-                ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
+                ->map(fn (array $raw) => (object) FootballApiService::normaliseFixture($raw));
 
             $recentResults = collect($this->api->getFinishedFixtures(10, $id))
-                ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
+                ->map(fn (array $raw) => (object) FootballApiService::normaliseFixture($raw));
         }
 
         // Teams in this league
         $teams = collect($this->api->getTeamsByLeague($id))
-            ->map(fn(array $raw) => (object) FootballApiService::normaliseTeam($raw));
+            ->map(fn (array $raw) => (object) FootballApiService::normaliseTeam($raw));
 
         // Build display string for the selected season
         $parts = explode('-', $selectedSeason);
         $seasonDisplay = count($parts) === 2
-            ? $parts[0] . '/' . substr($parts[1], -2)
+            ? $parts[0].'/'.substr($parts[1], -2)
             : $selectedSeason;
 
         return view('competitions.show', compact(

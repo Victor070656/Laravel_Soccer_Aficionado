@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class UserManagementController extends Controller
@@ -14,13 +14,13 @@ class UserManagementController extends Controller
         $query = User::with('roles');
 
         if ($request->filled('search')) {
-            $query->where(fn($q) => $q->where('name', 'like', "%{$request->search}%")
+            $query->where(fn ($q) => $q->where('name', 'like', "%{$request->search}%")
                 ->orWhere('email', 'like', "%{$request->search}%")
                 ->orWhere('username', 'like', "%{$request->search}%"));
         }
 
         if ($request->filled('role')) {
-            $query->whereHas('roles', fn($q) => $q->where('slug', $request->role));
+            $query->whereHas('roles', fn ($q) => $q->where('slug', $request->role));
         }
 
         if ($request->has('banned')) {

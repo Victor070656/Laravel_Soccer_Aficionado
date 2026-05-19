@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Club;
 use App\Models\Community;
-use App\Models\FootballMatch;
 use App\Models\Post;
 use App\Models\User;
 use App\Services\FootballApiService;
@@ -14,8 +12,7 @@ class SearchController extends Controller
 {
     public function __construct(
         protected FootballApiService $api,
-    ) {
-    }
+    ) {}
 
     public function __invoke(Request $request)
     {
@@ -36,12 +33,13 @@ class SearchController extends Controller
             $communities = $results['communities'];
             $posts = $results['posts'];
             $matches = $results['matches'];
+
             return view('search.index', compact('users', 'clubs', 'communities', 'posts', 'matches', 'query', 'type'));
         }
 
         if ($type === 'all' || $type === 'users') {
             $results['users'] = User::select(['id', 'name', 'username', 'avatar', 'points'])
-                ->where(fn($q) => $q->where('name', 'like', "%{$query}%")
+                ->where(fn ($q) => $q->where('name', 'like', "%{$query}%")
                     ->orWhere('username', 'like', "%{$query}%"))
                 ->take(10)->get();
         }
@@ -49,7 +47,7 @@ class SearchController extends Controller
         if ($type === 'all' || $type === 'clubs') {
             $results['clubs'] = collect($this->api->getAllTeams(search: $query))
                 ->take(10)
-                ->map(fn(array $raw) => (object) FootballApiService::normaliseTeam($raw));
+                ->map(fn (array $raw) => (object) FootballApiService::normaliseTeam($raw));
         }
 
         if ($type === 'all' || $type === 'communities') {
@@ -76,7 +74,7 @@ class SearchController extends Controller
         if ($type === 'all' || $type === 'matches') {
             $result = $this->api->getAllFixtures();
             $allFixtures = collect($result['data'] ?? [])
-                ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
+                ->map(fn (array $raw) => (object) FootballApiService::normaliseFixture($raw));
 
             $matches = $allFixtures->filter(function ($fixture) use ($query) {
                 $q = mb_strtolower($query);

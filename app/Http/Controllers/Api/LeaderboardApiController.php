@@ -10,8 +10,7 @@ class LeaderboardApiController extends BaseApiController
 {
     public function __construct(
         protected GamificationService $gamification,
-    ) {
-    }
+    ) {}
 
     public function __invoke(Request $request)
     {

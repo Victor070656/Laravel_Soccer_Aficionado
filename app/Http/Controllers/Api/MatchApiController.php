@@ -9,8 +9,7 @@ class MatchApiController extends BaseApiController
 {
     public function __construct(
         protected FootballApiService $api,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request)
     {
@@ -22,7 +21,7 @@ class MatchApiController extends BaseApiController
         ]);
 
         $result['data'] = array_map(
-            fn(array $raw) => FootballApiService::normaliseFixture($raw),
+            fn (array $raw) => FootballApiService::normaliseFixture($raw),
             $result['data'] ?? [],
         );
 
@@ -33,7 +32,7 @@ class MatchApiController extends BaseApiController
     {
         $raw = $this->api->getFixture($id);
 
-        if (!$raw) {
+        if (! $raw) {
             return $this->error('Match not found.', 404);
         }
 
@@ -41,13 +40,13 @@ class MatchApiController extends BaseApiController
 
         // Goal scorers, cards – parsed from TheSportsDB detail strings
         $match['events'] = array_map(
-            fn(array $e) => FootballApiService::normaliseEvent($e),
+            fn (array $e) => FootballApiService::normaliseEvent($e),
             $this->api->getFixtureEvents($id),
         );
 
         // Starting XI + substitutes per team, with formations
         $match['lineups'] = array_map(
-            fn(array $l) => FootballApiService::normaliseLineup($l),
+            fn (array $l) => FootballApiService::normaliseLineup($l),
             $this->api->getFixtureLineups($id),
         );
 
@@ -66,9 +65,10 @@ class MatchApiController extends BaseApiController
                 $match = FootballApiService::normaliseFixture($raw);
                 // Attach recent events for each live match
                 $match['events'] = array_map(
-                    fn(array $e) => FootballApiService::normaliseEvent($e),
+                    fn (array $e) => FootballApiService::normaliseEvent($e),
                     $this->api->getFixtureEvents($match['id']),
                 );
+
                 return $match;
             },
             $fixtures,

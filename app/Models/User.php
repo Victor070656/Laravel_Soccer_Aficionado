@@ -77,7 +77,7 @@ class User extends Authenticatable
     protected static function booted(): void
     {
         static::creating(function (User $user) {
-            if (!$user->username) {
+            if (! $user->username) {
                 $user->username = static::generateUniqueUsername($user->name);
             }
         });
@@ -91,11 +91,11 @@ class User extends Authenticatable
         $username = Str::slug($name);
 
         if (empty($username)) {
-            $username = 'user-' . Str::random(8);
+            $username = 'user-'.Str::random(8);
         }
 
         if (User::where('username', $username)->exists()) {
-            $username .= '-' . Str::random(5);
+            $username .= '-'.Str::random(5);
         }
 
         // Ensure it stays unique even after appending random chars
@@ -239,7 +239,7 @@ class User extends Authenticatable
 
     public function getAvatarUrlAttribute(): ?string
     {
-        return $this->avatar ? asset('storage/' . $this->avatar) : null;
+        return $this->avatar ? asset('storage/'.$this->avatar) : null;
     }
 
     /**
@@ -250,7 +250,7 @@ class User extends Authenticatable
         return Str::of($this->name)
             ->explode(' ')
             ->take(2)
-            ->map(fn($word) => Str::substr($word, 0, 1))
+            ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
 
@@ -258,7 +258,7 @@ class User extends Authenticatable
     {
         $points = $this->points ?? 0;
 
-        return match(true) {
+        return match (true) {
             $points < 100 => 100,
             $points < 500 => 500,
             $points < 1000 => 1000,

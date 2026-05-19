@@ -9,8 +9,7 @@ class ClubApiController extends BaseApiController
 {
     public function __construct(
         protected FootballApiService $api,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request)
     {
@@ -20,7 +19,7 @@ class ClubApiController extends BaseApiController
         );
 
         $teams = collect($allTeams)
-            ->map(fn(array $raw) => (object) FootballApiService::normaliseTeam($raw));
+            ->map(fn (array $raw) => (object) FootballApiService::normaliseTeam($raw));
 
         // Simple pagination
         $page = max(1, (int) $request->input('page', 1));
@@ -43,7 +42,7 @@ class ClubApiController extends BaseApiController
     {
         $raw = $this->api->getTeam($id);
 
-        if (!$raw) {
+        if (! $raw) {
             return $this->error('Club not found.', 404);
         }
 
@@ -51,19 +50,19 @@ class ClubApiController extends BaseApiController
 
         // Squad
         $club['squad'] = array_map(
-            fn(array $p) => FootballApiService::normaliseSquadPlayer($p),
+            fn (array $p) => FootballApiService::normaliseSquadPlayer($p),
             $this->api->getTeamSquad($id),
         );
 
         // Recent results
         $club['recent_matches'] = array_map(
-            fn(array $raw) => FootballApiService::normaliseFixture($raw),
+            fn (array $raw) => FootballApiService::normaliseFixture($raw),
             $this->api->getTeamFixtures($id, 'finished', 5),
         );
 
         // Upcoming matches
         $club['upcoming_matches'] = array_map(
-            fn(array $raw) => FootballApiService::normaliseFixture($raw),
+            fn (array $raw) => FootballApiService::normaliseFixture($raw),
             $this->api->getTeamFixtures($id, 'upcoming', 5),
         );
 

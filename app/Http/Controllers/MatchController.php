@@ -9,8 +9,7 @@ class MatchController extends Controller
 {
     public function __construct(
         protected FootballApiService $api,
-    ) {
-    }
+    ) {}
 
     /**
      * List fixtures – supports filters: status, league, date, page.
@@ -25,10 +24,10 @@ class MatchController extends Controller
         ]);
 
         $matches = collect($result['data'] ?? [])
-            ->map(fn(array $raw) => (object) FootballApiService::normaliseFixture($raw));
+            ->map(fn (array $raw) => (object) FootballApiService::normaliseFixture($raw));
 
         $leagues = collect($this->api->getLeagues())
-            ->map(fn(array $l) => (object) $l);
+            ->map(fn (array $l) => (object) $l);
 
         return view('matches.index', [
             'matches' => $matches,
@@ -45,7 +44,7 @@ class MatchController extends Controller
     {
         $raw = $this->api->getFixture($id);
 
-        if (!$raw) {
+        if (! $raw) {
             abort(404, 'Match not found.');
         }
 
@@ -61,7 +60,7 @@ class MatchController extends Controller
     {
         $raw = $this->api->getFixture($id);
 
-        if (!$raw) {
+        if (! $raw) {
             abort(404, 'Match not found.');
         }
 

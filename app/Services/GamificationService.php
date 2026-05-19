@@ -48,7 +48,7 @@ class GamificationService
      */
     public function checkBadges(User $user): void
     {
-        $badges = cache()->remember('all_badges', 3600, fn() => Badge::all());
+        $badges = cache()->remember('all_badges', 3600, fn () => Badge::all());
 
         $earnedBadgeIds = $user->badges()->pluck('badge_id')->all();
 
@@ -96,6 +96,7 @@ class GamificationService
             }
 
             $count = $counts[$key] ?? 0;
+
             return $count >= $badge->criteria_value;
         }
 

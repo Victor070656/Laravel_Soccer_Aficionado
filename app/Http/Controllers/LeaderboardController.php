@@ -4,14 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Services\GamificationService;
-use Illuminate\Http\Request;
 
 class LeaderboardController extends Controller
 {
     public function __construct(
         protected GamificationService $gamification,
-    ) {
-    }
+    ) {}
 
     public function __invoke()
     {

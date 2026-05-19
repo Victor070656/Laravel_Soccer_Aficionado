@@ -104,7 +104,7 @@ class AdManagementController extends Controller
 
     public function toggle(Ad $ad)
     {
-        $ad->update(['is_active' => !$ad->is_active]);
+        $ad->update(['is_active' => ! $ad->is_active]);
 
         $status = $ad->is_active ? 'enabled' : 'disabled';
 

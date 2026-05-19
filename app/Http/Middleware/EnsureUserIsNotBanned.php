@@ -28,7 +28,7 @@ class EnsureUserIsNotBanned
             $request->session()->invalidate();
 
             return redirect()->route('login')->withErrors([
-                'email' => 'Your account has been suspended. Reason: ' . ($request->user()->ban_reason ?? 'Violation of community guidelines'),
+                'email' => 'Your account has been suspended. Reason: '.($request->user()->ban_reason ?? 'Violation of community guidelines'),
             ]);
         }
 

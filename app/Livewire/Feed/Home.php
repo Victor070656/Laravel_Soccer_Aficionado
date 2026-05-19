@@ -3,13 +3,14 @@
 namespace App\Livewire\Feed;
 
 use App\Models\Post;
-use App\Models\User;
 use Livewire\Component;
 
 class Home extends Component
 {
     public string $newPostBody = '';
+
     public string $newPostType = 'banter';
+
     public ?int $matchId = null;
 
     public function mount(): void
@@ -29,13 +30,13 @@ class Home extends Component
                 if ($user) {
                     $followingIds = $user->following()->pluck('users.id')->toArray();
                     $q->whereIn('user_id', $followingIds)
-                       ->orWhere('user_id', $user->id);
+                        ->orWhere('user_id', $user->id);
                 }
                 // Always include trending and match-related posts
                 $q->orWhere('is_pinned', true)
-                   ->orWhere('type', 'match_reaction')
-                   ->orWhere('type', 'goal_reaction')
-                   ->orWhere('type', 'breaking_news');
+                    ->orWhere('type', 'match_reaction')
+                    ->orWhere('type', 'goal_reaction')
+                    ->orWhere('type', 'breaking_news');
             })
             ->latest()
             ->limit(50)
@@ -71,7 +72,7 @@ class Home extends Component
             'newPostBody' => 'required|string|max:280',
         ]);
 
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return;
         }
 
@@ -89,12 +90,12 @@ class Home extends Component
 
     public function likePost(int $postId)
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return;
         }
 
         $post = Post::find($postId);
-        if ($post && !auth()->user()->hasLiked($post)) {
+        if ($post && ! auth()->user()->hasLiked($post)) {
             $post->likes()->create(['user_id' => auth()->id()]);
             $post->increment('likes_count');
         }
@@ -118,7 +119,7 @@ class Home extends Component
     {
         return [
             'post-created' => '$refresh',
-            "echo:feed,PostCreated" => '$refresh',
+            'echo:feed,PostCreated' => '$refresh',
         ];
     }
 }
