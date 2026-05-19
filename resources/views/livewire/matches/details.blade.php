@@ -1,32 +1,32 @@
 <div @if(in_array($match->status, ['live', 'half_time'])) wire:poll.30s @endif>
     <div class="max-w-7xl mx-auto space-y-8 p-2 sm:p-4">
         {{-- Hero Section --}}
-        <div class="relative rounded-2xl overflow-hidden shadow-xl">
+        <div class="relative rounded-2xl overflow-hidden shadow-xl shadow-primary/30 pulse-energy">
             {{-- Background gradient based on match status --}}
             @php
                 $heroGradient = match($match->status) {
-                    'live', 'half_time' => 'from-red-700 via-rose-600 to-red-800',
-                    'finished' => 'from-zinc-700 via-zinc-600 to-zinc-800',
-                    default => 'from-green-700 via-emerald-600 to-teal-600',
+                    'live', 'half_time' => 'from-primary via-primary/80 to-primary/60',
+                    'finished' => 'from-on-surface-variant via-on-surface-variant/80 to-on-surface-variant/60',
+                    default => 'from-primary via-primary/80 to-primary/60',
                 };
             @endphp
-            <div class="bg-gradient-to-r {{ $heroGradient }} p-6 sm:p-8 lg:p-10 text-white">
-                <div class="absolute inset-0 opacity-5" style="background-image: url('https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=600&q=30'); background-size: cover; background-position: center;"></div>
+            <div class="bg-gradient-to-r {{ $heroGradient }} p-6 sm:p-8 lg:p-10 text-white glow-primary-lg">
+                <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=600&q=30'); background-size: cover; background-position: center;"></div>
                 <div class="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
                 <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/3 -translate-x-1/4"></div>
 
                 {{-- Competition & Date --}}
                 <div class="relative z-10 text-center mb-6">
-                    <div class="inline-flex items-center gap-2 rounded-xl bg-white/15 backdrop-blur-sm px-4 py-2 text-sm border border-white/10">
+                    <div class="inline-flex items-center gap-2 rounded-xl bg-white/15 backdrop-blur-sm px-4 py-2 text-sm border border-white/10 font-bold uppercase tracking-wide">
                         @if($match->league['logo'] ?? null)
                         <img loading="lazy" decoding="async" src="{{ $match->league['logo'] }}" alt="" class="h-5 w-5 object-contain">
                         @endif
-                        <span class="font-medium">{{ $match->league['name'] }}</span>
+                        <span class="font-semibold">{{ $match->league['name'] }}</span>
                         <span class="text-white/50">·</span>
-                        <span class="text-white/80">{{ \Carbon\Carbon::parse($match->date)->format('l, M d, Y · H:i') }}</span>
+                        <span class="text-white/80 font-medium">{{ \Carbon\Carbon::parse($match->date)->format('l, M d, Y · H:i') }}</span>
                     </div>
                     @if($match->league['round'] ?? null)
-                    <div class="mt-2 text-sm text-white/60">{{ $match->league['round'] }}</div>
+                    <div class="mt-2 text-sm text-white/70 font-semibold uppercase tracking-wide">{{ $match->league['round'] }}</div>
                     @endif
                 </div>
 
@@ -34,30 +34,30 @@
                 <div class="relative z-10 flex items-center justify-center gap-6 sm:gap-10 lg:gap-16">
                     {{-- Home Team --}}
                     <div class="flex-1 text-center">
-                        <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center p-2 border border-white/10">
+                        <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center p-2 border border-white/20 glow-primary hover:scale-110 transition-transform">
                             @if($match->home_team['logo'] ?? null)
                             <img loading="lazy" decoding="async" src="{{ $match->home_team['logo'] }}" alt="{{ $match->home_team['name'] }}" class="h-14 w-14 sm:h-16 sm:w-16 object-contain">
                             @else
                             <span class="text-4xl">⚽</span>
                             @endif
                         </div>
-                        <div class="text-lg sm:text-xl font-bold">{{ $match->home_team['name'] }}</div>
-                        <div class="text-xs text-white/50 mt-0.5 uppercase tracking-wider">Home</div>
+                        <div class="text-lg sm:text-2xl font-bold text-white">{{ $match->home_team['name'] }}</div>
+                        <div class="text-xs text-white/70 mt-0.5 uppercase tracking-wider font-semibold">Home</div>
                     </div>
 
                     {{-- Score --}}
                     <div class="text-center flex-shrink-0">
-                        <div class="text-5xl sm:text-6xl font-black tabular-nums tracking-tight">{{ $match->score_display }}</div>
+                        <div class="text-6xl sm:text-7xl font-black tabular-nums tracking-tight text-white drop-shadow-2xl">{{ $match->score_display }}</div>
                         @php
                             $statusClasses = match($match->status) {
-                                'live', 'half_time' => 'bg-white/20 text-white border-white/20',
+                                'live', 'half_time' => 'bg-secondary/30 text-white border-secondary/50 pulse-energy',
                                 'finished' => 'bg-white/15 text-white/80 border-white/10',
                                 default => 'bg-white/15 text-white/80 border-white/10',
                             };
                         @endphp
-                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full mt-3 {{ $statusClasses }} border backdrop-blur-sm">
+                        <span class="inline-flex items-center gap-1.5 text-xs font-bold px-4 py-2 rounded-full mt-4 {{ $statusClasses }} border backdrop-blur-sm uppercase tracking-widest">
                             @if(in_array($match->status, ['live', 'half_time']))
-                            <span class="relative flex h-1.5 w-1.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span><span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-white"></span></span>
+                            <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span></span>
                             @endif
                             {{ $match->status_long }}
                             @if($match->elapsed && in_array($match->status, ['live', 'half_time']))
@@ -68,28 +68,28 @@
 
                     {{-- Away Team --}}
                     <div class="flex-1 text-center">
-                        <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center p-2 border border-white/10">
+                        <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center p-2 border border-white/20 glow-primary hover:scale-110 transition-transform">
                             @if($match->away_team['logo'] ?? null)
                             <img loading="lazy" decoding="async" src="{{ $match->away_team['logo'] }}" alt="{{ $match->away_team['name'] }}" class="h-14 w-14 sm:h-16 sm:w-16 object-contain">
                             @else
                             <span class="text-4xl">⚽</span>
                             @endif
                         </div>
-                        <div class="text-lg sm:text-xl font-bold">{{ $match->away_team['name'] }}</div>
-                        <div class="text-xs text-white/50 mt-0.5 uppercase tracking-wider">Away</div>
+                        <div class="text-lg sm:text-2xl font-bold text-white">{{ $match->away_team['name'] }}</div>
+                        <div class="text-xs text-white/70 mt-0.5 uppercase tracking-wider font-semibold">Away</div>
                     </div>
                 </div>
 
                 {{-- Score details --}}
-                <div class="relative z-10 text-center mt-4 space-y-1">
+                <div class="relative z-10 text-center mt-6 space-y-1">
                     @if($match->status === 'finished' && $match->ht_score['home'] !== null)
-                    <div class="text-xs text-white/50">HT: {{ $match->ht_score['home'] }} - {{ $match->ht_score['away'] }}</div>
+                    <div class="text-xs text-white/60 font-semibold uppercase">HT: {{ $match->ht_score['home'] }} - {{ $match->ht_score['away'] }}</div>
                     @endif
                     @if($match->et_score['home'] !== null)
-                    <div class="text-xs text-white/50">ET: {{ $match->et_score['home'] }} - {{ $match->et_score['away'] }}</div>
+                    <div class="text-xs text-white/60 font-semibold uppercase">ET: {{ $match->et_score['home'] }} - {{ $match->et_score['away'] }}</div>
                     @endif
                     @if($match->penalty_score['home'] !== null)
-                    <div class="text-xs text-white/50">PEN: {{ $match->penalty_score['home'] }} - {{ $match->penalty_score['away'] }}</div>
+                    <div class="text-xs text-white/60 font-semibold uppercase">PEN: {{ $match->penalty_score['home'] }} - {{ $match->penalty_score['away'] }}</div>
                     @endif
                 </div>
             </div>
@@ -98,43 +98,43 @@
         {{-- Events & Statistics --}}
         <div class="grid gap-6 lg:grid-cols-2">
             {{-- Match Events --}}
-            <div class="rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 shadow-sm overflow-hidden">
-                <div class="px-5 py-4 border-b border-zinc-100 dark:border-zinc-700/60 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/10 dark:to-orange-900/10">
-                    <h3 class="font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-                        <span class="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 text-sm">📋</span>
+            <div class="card card-match rounded-2xl border border-primary/15 bg-gradient-to-b from-surface-container/80 to-surface-container/40 shadow-sm overflow-hidden glass-premium hover:glow-primary transition-all">
+                <div class="px-5 py-4 border-b border-primary/10 bg-gradient-to-r from-primary/15 to-primary/8">
+                    <h3 class="font-bold text-h6 text-on-surface flex items-center gap-2 uppercase tracking-wide">
+                        <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center text-primary text-sm glow-primary">📋</span>
                         Match Events
                     </h3>
                 </div>
                 <div class="p-5">
                     @forelse($events as $event)
-                    <div class="flex items-center gap-3 py-3 border-b border-zinc-100 dark:border-zinc-700/40 last:border-0 group hover:bg-zinc-50/50 dark:hover:bg-zinc-700/20 -mx-2 px-2 rounded-lg transition">
-                        <span class="flex-shrink-0 w-10 text-xs font-mono text-zinc-400 dark:text-zinc-500 text-right tabular-nums">{{ $event->time }}</span>
-                        <span class="flex-shrink-0 w-6 text-center text-base">{{ $event->icon }}</span>
+                    <div class="flex items-center gap-3 py-3 border-b border-primary/10 last:border-0 group hover:bg-primary/5 -mx-2 px-2 rounded-lg transition">
+                        <span class="flex-shrink-0 w-10 text-xs font-bold text-primary/60 text-right tabular-nums uppercase tracking-wide">{{ $event->time }}'</span>
+                        <span class="flex-shrink-0 w-6 text-center text-lg">{{ $event->icon }}</span>
                         <div class="flex-1 min-w-0">
-                            <span class="text-sm font-medium text-zinc-800 dark:text-zinc-200">{{ $event->player['name'] }}</span>
+                            <span class="text-sm font-bold text-on-surface group-hover:text-primary transition">{{ $event->player['name'] }}</span>
                             @if($event->assist['name'] ?? null)
-                            <span class="text-xs text-zinc-400 dark:text-zinc-500">({{ $event->assist['name'] }})</span>
+                            <span class="text-xs text-on-surface-variant font-semibold">({{ $event->assist['name'] }})</span>
                             @endif
                             @if($event->detail)
-                            <div class="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">{{ $event->detail }}</div>
+                            <div class="text-xs text-on-surface-variant/70 mt-0.5 font-medium">{{ $event->detail }}</div>
                             @endif
                         </div>
-                        <span class="flex-shrink-0 text-xs text-zinc-400 dark:text-zinc-500 font-medium">{{ $event->team['name'] }}</span>
+                        <span class="flex-shrink-0 text-xs text-on-surface-variant/60 font-bold uppercase tracking-wide">{{ $event->team['name'] }}</span>
                     </div>
                     @empty
-                    <div class="rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-700 p-8 text-center">
+                    <div class="rounded-xl border-2 border-dashed border-primary/30 p-8 text-center glass-premium">
                         <span class="text-3xl">📝</span>
-                        <p class="text-sm text-zinc-400 mt-2">No events recorded yet.</p>
+                        <p class="text-sm text-on-surface-variant font-semibold mt-2 uppercase tracking-wide">No events recorded yet.</p>
                     </div>
                     @endforelse
                 </div>
             </div>
 
             {{-- Match Statistics --}}
-            <div class="rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 shadow-sm overflow-hidden">
-                <div class="px-5 py-4 border-b border-zinc-100 dark:border-zinc-700/60 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10">
-                    <h3 class="font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-                        <span class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 text-sm">📊</span>
+            <div class="card card-match rounded-2xl border border-tertiary/15 bg-gradient-to-b from-surface-container/80 to-surface-container/40 shadow-sm overflow-hidden glass-premium hover:glow-primary transition-all">
+                <div class="px-5 py-4 border-b border-tertiary/10 bg-gradient-to-r from-tertiary/15 to-tertiary/8">
+                    <h3 class="font-bold text-h6 text-on-surface flex items-center gap-2 uppercase tracking-wide">
+                        <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-tertiary/20 to-tertiary/10 flex items-center justify-center text-tertiary text-sm glow-primary">📊</span>
                         Statistics
                     </h3>
                 </div>

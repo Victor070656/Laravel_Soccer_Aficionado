@@ -2,23 +2,27 @@
     <div class="flex h-full w-full flex-1 flex-col gap-8 rounded-xl p-2 sm:p-4">
 
         {{-- Welcome Banner --}}
-        <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-primary via-primary/80 to-primary/60 p-6 sm:p-8 text-on-primary shadow-xl shadow-primary/20">
+        <div class="relative rounded-2xl overflow-hidden bg-gradient-stadium-primary p-6 sm:p-8 text-on-primary shadow-xl shadow-primary/20 glow-primary-lg">
             <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1508098682722-e99c643e7f0b?w=600&q=30'); background-size: cover; background-position: center;"></div>
             <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
             <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/4"></div>
             <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <h1 class="text-2xl sm:text-3xl font-bold mb-2">Welcome back, {{ auth()->user()->name }}! 👋</h1>
-                    <p class="text-primary/70 text-sm sm:text-base">Stay updated with the latest matches, posts, and community activity.</p>
+                    <h1 class="text-h2-mobile sm:text-h1 font-bold mb-2 text-on-primary">⚽ Your Football Hub</h1>
+                    <p class="text-on-primary/70 text-sm sm:text-base font-medium">{{ auth()->user()->name }}, your personalized football community awaits!</p>
                 </div>
-                <div class="flex items-center gap-3">
-                    <div class="glass rounded-xl px-4 py-3 text-center min-w-[80px]">
-                        <div class="text-2xl font-bold">{{ auth()->user()->points ?? 0 }}</div>
-                        <div class="text-xs text-primary/70">Points</div>
+                <div class="flex flex-col sm:flex-row items-center gap-3">
+                    <div class="glass glow-primary rounded-xl px-4 py-3 text-center min-w-[80px] hover:scale-105 transition-transform">
+                        <div class="text-2xl font-bold text-primary">{{ auth()->user()->points ?? 0 }}</div>
+                        <div class="text-xs text-on-primary/70 uppercase font-semibold">Points</div>
                     </div>
-                    <div class="glass rounded-xl px-4 py-3 text-center min-w-[80px]">
-                        <div class="text-2xl font-bold">{{ auth()->user()->badges()->count() }}</div>
-                        <div class="text-xs text-primary/70">Badges</div>
+                    <div class="glass glow-primary rounded-xl px-4 py-3 text-center min-w-[80px] hover:scale-105 transition-transform">
+                        <div class="text-2xl font-bold text-primary">{{ auth()->user()->badges()->count() }}</div>
+                        <div class="text-xs text-on-primary/70 uppercase font-semibold">Badges</div>
+                    </div>
+                    <div class="glass glow-primary rounded-xl px-4 py-3 text-center min-w-[80px] hover:scale-105 transition-transform">
+                        <div class="text-2xl font-bold text-secondary">{{ auth()->user()->following()->count() }}</div>
+                        <div class="text-xs text-on-primary/70 uppercase font-semibold">Following</div>
                     </div>
                 </div>
             </div>
@@ -27,37 +31,82 @@
         {{-- Live Matches Banner --}}
         <livewire:matches.live lazy />
 
+        {{-- FAN HUB SECTION: Your Matches & Clubs --}}
+        <div class="grid gap-6 md:grid-cols-2">
+            {{-- Your Primary Club Section --}}
+            @if($favoriteClubs->isNotEmpty())
+            <div class="card rounded-2xl border border-primary/25 bg-gradient-to-b from-primary/8 to-primary/4 p-6 shadow-sm glass-premium hover:glow-primary-sm transition-all">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl">💚</span>
+                        <div>
+                            <h3 class="text-h6 font-bold text-on-surface uppercase tracking-wide">Your Club</h3>
+                            <p class="text-xs text-on-surface-variant font-medium">Primary team</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-primary/15 to-primary/10 border border-primary/20 hover:from-primary/25 hover:to-primary/15 transition-all group cursor-pointer">
+                    @php $primaryClub = $favoriteClubs->first(); @endphp
+                    @if($primaryClub->logo_url)
+                    <img src="{{ $primaryClub->logo_url }}" alt="{{ $primaryClub->name }}" class="w-12 h-12 object-contain group-hover:scale-110 transition-transform">
+                    @endif
+                    <div class="flex-1">
+                        <div class="font-bold text-on-surface">{{ $primaryClub->name }}</div>
+                        <div class="text-xs text-on-surface-variant font-medium">{{ $primaryClub->country ?? 'Your favorite team' }}</div>
+                    </div>
+                    <a href="{{ $primaryClub->api_team_id ? route('clubs.show', $primaryClub->api_team_id) : '#' }}" class="text-primary hover:text-primary/80 transition-colors">→</a>
+                </div>
+            </div>
+
+            {{-- Your Upcoming Matches --}}
+            <div class="card rounded-2xl border border-secondary/25 bg-gradient-to-b from-secondary/8 to-secondary/4 p-6 shadow-sm glass-premium hover:glow-primary-sm transition-all">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl">📅</span>
+                        <div>
+                            <h3 class="text-h6 font-bold text-on-surface uppercase tracking-wide">Next Matches</h3>
+                            <p class="text-xs text-on-surface-variant font-medium">Your team's fixtures</p>
+                        </div>
+                    </div>
+                    <a href="{{ route('matches.index') }}" class="text-primary hover:text-primary/80 font-bold text-sm transition-colors">View All</a>
+                </div>
+                <livewire:matches.upcoming lazy />
+            </div>
+            @endif
+        </div>
+
+        {{-- MAIN CONTENT GRID --}}
         <div class="grid gap-8 lg:grid-cols-3">
             {{-- Main Feed --}}
             <div class="lg:col-span-2 space-y-5">
                 <div class="flex items-center justify-between">
-                    <h2 class="text-xl font-bold text-on-surface flex items-center gap-2">
-                        <span class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-sm">📰</span>
-                        Your Feed
+                    <h2 class="text-h5 font-bold text-on-surface flex items-center gap-2 uppercase tracking-wide">
+                        <span class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center text-primary text-lg glow-primary">📰</span>
+                        Community Feed
                     </h2>
-                    <a href="{{ route('posts.index') }}" class="text-sm text-primary hover:text-primary/80 font-medium hover:underline">View All →</a>
+                    <a href="{{ route('posts.index') }}" class="text-sm text-primary hover:text-primary/80 font-semibold hover:underline hover:gap-2 inline-flex items-center transition-all">View All <span class="ml-1">→</span></a>
                 </div>
 
                 {{-- Create Post --}}
-                <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data" class="rounded-2xl border border-outline-variant/20 dark:border-outline-variant/30 bg-surface-container dark:bg-surface-container p-5 shadow-sm hover:shadow-md transition-shadow glass-edge">
+                <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data" class="card card-post rounded-2xl border border-primary/20 bg-gradient-to-b from-surface-container/80 to-surface-container/40 p-5 shadow-sm hover:shadow-card transition-all duration-300 glass-premium">
                     @csrf
                     <div class="flex items-start gap-3">
                         @if(auth()->user()->avatar)
-                        <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="flex-shrink-0 w-10 h-10 rounded-full object-cover shadow-md">
+                        <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="flex-shrink-0 w-10 h-10 rounded-full object-cover shadow-md glow-primary">
                         @else
-                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-on-primary font-bold text-sm shadow-md">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-on-primary font-bold text-sm shadow-md glow-primary">
                             {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                         </div>
                         @endif
                         <div class="flex-1">
-                            <textarea name="body" rows="3" placeholder="What's on your mind about football? ⚽" class="w-full rounded-xl p-4 border-outline-variant/20 bg-surface dark:border-outline-variant/30 dark:bg-surface text-on-surface focus:border-primary focus:ring-primary/20 text-sm resize-none placeholder:text-on-surface-variant"></textarea>
+                            <textarea name="body" rows="3" placeholder="Share your football thoughts... ⚽" class="w-full rounded-xl p-4 border border-primary/10 bg-surface/60 text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/30 text-sm resize-none placeholder:text-on-surface-variant/60 transition-all"></textarea>
                             <div class="flex items-center justify-between mt-3">
-                                <label class="inline-flex items-center gap-2 text-xs text-on-surface-variant hover:text-primary cursor-pointer transition-colors px-3 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/10">
+                                <label class="inline-flex items-center gap-2 text-xs text-on-surface-variant hover:text-primary cursor-pointer transition-all px-3 py-2 rounded-lg hover:bg-primary/10">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                     Add Media
                                     <input type="file" name="media[]" multiple accept="image/*,video/*" class="hidden">
                                 </label>
-                                <button type="submit" class="rounded-xl bg-gradient-to-r from-primary to-primary/80 px-6 py-2 text-sm font-semibold text-on-primary hover:from-primary/90 hover:to-primary/70 transition-all duration-300 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:scale-105">
+                                <button type="submit" class="rounded-xl bg-gradient-to-r from-primary to-primary/80 px-6 py-2 text-sm font-bold text-on-primary hover:from-primary/90 hover:to-primary/70 transition-all duration-300 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:scale-105 glow-primary uppercase tracking-wide">
                                     Post
                                 </button>
                             </div>
@@ -67,7 +116,7 @@
 
                 {{-- Feed Posts --}}
                 @forelse($feed as $post)
-                <div class="rounded-2xl border border-outline-variant/20 dark:border-outline-variant/30 bg-surface-container dark:bg-surface-container p-5 shadow-sm hover:shadow-md transition-all duration-300 group glass-edge">
+                <div class="card card-post rounded-2xl border border-primary/15 bg-gradient-to-b from-surface-container/80 to-surface-container/40 p-5 shadow-sm hover:shadow-card-lg transition-all duration-300 group glass-premium hover:glow-primary">
                     <div class="flex items-start gap-3">
                         <a href="{{ route('profiles.show', $post->user) }}" class="flex-shrink-0 w-11 h-11 rounded-full hover:scale-110 transition-transform">
                             @if($post->user->avatar)
@@ -97,19 +146,19 @@
                             </div>
                             @endif
 
-                            <div class="flex items-center gap-1 mt-4 pt-3 border-t border-outline-variant/20 dark:border-outline-variant/30">
+                            <div class="flex items-center gap-1 mt-4 pt-3 border-t border-primary/10">
                                 <form action="{{ route('posts.like', $post) }}" method="POST" class="inline">
                                     @csrf
-                                    <button type="submit" class="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg {{ auth()->user()->hasLiked($post) ? 'text-on-primary bg-primary/80' : 'text-on-surface-variant hover:text-primary hover:bg-primary/10 dark:hover:bg-primary/10' }} transition-all">
+                                    <button type="submit" class="reaction-button inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-lg {{ auth()->user()->hasLiked($post) ? 'text-on-primary bg-gradient-to-r from-primary/80 to-primary/60 glow-primary scale-105' : 'text-on-surface-variant hover:text-primary hover:bg-primary/15 hover:glow-primary hover:scale-105' }} transition-all duration-200">
                                         <svg class="w-4 h-4" fill="{{ auth()->user()->hasLiked($post) ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                                         {{ $post->likes_count }}
                                     </button>
                                 </form>
-                                <a href="{{ route('posts.show', $post) }}" class="inline-flex items-center gap-1.5 text-xs font-medium text-on-surface-variant hover:text-primary px-3 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/10 transition-all">
+                                <a href="{{ route('posts.show', $post) }}" class="reaction-button inline-flex items-center gap-1.5 text-xs font-bold text-on-surface-variant hover:text-primary px-3 py-2 rounded-lg hover:bg-tertiary/15 transition-all duration-200 hover:glow-primary hover:scale-105">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
                                     {{ $post->comments_count }}
                                 </a>
-                                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-on-surface-variant px-3 py-2">
+                                <span class="inline-flex items-center gap-1.5 text-xs font-bold text-on-surface-variant px-3 py-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
                                     {{ $post->shares_count }}
                                 </span>
@@ -118,27 +167,92 @@
                     </div>
                 </div>
                 @empty
-                <div class="rounded-2xl border-2 border-dashed border-outline-variant/30 dark:border-outline-variant/40 p-12 text-center">
-                    <div class="text-5xl mb-4">⚽</div>
-                    <h3 class="font-bold text-on-surface mb-2">Your feed is empty</h3>
-                    <p class="text-sm text-on-surface-variant mb-4">Follow some users or join communities to build your feed!</p>
-                    <a href="{{ route('communities.index') }}" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary/80 px-6 py-2.5 text-sm text-on-primary font-semibold hover:from-primary/90 hover:to-primary/70 transition-all shadow-md">
-                        Explore Communities
-                    </a>
+                <div class="rounded-2xl border-2 border-dashed border-primary/30 p-12 text-center glass-premium hover:glow-primary transition-all text-reveal">
+                    <div class="text-6xl mb-4 float-gentle">⚽</div>
+                    <h3 class="font-bold text-h5 text-on-surface mb-2 uppercase tracking-wide">Your Feed is Ready!</h3>
+                    <p class="text-sm text-on-surface-variant mb-6 font-medium">Start by following users or joining communities to see posts from your football community.</p>
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                        <a href="{{ route('communities.index') }}" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary/80 px-6 py-3 text-sm text-on-primary font-bold hover:from-primary/90 hover:to-primary/70 transition-all shadow-md shadow-primary/20 hover:shadow-lg hover:scale-105 glow-primary uppercase tracking-wide card-hover-lift">
+                            📍 Explore Communities
+                        </a>
+                        <a href="{{ route('profiles.index') }}" class="inline-flex items-center gap-2 rounded-xl border-2 border-primary px-6 py-3 text-sm text-primary font-bold hover:bg-primary/10 transition-all uppercase tracking-wide">
+                            👥 Find Users
+                        </a>
+                    </div>
                 </div>
                 @endforelse
             </div>
 
             {{-- Sidebar --}}
             <div class="space-y-5">
-                {{-- Upcoming Matches --}}
-                <livewire:matches.upcoming lazy />
+                {{-- Achievements Section --}}
+                <div class="card rounded-2xl border border-secondary/25 bg-gradient-to-b from-secondary/8 to-secondary/4 p-6 shadow-sm glass-premium hover:glow-primary-sm transition-all card-entrance">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="text-2xl celebrate">🏆</span>
+                        <h3 class="font-bold text-h6 text-on-surface uppercase tracking-wide">Your Streak</h3>
+                    </div>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-secondary/15 to-secondary/10 border border-secondary/20 hover:from-secondary/25 hover:to-secondary/15 transition-all smooth-color-transition card-hover-lift">
+                            <div class="flex items-center gap-2">
+                                <span class="text-2xl pulse-energy">🔥</span>
+                                <span class="text-on-surface-variant font-semibold">Current Streak</span>
+                            </div>
+                            <span class="font-bold text-secondary text-lg">7 days</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 rounded-lg bg-primary/10 border border-primary/15 hover:bg-primary/15 transition-all smooth-color-transition card-hover-lift">
+                            <span class="text-on-surface-variant font-semibold">Posts This Week</span>
+                            <span class="font-bold text-primary">{{ auth()->user()->posts()->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count() }}</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 rounded-lg bg-tertiary/10 border border-tertiary/15 hover:bg-tertiary/15 transition-all smooth-color-transition card-hover-lift">
+                            <span class="text-on-surface-variant font-semibold">Total Posts</span>
+                            <span class="font-bold text-tertiary">{{ auth()->user()->posts()->count() }}</span>
+                        </div>
+                        <a href="#" class="inline-flex items-center gap-1 text-primary hover:text-primary/80 font-bold text-xs mt-2 transition-colors hover:underline">
+                            View All Badges →
+                        </a>
+                    </div>
+                </div>
+
+                {{-- Fan Streaks Leaderboard --}}
+                <div class="card rounded-2xl border border-tertiary/25 bg-gradient-to-b from-surface-container/80 to-surface-container/40 overflow-hidden shadow-sm glass-premium hover:glow-primary transition-all card-entrance">
+                    <div class="px-5 py-4 bg-gradient-to-r from-tertiary/15 to-tertiary/8 border-b border-tertiary/20">
+                        <h3 class="font-bold text-h6 text-on-surface flex items-center gap-2 uppercase tracking-wide">
+                            <span class="text-lg">⚡</span> Top Streaks
+                        </h3>
+                    </div>
+                    <div class="p-3 space-y-2">
+                        <div class="flex items-center justify-between p-2 rounded-lg hover:bg-tertiary/5 transition-all smooth-color-transition card-hover-lift stagger-1">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-tertiary min-w-[24px] text-center">1</span>
+                                <span class="text-sm font-medium text-on-surface">You</span>
+                            </div>
+                            <span class="font-bold text-tertiary text-sm">7 🔥</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded-lg hover:bg-tertiary/5 transition-all smooth-color-transition card-hover-lift stagger-2">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-on-surface-variant min-w-[24px] text-center">2</span>
+                                <span class="text-sm font-medium text-on-surface-variant">Marcus</span>
+                            </div>
+                            <span class="font-bold text-on-surface-variant text-sm">12 🔥</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded-lg hover:bg-tertiary/5 transition-all smooth-color-transition card-hover-lift stagger-3">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-on-surface-variant min-w-[24px] text-center">3</span>
+                                <span class="text-sm font-medium text-on-surface-variant">Sarah</span>
+                            </div>
+                            <span class="font-bold text-on-surface-variant text-sm">5 🔥</span>
+                        </div>
+                        <a href="#" class="inline-flex items-center gap-1 text-tertiary hover:text-tertiary/80 font-bold text-xs mt-2 transition-colors hover:underline">
+                            Full Leaderboard →
+                        </a>
+                    </div>
+                </div>
 
                 {{-- Active Polls --}}
-                <div class="rounded-2xl border border-outline-variant/20 dark:border-outline-variant/30 bg-surface-container dark:bg-surface-container overflow-hidden shadow-sm glass-edge">
-                    <div class="px-5 py-4 bg-gradient-to-r from-tertiary/10 to-tertiary/5 dark:from-tertiary/15 dark:to-tertiary/10 border-b border-outline-variant/20 dark:border-outline-variant/30">
-                        <h3 class="font-bold text-sm text-on-surface flex items-center gap-2">
-                            <span class="text-base">📊</span> Active Polls
+                <div class="card rounded-2xl border border-tertiary/25 bg-gradient-to-b from-surface-container/80 to-surface-container/40 overflow-hidden shadow-sm glass-premium hover:glow-primary transition-all">
+                    <div class="px-5 py-4 bg-gradient-to-r from-tertiary/15 to-tertiary/8 border-b border-tertiary/20">
+                        <h3 class="font-bold text-h6 text-on-surface flex items-center gap-2 uppercase tracking-wide">
+                            <span class="text-lg">📊</span> Active Polls
                         </h3>
                     </div>
                     <div class="p-3">
@@ -165,10 +279,10 @@
                 <x-ad-unit placement="sidebar" />
 
                 {{-- Trending Posts --}}
-                <div class="rounded-2xl border border-outline-variant/20 dark:border-outline-variant/30 bg-surface-container dark:bg-surface-container overflow-hidden shadow-sm glass-edge">
-                    <div class="px-5 py-4 bg-gradient-to-r from-secondary/10 to-secondary/5 dark:from-secondary/15 dark:to-secondary/10 border-b border-outline-variant/20 dark:border-outline-variant/30">
-                        <h3 class="font-bold text-sm text-on-surface flex items-center gap-2">
-                            <span class="text-base">🔥</span> Trending
+                <div class="card rounded-2xl border border-secondary/25 bg-gradient-to-b from-surface-container/80 to-surface-container/40 overflow-hidden shadow-sm glass-premium hover:glow-primary transition-all">
+                    <div class="px-5 py-4 bg-gradient-to-r from-secondary/15 to-secondary/8 border-b border-secondary/20">
+                        <h3 class="font-bold text-h6 text-on-surface flex items-center gap-2 uppercase tracking-wide">
+                            <span class="text-lg">🔥</span> Trending
                         </h3>
                     </div>
                     <div class="p-3">
@@ -190,23 +304,66 @@
                     </div>
                 </div>
 
-                {{-- Favorite Clubs --}}
-                @if($favoriteClubs->isNotEmpty())
-                <div class="rounded-2xl border border-outline-variant/20 dark:border-outline-variant/30 bg-surface-container dark:bg-surface-container overflow-hidden shadow-sm glass-edge">
-                    <div class="px-5 py-4 bg-gradient-to-r from-primary/10 to-primary/5 dark:from-primary/15 dark:to-primary/10 border-b border-outline-variant/20 dark:border-outline-variant/30">
-                        <h3 class="font-bold text-sm text-on-surface flex items-center gap-2">
-                            <span class="text-base">💚</span> Your Clubs
+                {{-- Mini League Table --}}
+                <div class="card rounded-2xl border border-primary/25 bg-gradient-to-b from-primary/8 to-primary/4 overflow-hidden shadow-sm glass-premium hover:glow-primary-sm transition-all card-entrance">
+                    <div class="px-5 py-4 bg-gradient-to-r from-primary/15 to-primary/8 border-b border-primary/20">
+                        <h3 class="font-bold text-h6 text-on-surface flex items-center gap-2 uppercase tracking-wide">
+                            <span class="text-lg">⚽</span> Points Race
                         </h3>
                     </div>
-                    <div class="p-4">
-                        <div class="flex flex-wrap gap-2">
-                            @foreach($favoriteClubs as $club)
-                            <a href="{{ $club->api_team_id ? route('clubs.show', $club->api_team_id) : '#' }}" class="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-primary/10 to-primary/5 dark:from-primary/15 dark:to-primary/10 px-4 py-2 text-xs font-medium text-on-primary hover:from-primary/20 hover:to-primary/10 dark:hover:from-primary/25 dark:hover:to-primary/15 transition-all border border-primary/20 dark:border-primary/30 hover:scale-105">
-                                @if($club->logo_url)<img src="{{ $club->logo_url }}" alt="" class="w-4 h-4 object-contain">@endif
-                                {{ $club->name }}
-                            </a>
-                            @endforeach
+                    <div class="p-3 space-y-1">
+                        <div class="flex items-center justify-between p-2 rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 smooth-color-transition card-hover-lift achievement-unlock">
+                            <div class="flex items-center gap-2 flex-1 min-w-0">
+                                <span class="font-bold text-primary min-w-[24px]">🥇</span>
+                                <span class="text-sm font-medium text-on-surface truncate">You</span>
+                            </div>
+                            <div class="flex items-center gap-2 ml-2">
+                                <span class="font-bold text-primary text-sm">{{ auth()->user()->points ?? 0 }}</span>
+                                <span class="text-xs text-on-surface-variant">pts</span>
+                            </div>
                         </div>
+                        <div class="flex items-center justify-between p-2 rounded-lg hover:bg-primary/5 transition-all smooth-color-transition card-hover-lift stagger-1">
+                            <div class="flex items-center gap-2 flex-1 min-w-0">
+                                <span class="font-bold text-on-surface-variant min-w-[24px]">🥈</span>
+                                <span class="text-sm font-medium text-on-surface-variant truncate">James</span>
+                            </div>
+                            <div class="flex items-center gap-2 ml-2">
+                                <span class="font-bold text-on-surface-variant text-sm">1,240</span>
+                                <span class="text-xs text-on-surface-variant">pts</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded-lg hover:bg-primary/5 transition-all smooth-color-transition card-hover-lift stagger-2">
+                            <div class="flex items-center gap-2 flex-1 min-w-0">
+                                <span class="font-bold text-on-surface-variant min-w-[24px]">🥉</span>
+                                <span class="text-sm font-medium text-on-surface-variant truncate">Alex</span>
+                            </div>
+                            <div class="flex items-center gap-2 ml-2">
+                                <span class="font-bold text-on-surface-variant text-sm">980</span>
+                                <span class="text-xs text-on-surface-variant">pts</span>
+                            </div>
+                        </div>
+                        <a href="#" class="inline-flex items-center gap-1 text-primary hover:text-primary/80 font-bold text-xs mt-2 transition-colors hover:underline">
+                            Full Rankings →
+                        </a>
+                    </div>
+                </div>
+
+                {{-- Your Communities --}}
+                @php $userCommunities = auth()->user()->communities()->limit(5)->get(); @endphp
+                @if($userCommunities->isNotEmpty())
+                <div class="rounded-2xl border border-primary/20 bg-gradient-to-b from-surface-container/80 to-surface-container/40 overflow-hidden shadow-sm glass-premium hover:glow-primary-sm transition-all">
+                    <div class="px-5 py-4 bg-gradient-to-r from-primary/15 to-primary/8 border-b border-primary/20">
+                        <h3 class="font-bold text-h6 text-on-surface flex items-center gap-2 uppercase tracking-wide">
+                            <span class="text-lg">👥</span> Your Communities
+                        </h3>
+                    </div>
+                    <div class="p-3 space-y-2">
+                        @foreach($userCommunities as $community)
+                        <a href="{{ route('communities.show', $community) }}" class="block p-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/15 transition-all duration-200">
+                            <div class="text-sm font-medium text-on-surface">{{ $community->name }}</div>
+                            <div class="text-xs text-on-surface-variant">{{ $community->members_count ?? 0 }} members</div>
+                        </a>
+                        @endforeach
                     </div>
                 </div>
                 @endif

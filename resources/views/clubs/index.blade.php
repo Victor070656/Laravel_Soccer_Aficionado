@@ -1,16 +1,16 @@
 <x-layouts::app :title="__('Clubs')">
     <div class="max-w-7xl mx-auto space-y-8 p-2 sm:p-4">
         {{-- Header --}}
-        <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-primary via-primary/80 to-primary/60 p-6 sm:p-8 text-on-primary shadow-xl">
+        <div class="relative rounded-2xl overflow-hidden bg-gradient-stadium-primary p-6 sm:p-8 text-on-primary shadow-xl shadow-primary/20 glow-primary-lg">
             <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=600&q=30'); background-size: cover; background-position: center;"></div>
             <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
             <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/3 -translate-x-1/4"></div>
             <div class="relative z-10">
-                <h1 class="text-2xl sm:text-3xl font-bold mb-2 flex items-center gap-3">
-                    <span class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center text-xl">⚽</span>
+                <h1 class="text-h2-mobile sm:text-h1 font-bold mb-2 flex items-center gap-3 text-on-primary uppercase tracking-wide">
+                    <span class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center text-xl glow-primary">⚽</span>
                     Clubs
                 </h1>
-                <p class="text-on-primary/70 text-sm sm:text-base">Explore football clubs from around the world.</p>
+                <p class="text-on-primary/70 text-sm sm:text-base font-medium">Explore football clubs from around the world.</p>
             </div>
         </div>
 
@@ -25,21 +25,21 @@
         @endunless
 
         {{-- Search --}}
-        <form method="GET" class="rounded-2xl border border-outline-variant/20 dark:border-outline-variant/30 bg-surface-container dark:bg-surface-container p-5 shadow-sm glass-edge">
+        <form method="GET" class="card rounded-2xl border border-primary/20 bg-gradient-to-b from-surface-container/80 to-surface-container/40 p-5 shadow-sm glass-premium">
             <div class="flex flex-wrap items-center gap-3">
                 <div class="flex-1 min-w-[180px]">
-                    <label class="block text-xs font-medium text-on-surface-variant mb-1.5">Club Name</label>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search clubs..." class="w-full p-4 rounded-xl border-outline-variant/20 dark:border-outline-variant/30 dark:bg-surface-container-high dark:text-on-surface focus:border-primary focus:ring-primary/20 text-sm">
+                    <label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wide">Club Name</label>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search clubs..." class="w-full p-4 rounded-xl border border-primary/10 bg-surface/60 dark:bg-surface/60 dark:text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/30 text-sm transition-all">
                 </div>
                 <div class="w-40">
-                    <label class="block text-xs font-medium text-on-surface-variant mb-1.5">Country</label>
-                    <input type="text" name="country" value="{{ request('country') }}" placeholder="e.g. England" class="w-full p-4 rounded-xl border-outline-variant/20 dark:border-outline-variant/30 dark:bg-surface-container-high dark:text-on-surface focus:border-primary focus:ring-primary/20 text-sm">
+                    <label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wide">Country</label>
+                    <input type="text" name="country" value="{{ request('country') }}" placeholder="e.g. England" class="w-full p-4 rounded-xl border border-primary/10 bg-surface/60 dark:bg-surface/60 dark:text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/30 text-sm transition-all">
                 </div>
-                <button type="submit" class="rounded-xl bg-gradient-to-r from-primary to-primary/80 px-6 py-2.5 text-sm font-semibold text-on-primary hover:from-primary/90 hover:to-primary/70 transition-all shadow-md shadow-primary/20 hover:scale-105">
+                <button type="submit" class="rounded-xl bg-gradient-to-r from-primary to-primary/80 px-6 py-3 text-sm font-bold text-on-primary hover:from-primary/90 hover:to-primary/70 transition-all shadow-md shadow-primary/20 hover:scale-105 glow-primary uppercase tracking-wide">
                     Search
                 </button>
                 @if(request()->hasAny(['search', 'country']))
-                <a href="{{ route('clubs.index') }}" class="rounded-xl border border-outline-variant/20 dark:border-outline-variant/30 px-5 py-2.5 text-sm font-medium text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition">Clear</a>
+                <a href="{{ route('clubs.index') }}" class="rounded-xl border border-primary/20 px-6 py-3 text-sm font-bold text-on-surface-variant hover:bg-primary/10 dark:hover:bg-primary/10 transition-all uppercase tracking-wide">Clear</a>
                 @endif
             </div>
         </form>
@@ -50,21 +50,21 @@
         {{-- Club Cards --}}
         <div class="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             @forelse($clubs as $club)
-            <a href="{{ route('clubs.show', $club->id) }}" class="group block rounded-2xl border border-outline-variant/20 dark:border-outline-variant/30 bg-surface-container dark:bg-surface-container shadow-sm hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 hover:-translate-y-1 overflow-hidden glass-edge">
+            <a href="{{ route('clubs.show', $club->id) }}" class="group card card-club block rounded-2xl border border-primary/15 bg-gradient-to-b from-surface-container/80 to-surface-container/40 shadow-sm hover:shadow-card-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden glass-premium hover:glow-primary">
                 <div class="p-5">
                     <div class="flex items-center gap-3 mb-3">
                         @if($club->logo)
-                        <div class="w-14 h-14 rounded-xl bg-surface-container-high dark:bg-surface-container-high flex items-center justify-center p-1.5 group-hover:scale-110 transition-transform duration-300">
+                        <div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center p-1.5 group-hover:scale-110 transition-transform duration-300 glow-primary">
                             <img loading="lazy" decoding="async" src="{{ $club->logo }}" alt="{{ $club->name }}" class="w-10 h-10 object-contain">
                         </div>
                         @else
-                        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/30 to-primary/20 dark:from-primary/20 dark:to-primary/10 flex items-center justify-center text-lg font-bold text-primary group-hover:scale-110 transition-transform duration-300">
+                        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/30 to-primary/20 flex items-center justify-center text-lg font-bold text-primary group-hover:scale-110 transition-transform duration-300 glow-primary">
                             {{ strtoupper(substr($club->code ?? $club->name, 0, 3)) }}
                         </div>
                         @endif
                         <div class="flex-1 min-w-0">
                             <div class="font-bold text-on-surface group-hover:text-primary transition text-sm truncate">{{ $club->name }}</div>
-                            <div class="text-xs text-on-surface-variant mt-0.5">{{ $club->country }}</div>
+                            <div class="text-xs text-on-surface-variant mt-0.5 font-semibold uppercase tracking-wide">{{ $club->country }}</div>
                         </div>
                     </div>
                     @if($club->venue['name'] ?? null)

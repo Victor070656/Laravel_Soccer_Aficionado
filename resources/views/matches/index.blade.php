@@ -1,18 +1,18 @@
 <x-layouts::app :title="__('Matches')">
     <div class="max-w-7xl mx-auto space-y-8 p-2 sm:p-4">
         {{-- Header --}}
-        <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-primary via-primary/80 to-primary/60 p-6 sm:p-8 text-on-primary shadow-xl">
+        <div class="relative rounded-2xl overflow-hidden bg-gradient-stadium-primary p-6 sm:p-8 text-on-primary shadow-xl shadow-primary/20 glow-primary-lg">
             <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=600&q=30'); background-size: cover; background-position: center;"></div>
             <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
             <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <h1 class="text-2xl sm:text-3xl font-bold mb-2 flex items-center gap-3">
-                        <span class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center text-xl">⚽</span>
+                    <h1 class="text-h2-mobile sm:text-h1 font-bold mb-2 flex items-center gap-3 text-on-primary uppercase tracking-wide">
+                        <span class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center text-xl glow-primary">⚽</span>
                         Matches
                     </h1>
-                    <p class="text-on-primary/70 text-sm sm:text-base">Browse all football matches. Filter by competition, status, or date.</p>
+                    <p class="text-on-primary/70 text-sm sm:text-base font-medium">Browse all football matches. Filter by competition, status, or date.</p>
                 </div>
-                <a href="{{ route('matches.live') }}" class="inline-flex items-center gap-2 rounded-xl bg-secondary/90 backdrop-blur-sm hover:bg-secondary px-5 py-2.5 text-sm font-bold text-on-secondary transition-all shadow-lg shadow-secondary/30 hover:scale-105 border border-secondary/50 glass-edge">
+                <a href="{{ route('matches.live') }}" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-secondary to-secondary/80 backdrop-blur-sm hover:from-secondary/90 hover:to-secondary/70 px-5 py-3 text-sm font-bold text-on-secondary transition-all shadow-lg shadow-secondary/30 hover:scale-105 border border-secondary/50 glass-premium glow-secondary uppercase tracking-wide">
                     <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-current opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-current"></span></span>
                     Live Matches
                 </a>
@@ -30,11 +30,11 @@
         @endunless
 
         {{-- Filters --}}
-        <form method="GET" class="rounded-2xl border border-outline-variant/20 dark:border-outline-variant/30 bg-surface-container dark:bg-surface-container p-5 shadow-sm glass-edge">
+        <form method="GET" class="card rounded-2xl border border-primary/20 bg-gradient-to-b from-surface-container/80 to-surface-container/40 p-5 shadow-sm glass-premium">
             <div class="flex flex-wrap items-center gap-3">
                 <div class="flex-1 min-w-[160px]">
-                    <label class="block text-xs font-medium text-on-surface-variant mb-1.5">Competition</label>
-                    <select name="league" class="w-full rounded-xl border-outline-variant/20 dark:border-outline-variant/30 dark:bg-surface-container-high dark:text-on-surface text-sm p-4 focus:border-primary focus:ring-primary/20">
+                    <label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wide">Competition</label>
+                    <select name="league" class="w-full rounded-xl border border-primary/10 bg-surface/60 dark:bg-surface/60 dark:text-on-surface text-sm p-4 focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all">
                         <option value="">All Competitions</option>
                         @foreach($leagues as $league)
                         <option value="{{ $league->id }}" {{ request('league') == $league->id ? 'selected' : '' }}>{{ $league->name }}</option>
@@ -42,8 +42,8 @@
                     </select>
                 </div>
                 <div class="flex-1 min-w-[140px]">
-                    <label class="block text-xs font-medium text-on-surface-variant mb-1.5">Status</label>
-                    <select name="status" class="w-full rounded-xl border-outline-variant/20 dark:border-outline-variant/30 dark:bg-surface-container-high dark:text-on-surface text-sm p-4 focus:border-primary focus:ring-primary/20">
+                    <label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wide">Status</label>
+                    <select name="status" class="w-full rounded-xl border border-primary/10 bg-surface/60 dark:bg-surface/60 dark:text-on-surface text-sm p-4 focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all">
                         <option value="">All Statuses</option>
                         @foreach(['scheduled' => 'Scheduled', 'live' => 'Live', 'finished' => 'Finished'] as $value => $label)
                         <option value="{{ $value }}" {{ request('status') == $value ? 'selected' : '' }}>{{ $label }}</option>
@@ -51,16 +51,16 @@
                     </select>
                 </div>
                 <div class="flex-1 min-w-[150px]">
-                    <label class="block text-xs font-medium text-on-surface-variant mb-1.5">Date</label>
-                    <input type="date" name="date" value="{{ request('date') }}" class="w-full rounded-xl border-outline-variant/20 dark:border-outline-variant/30 p-4 dark:bg-surface-container-high dark:text-on-surface text-sm focus:border-primary focus:ring-primary/20">
+                    <label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wide">Date</label>
+                    <input type="date" name="date" value="{{ request('date') }}" class="w-full rounded-xl border border-primary/10 p-4 bg-surface/60 dark:bg-surface/60 dark:text-on-surface text-sm focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all">
                 </div>
                 <div class="flex gap-2">
-                    <button type="submit" class="rounded-xl bg-gradient-to-r from-primary to-primary/80 px-6 py-2.5 text-sm font-semibold text-on-primary hover:from-primary/90 hover:to-primary/70 transition-all shadow-md shadow-primary/20 hover:scale-105">
-                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                    <button type="submit" class="rounded-xl bg-gradient-to-r from-primary to-primary/80 px-6 py-3 text-sm font-bold text-on-primary hover:from-primary/90 hover:to-primary/70 transition-all shadow-md shadow-primary/20 hover:scale-105 glow-primary uppercase tracking-wide">
+                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
                         Filter
                     </button>
                     @if(request()->hasAny(['league', 'status', 'date']))
-                    <a href="{{ route('matches.index') }}" class="rounded-xl border border-outline-variant/20 dark:border-outline-variant/30 px-4 py-2.5 text-sm text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-all">Clear</a>
+                    <a href="{{ route('matches.index') }}" class="rounded-xl border border-primary/20 px-4 py-3 text-sm text-on-surface-variant hover:bg-primary/10 dark:hover:bg-primary/10 transition-all font-semibold uppercase tracking-wide">Clear</a>
                     @endif
                 </div>
             </div>
@@ -72,7 +72,7 @@
         {{-- Match List --}}
         <div class="space-y-4">
             @forelse($matches as $match)
-            <a href="{{ route('matches.show', $match->id) }}" class="group block rounded-2xl border border-outline-variant/20 dark:border-outline-variant/30 bg-surface-container dark:bg-surface-container p-5 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 glass-edge">
+            <a href="{{ route('matches.show', $match->id) }}" class="group card card-match block rounded-2xl border border-primary/15 bg-gradient-to-b from-surface-container/80 to-surface-container/40 p-5 shadow-sm hover:shadow-card-lg transition-all duration-300 hover:-translate-y-1 glass-premium hover:glow-primary pulse-energy">
                 <div class="flex items-center justify-between mb-3">
                     <div class="flex items-center gap-2">
                         @if($match->league['logo'] ?? null)
@@ -99,41 +99,41 @@
                 <div class="flex items-center justify-between">
                     <div class="flex-1 flex items-center gap-3">
                         @if($match->home_team['logo'] ?? null)
-                        <img loading="lazy" decoding="async" src="{{ $match->home_team['logo'] }}" alt="" class="h-10 w-10 object-contain group-hover:scale-110 transition-transform">
+                        <img loading="lazy" decoding="async" src="{{ $match->home_team['logo'] }}" alt="" class="h-10 w-10 object-contain group-hover:scale-110 transition-transform glow-primary">
                         @else
-                        <div class="h-10 w-10 rounded-full bg-surface-container-high dark:bg-surface-container-high flex items-center justify-center text-lg">⚽</div>
+                        <div class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-lg glow-primary">⚽</div>
                         @endif
-                        <div class="font-bold text-on-surface group-hover:text-primary dark:group-hover:text-primary transition-colors">{{ $match->home_team['name'] }}</div>
+                        <div class="font-bold text-on-surface group-hover:text-primary transition-colors text-sm sm:text-base">{{ $match->home_team['name'] }}</div>
                     </div>
                     <div class="px-5 text-center">
-                        <span class="text-3xl font-bold {{ in_array($match->status, ['live', 'half_time']) ? 'bg-gradient-to-r from-secondary to-tertiary bg-clip-text text-transparent' : 'text-on-surface' }}">{{ $match->score_display }}</span>
+                        <span class="text-4xl font-black {{ in_array($match->status, ['live', 'half_time']) ? 'bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent glow-primary' : 'text-primary' }} drop-shadow-lg">{{ $match->score_display }}</span>
                     </div>
                     <div class="flex-1 flex items-center justify-end gap-3">
-                        <div class="font-bold text-on-surface text-right group-hover:text-primary dark:group-hover:text-primary transition-colors">{{ $match->away_team['name'] }}</div>
+                        <div class="font-bold text-on-surface text-right group-hover:text-primary transition-colors text-sm sm:text-base">{{ $match->away_team['name'] }}</div>
                         @if($match->away_team['logo'] ?? null)
-                        <img loading="lazy" decoding="async" src="{{ $match->away_team['logo'] }}" alt="" class="h-10 w-10 object-contain group-hover:scale-110 transition-transform">
+                        <img loading="lazy" decoding="async" src="{{ $match->away_team['logo'] }}" alt="" class="h-10 w-10 object-contain group-hover:scale-110 transition-transform glow-primary">
                         @else
-                        <div class="h-10 w-10 rounded-full bg-surface-container-high dark:bg-surface-container-high flex items-center justify-center text-lg">⚽</div>
+                        <div class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-lg glow-primary">⚽</div>
                         @endif
                     </div>
                 </div>
                 @if($match->venue || ($match->league['round'] ?? null))
-                <div class="flex items-center gap-3 mt-3 pt-3 border-t border-outline-variant/20 dark:border-outline-variant/30 text-xs text-on-surface-variant">
-                    @if($match->venue)<span class="flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>{{ $match->venue }}</span>@endif
+                <div class="flex items-center gap-3 mt-3 pt-3 border-t border-primary/10 text-xs text-on-surface-variant font-semibold uppercase tracking-wide">
+                    @if($match->venue)<span class="inline-flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>{{ $match->venue }}</span>@endif
                     @if($match->league['round'] ?? null)<span>{{ $match->league['round'] }}</span>@endif
                 </div>
                 @endif
             </a>
             @empty
-            <div class="rounded-2xl border-2 border-dashed border-outline-variant/30 dark:border-outline-variant/40 p-16 text-center">
+            <div class="rounded-2xl border-2 border-dashed border-primary/30 p-16 text-center glass-premium hover:glow-primary transition-all">
                 @if($apiConfigured)
-                <div class="text-5xl mb-4">⚽</div>
-                <h3 class="font-bold text-on-surface mb-2">No matches found</h3>
-                <p class="text-sm text-on-surface-variant">Try adjusting your filters to find matches.</p>
+                <div class="text-6xl mb-4 animate-bounce">⚽</div>
+                <h3 class="font-bold text-h4 text-on-surface mb-2 uppercase tracking-wide">No matches found</h3>
+                <p class="text-sm text-on-surface-variant font-medium">Try adjusting your filters to find matches.</p>
                 @else
-                <div class="text-5xl mb-4">🔌</div>
-                <h3 class="font-bold text-on-surface mb-2">API Not Configured</h3>
-                <p class="text-sm text-on-surface-variant">Configure your API key to see live match data.</p>
+                <div class="text-6xl mb-4 animate-pulse">🔌</div>
+                <h3 class="font-bold text-h4 text-on-surface mb-2 uppercase tracking-wide">API Not Configured</h3>
+                <p class="text-sm text-on-surface-variant font-medium">Configure your API key to see live match data.</p>
                 @endif
             </div>
             @endforelse
