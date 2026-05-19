@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Lexend:wght@400;500;600;700;800;900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-background text-on-background antialiased overflow-x-hidden selection:bg-secondary selection:text-on-secondary">
+<body class="marketing-page bg-background text-on-background antialiased overflow-x-hidden selection:bg-secondary selection:text-on-secondary">
     <div class="relative min-h-screen flex flex-col turf-pattern bg-[radial-gradient(circle_at_top,rgba(74,225,118,0.12),transparent_35%),radial-gradient(circle_at_80%_20%,rgba(249,189,34,0.08),transparent_28%),linear-gradient(180deg,#0e0e0e_0%,#131313_38%,#0e0e0e_100%)]">
         <div class="pointer-events-none absolute inset-0 opacity-25" style="background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 72px 72px;"></div>
         <div class="pointer-events-none absolute inset-x-0 top-0 bg-[radial-gradient(circle_at_top,rgba(74,225,118,0.2),transparent_60%)]" style="height: 520px;"></div>

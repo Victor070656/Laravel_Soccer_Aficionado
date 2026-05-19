@@ -2018,9 +2018,383 @@ button[data-flux], a[data-flux] {
     transition: all 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
+/* ========================================
+   PHASE 10: RESPONSIVE DENSITY OPTIMIZATION
+   ======================================== */
+
+/* Tablet Optimizations (md: 768px and up) */
+@media (min-width: 768px) {
+    /* Tighter card interactions on tablet */
+    .card-hover-lift:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 32px rgba(74, 255, 153, 0.15);
+    }
+    
+    /* Better sidebar text sizing */
+    .sidebar-text-sm {
+        font-size: 0.8125rem;
+    }
+    
+    /* Optimized leaderboard density */
+    .leaderboard-item {
+        padding: 0.375rem 0;
+    }
+    
+    /* Improved badge sizing on tablet */
+    .tablet-badge-sm {
+        font-size: 0.75rem;
+    }
+}
+
+/* Mobile Optimizations (sm: 640px) */
+@media (max-width: 767px) {
+    /* Tighter button spacing on mobile */
+    .mobile-btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.8125rem;
+    }
+    
+    /* Reduce card shadows on mobile for performance */
+    .card {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Optimized hover for touch devices */
+    .touch-optimized {
+        padding: 0.625rem;
+    }
+    
+    /* Stack badges vertically on small screens */
+    .stats-container {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+}
+
+/* Large screens: Increase sidebar prominence */
+@media (min-width: 1024px) {
+    /* Better visual separation on large screens */
+    .lg-spacing-increase {
+        gap: 2rem;
+    }
+}
+
+/* Print optimization */
+@media print {
+    .card {
+        break-inside: avoid;
+    }
+}
+
 /* Focus visible rings for accessibility */
 .focus-ring:focus-visible {
     outline: 2px solid rgba(74, 255, 153, 0.5);
     outline-offset: 2px;
 }
 
+/* ========================================
+   FULL-PAGE ROLLOUT: GLOBAL UI CONSISTENCY
+   ======================================== */
+
+.ui-page {
+    position: relative;
+    padding: 0.75rem;
+}
+
+.ui-page::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 18% 10%, rgba(74, 255, 153, 0.08), transparent 42%),
+        radial-gradient(circle at 85% 6%, rgba(245, 158, 11, 0.06), transparent 35%);
+    z-index: -1;
+}
+
+.ui-page-inner {
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .ui-page {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 1023px) {
+    .ui-app-shell {
+        padding-bottom: calc(7.5rem + env(safe-area-inset-bottom));
+    }
+}
+
+@media (max-width: 767px) {
+    .ui-page {
+        padding: 0.75rem;
+        padding-bottom: calc(7.75rem + env(safe-area-inset-bottom));
+    }
+
+    .ui-page > div:first-child {
+        gap: 1rem !important;
+    }
+
+    .auth-page .auth-page-panel {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    /* Improve mobile card sizing */
+    .ui-page [class*="rounded-2xl"] {
+        padding: 1rem;
+    }
+
+    /* Make mobile text more readable */
+    .ui-page h1 {
+        font-size: 1.5rem;
+    }
+
+    .ui-page h2,
+    .ui-page h3 {
+        font-size: 1.25rem;
+    }
+
+    /* Improve tap targets for mobile */
+    .ui-page button,
+    .ui-page a[class*="btn"] {
+        min-height: 2.75rem;
+        padding: 0.75rem 1rem;
+    }
+}
+
+@media (max-width: 639px) {
+    .ui-page {
+        padding: 0.5rem;
+        padding-bottom: calc(8rem + env(safe-area-inset-bottom));
+    }
+
+    /* Stack items vertically on very small screens */
+    .grid-cols-2,
+    .grid-cols-3,
+    .grid-cols-4 {
+        @apply grid-cols-1;
+    }
+
+    /* Reduce gap on very small screens */
+    .gap-6 {
+        gap: 1rem;
+    }
+
+    .gap-4 {
+        gap: 0.75rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .ui-app-shell {
+        padding-bottom: 0;
+    }
+}
+
+/* Shared cards and panels across app/admin pages */
+.ui-page :is(div, section, article)[class*="rounded-2xl"][class*="border"] {
+    border-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+}
+
+.ui-page :is(div, section, article)[class*="rounded-2xl"][class*="border"]:hover {
+    box-shadow: 0 10px 36px rgba(74, 255, 153, 0.12), 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Typography consistency */
+.ui-page h1 {
+    letter-spacing: -0.02em;
+}
+
+.ui-page h2,
+.ui-page h3 {
+    letter-spacing: -0.01em;
+}
+
+/* Unified interactive behavior */
+.ui-page a,
+.ui-page button {
+    transition: all 0.2s ease;
+}
+
+.ui-page button:focus-visible,
+.ui-page a:focus-visible,
+.auth-page button:focus-visible,
+.auth-page a:focus-visible,
+.marketing-page a:focus-visible {
+    outline: 2px solid rgba(74, 255, 153, 0.45);
+    outline-offset: 2px;
+}
+
+/* Unified form controls across app pages */
+.ui-page input:not([type="checkbox"]):not([type="radio"]),
+.ui-page select,
+.ui-page textarea {
+    border-radius: 0.75rem;
+    border-color: rgba(255, 255, 255, 0.16);
+    background: rgba(21, 26, 31, 0.72);
+    color: var(--color-on-surface);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.ui-page input:not([type="checkbox"]):not([type="radio"]):focus,
+.ui-page select:focus,
+.ui-page textarea:focus,
+.auth-page input:not([type="checkbox"]):not([type="radio"]):focus,
+.auth-page select:focus,
+.auth-page textarea:focus {
+    border-color: rgba(74, 255, 153, 0.55);
+    box-shadow: 0 0 0 3px rgba(74, 255, 153, 0.2);
+}
+
+/* Table polish for admin/index pages */
+.ui-page table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.ui-page thead tr {
+    background: linear-gradient(90deg, rgba(74, 255, 153, 0.08), rgba(74, 255, 153, 0.03));
+}
+
+.ui-page tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.ui-page tbody tr:hover {
+    background: rgba(74, 255, 153, 0.05);
+}
+
+/* Auth page consistency */
+.auth-page .auth-page-panel {
+    background:
+        radial-gradient(circle at top left, rgba(74, 255, 153, 0.08), transparent 40%),
+        var(--color-surface-container-lowest);
+}
+
+.auth-page [data-flux-control],
+.auth-page input:not([type="checkbox"]):not([type="radio"]),
+.auth-page textarea,
+.auth-page select {
+    border-radius: 0.75rem;
+}
+
+/* Marketing page action consistency */
+.marketing-page nav a,
+.marketing-page section a {
+    transition: all 0.2s ease;
+}
+
+.marketing-page nav a:hover,
+.marketing-page section a:hover {
+    filter: brightness(1.06);
+}
+
+/* ===== MOBILE-FRIENDLY UTILITIES ===== */
+
+/* Safe area inset utilities for notched devices */
+.safe-area-inset-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+.safe-area-inset-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+}
+
+.safe-area-inset-left {
+    padding-left: max(1rem, env(safe-area-inset-left));
+}
+
+.safe-area-inset-right {
+    padding-right: max(1rem, env(safe-area-inset-right));
+}
+
+/* Bottom nav mobile improvements */
+@media (max-width: 767px) {
+    /* Ensure touch targets are at least 44x44px (accessibility standard) */
+    nav[class*="fixed"][class*="bottom"] a,
+    nav[class*="fixed"][class*="bottom"] button {
+        min-height: 3.5rem;
+        min-width: 3.5rem;
+    }
+
+    /* Improve spacing in flex layouts on mobile */
+    .flex {
+        gap: 0.5rem;
+    }
+
+    /* Better card padding on mobile */
+    [class*="rounded-2xl"],
+    [class*="rounded-xl"],
+    [class*="rounded-lg"] {
+        padding: 1rem;
+    }
+
+    /* Improve grid layouts on mobile */
+    .grid {
+        gap: 1rem;
+    }
+
+    /* Make images responsive on mobile */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Improve readability of long text on mobile */
+    p, .text-body-md, .text-body-lg {
+        line-height: 1.8;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Extra small devices */
+    .ui-page {
+        padding: 0.5rem;
+    }
+
+    [class*="rounded-2xl"],
+    [class*="rounded-xl"] {
+        padding: 0.75rem;
+    }
+
+    /* Stack more items on extra small devices */
+    .flex-wrap {
+        gap: 0.5rem;
+    }
+
+    /* Reduce font sizes on very small devices */
+    h1, .h1, .text-h1, .text-display-xl {
+        font-size: 1.5rem;
+    }
+
+    h2, .h2, .text-h2 {
+        font-size: 1.25rem;
+    }
+
+    h3, .h3, .text-h3 {
+        font-size: 1.125rem;
+    }
+}
+
+/* Improve hover states on touch devices */
+@media (hover: none) {
+    .ui-page a:hover,
+    .ui-page button:hover,
+    nav a:hover {
+        background-color: inherit;
+    }
+
+    .ui-page a:active,
+    .ui-page button:active,
+    nav a:active {
+        opacity: 0.8;
+    }
+}

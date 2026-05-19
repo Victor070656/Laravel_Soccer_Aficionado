@@ -3,7 +3,7 @@
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen bg-surface">
+    <body class="ui-app-shell min-h-screen bg-surface">
         <flux:sidebar sticky collapsible="mobile" class="border-e border-outline-variant/40 bg-surface-container-low">
             <flux:sidebar.header>
                 <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
@@ -89,14 +89,19 @@
             </flux:sidebar.nav>
 
             @auth
-            <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name ?? 'Guest'" />
-        @else
-            <flux:sidebar.nav>
-                <flux:sidebar.item icon="arrow-right-start-on-rectangle" :href="route('login')" wire:navigate>
-                    {{ __('Login') }}
-                </flux:sidebar.item>
-            </flux:sidebar.nav>
-        @endauth
+                <flux:sidebar.nav>
+                    <flux:sidebar.item icon="user" :href="auth()->user()->username ? route('profiles.show', auth()->user()) : route('profile.edit')" :current="request()->routeIs('profiles.*')" wire:navigate>
+                        {{ __('Profile') }}
+                    </flux:sidebar.item>
+                </flux:sidebar.nav>
+                <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name ?? 'Guest'" />
+            @else
+                <flux:sidebar.nav>
+                    <flux:sidebar.item icon="arrow-right-start-on-rectangle" :href="route('login')" wire:navigate>
+                        {{ __('Login') }}
+                    </flux:sidebar.item>
+                </flux:sidebar.nav>
+            @endauth
         </flux:sidebar>
 
 

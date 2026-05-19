@@ -41,7 +41,7 @@
                                 Add Media
                                 <input type="file" name="media[]" multiple accept="image/*,video/*" class="hidden">
                             </label>
-                            <button type="submit" class="rounded-xl bg-gradient-to-r from-primary to-primary/80 px-6 py-3 text-sm font-bold text-on-primary hover:from-primary/90 hover:to-primary/70 transition-all shadow-md shadow-primary/20 hover:shadow-lg hover:scale-105 glow-primary uppercase tracking-wide">Post</button>
+                            <button type="submit" class="focus-ring btn-primary rounded-xl px-6 py-3 text-sm font-bold text-on-primary hover:scale-105 glow-primary uppercase tracking-wide">Post</button>
                         </div>
                     </div>
                 </div>
@@ -90,12 +90,12 @@
                     @auth
                     <form action="{{ route('posts.like', $post) }}" method="POST" class="inline">
                         @csrf
-                        <button type="submit" class="reaction-button inline-flex items-center gap-1.5 text-xs font-bold {{ auth()->user()->hasLiked($post) ? 'text-on-primary bg-gradient-to-r from-primary/80 to-primary/60 glow-primary scale-105' : 'text-on-surface-variant hover:text-primary hover:bg-primary/15 hover:glow-primary hover:scale-105' }} transition-all duration-200 px-3 py-2 rounded-lg">
+                        <button type="submit" class="focus-ring reaction-button inline-flex items-center gap-1.5 text-xs font-bold {{ auth()->user()->hasLiked($post) ? 'text-on-primary bg-gradient-to-r from-primary/80 to-primary/60 glow-primary scale-105' : 'text-on-surface-variant hover:text-primary hover:bg-primary/15 hover:glow-primary hover:scale-105' }} transition-all duration-200 px-3 py-2 rounded-lg">
                             <span class="text-base">♥</span> {{ $post->likes_count }}
                         </button>
                     </form>
                     @endauth
-                    <a href="{{ route('posts.show', $post) }}" class="reaction-button inline-flex items-center gap-1.5 text-xs font-bold text-on-surface-variant hover:text-primary px-3 py-2 rounded-lg hover:bg-tertiary/15 transition-all duration-200 hover:glow-primary hover:scale-105">
+                    <a href="{{ route('posts.show', $post) }}" class="focus-ring reaction-button inline-flex items-center gap-1.5 text-xs font-bold text-on-surface-variant hover:text-primary px-3 py-2 rounded-lg hover:bg-tertiary/15 transition-all duration-200 hover:glow-primary hover:scale-105">
                         <span class="text-base">💬</span> {{ $post->comments_count }}
                     </a>
                     <span class="inline-flex items-center gap-1.5 text-xs font-bold text-on-surface-variant px-3 py-2">

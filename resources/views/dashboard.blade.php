@@ -1,8 +1,8 @@
 <x-layouts::app :title="__('Dashboard')">
-    <div class="flex h-full w-full flex-1 flex-col gap-8 rounded-xl p-2 sm:p-4">
+    <div class="flex h-full w-full flex-1 flex-col gap-6 rounded-xl p-2 sm:p-3 md:p-4">
 
         {{-- Welcome Banner --}}
-        <div class="relative rounded-2xl overflow-hidden bg-gradient-stadium-primary p-6 sm:p-8 text-on-primary shadow-xl shadow-primary/20 glow-primary-lg">
+        <div class="relative rounded-2xl overflow-hidden bg-gradient-stadium-primary p-4 sm:p-6 md:p-8 text-on-primary shadow-xl shadow-primary/20 glow-primary-lg">
             <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1508098682722-e99c643e7f0b?w=600&q=30'); background-size: cover; background-position: center;"></div>
             <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
             <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/4"></div>
@@ -68,7 +68,7 @@
                             <p class="text-xs text-on-surface-variant font-medium">Your team's fixtures</p>
                         </div>
                     </div>
-                    <a href="{{ route('matches.index') }}" class="text-primary hover:text-primary/80 font-bold text-sm transition-colors">View All</a>
+                    <a href="{{ route('matches.index') }}" class="focus-ring text-primary hover:text-primary/80 font-bold text-sm transition-colors">View All</a>
                 </div>
                 <livewire:matches.upcoming lazy />
             </div>
@@ -76,15 +76,15 @@
         </div>
 
         {{-- MAIN CONTENT GRID --}}
-        <div class="grid gap-8 lg:grid-cols-3">
+        <div class="grid gap-6 lg:gap-8 lg:grid-cols-3">
             {{-- Main Feed --}}
-            <div class="lg:col-span-2 space-y-5">
+            <div class="lg:col-span-2 space-y-4 md:space-y-5">
                 <div class="flex items-center justify-between">
                     <h2 class="text-h5 font-bold text-on-surface flex items-center gap-2 uppercase tracking-wide">
                         <span class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center text-primary text-lg glow-primary">📰</span>
                         Community Feed
                     </h2>
-                    <a href="{{ route('posts.index') }}" class="text-sm text-primary hover:text-primary/80 font-semibold hover:underline hover:gap-2 inline-flex items-center transition-all">View All <span class="ml-1">→</span></a>
+                    <a href="{{ route('posts.index') }}" class="focus-ring text-sm text-primary hover:text-primary/80 font-semibold hover:underline hover:gap-2 inline-flex items-center transition-all">View All <span class="ml-1">→</span></a>
                 </div>
 
                 {{-- Create Post --}}
@@ -106,7 +106,7 @@
                                     Add Media
                                     <input type="file" name="media[]" multiple accept="image/*,video/*" class="hidden">
                                 </label>
-                                <button type="submit" class="rounded-xl bg-gradient-to-r from-primary to-primary/80 px-6 py-2 text-sm font-bold text-on-primary hover:from-primary/90 hover:to-primary/70 transition-all duration-300 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:scale-105 glow-primary uppercase tracking-wide">
+                                <button type="submit" class="focus-ring btn-primary rounded-xl text-sm font-bold hover:scale-105 glow-primary uppercase tracking-wide">
                                     Post
                                 </button>
                             </div>
@@ -149,12 +149,12 @@
                             <div class="flex items-center gap-1 mt-4 pt-3 border-t border-primary/10">
                                 <form action="{{ route('posts.like', $post) }}" method="POST" class="inline">
                                     @csrf
-                                    <button type="submit" class="reaction-button inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-lg {{ auth()->user()->hasLiked($post) ? 'text-on-primary bg-gradient-to-r from-primary/80 to-primary/60 glow-primary scale-105' : 'text-on-surface-variant hover:text-primary hover:bg-primary/15 hover:glow-primary hover:scale-105' }} transition-all duration-200">
+                                    <button type="submit" class="focus-ring reaction-button inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-lg {{ auth()->user()->hasLiked($post) ? 'text-on-primary bg-gradient-to-r from-primary/80 to-primary/60 glow-primary scale-105' : 'text-on-surface-variant hover:text-primary hover:bg-primary/15 hover:glow-primary hover:scale-105' }} transition-all duration-200">
                                         <svg class="w-4 h-4" fill="{{ auth()->user()->hasLiked($post) ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                                         {{ $post->likes_count }}
                                     </button>
                                 </form>
-                                <a href="{{ route('posts.show', $post) }}" class="reaction-button inline-flex items-center gap-1.5 text-xs font-bold text-on-surface-variant hover:text-primary px-3 py-2 rounded-lg hover:bg-tertiary/15 transition-all duration-200 hover:glow-primary hover:scale-105">
+                                <a href="{{ route('posts.show', $post) }}" class="focus-ring reaction-button inline-flex items-center gap-1.5 text-xs font-bold text-on-surface-variant hover:text-primary px-3 py-2 rounded-lg hover:bg-tertiary/15 transition-all duration-200 hover:glow-primary hover:scale-105">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
                                     {{ $post->comments_count }}
                                 </a>
@@ -172,10 +172,10 @@
                     <h3 class="font-bold text-h5 text-on-surface mb-2 uppercase tracking-wide">Your Feed is Ready!</h3>
                     <p class="text-sm text-on-surface-variant mb-6 font-medium">Start by following users or joining communities to see posts from your football community.</p>
                     <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                        <a href="{{ route('communities.index') }}" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary/80 px-6 py-3 text-sm text-on-primary font-bold hover:from-primary/90 hover:to-primary/70 transition-all shadow-md shadow-primary/20 hover:shadow-lg hover:scale-105 glow-primary uppercase tracking-wide card-hover-lift">
+                        <a href="{{ route('communities.index') }}" class="focus-ring btn-primary inline-flex items-center gap-2 rounded-xl text-sm font-bold hover:scale-105 glow-primary uppercase tracking-wide card-hover-lift">
                             📍 Explore Communities
                         </a>
-                        <a href="{{ route('profiles.index') }}" class="inline-flex items-center gap-2 rounded-xl border-2 border-primary px-6 py-3 text-sm text-primary font-bold hover:bg-primary/10 transition-all uppercase tracking-wide">
+                        <a href="{{ route('search') }}" class="focus-ring btn-secondary inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm text-primary font-bold uppercase tracking-wide">
                             👥 Find Users
                         </a>
                     </div>
@@ -184,30 +184,30 @@
             </div>
 
             {{-- Sidebar --}}
-            <div class="space-y-5">
+            <div class="space-y-4 md:space-y-5">
                 {{-- Achievements Section --}}
                 <div class="card rounded-2xl border border-secondary/25 bg-gradient-to-b from-secondary/8 to-secondary/4 p-6 shadow-sm glass-premium hover:glow-primary-sm transition-all card-entrance">
                     <div class="flex items-center gap-2 mb-4">
                         <span class="text-2xl celebrate">🏆</span>
                         <h3 class="font-bold text-h6 text-on-surface uppercase tracking-wide">Your Streak</h3>
                     </div>
-                    <div class="space-y-3 text-sm">
-                        <div class="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-secondary/15 to-secondary/10 border border-secondary/20 hover:from-secondary/25 hover:to-secondary/15 transition-all smooth-color-transition card-hover-lift">
+                    <div class="space-y-2 text-sm">
+                        <div class="flex items-center justify-between p-2.5 rounded-lg bg-gradient-to-r from-secondary/15 to-secondary/10 border border-secondary/20 hover:from-secondary/25 hover:to-secondary/15 transition-all smooth-color-transition card-hover-lift">
                             <div class="flex items-center gap-2">
-                                <span class="text-2xl pulse-energy">🔥</span>
-                                <span class="text-on-surface-variant font-semibold">Current Streak</span>
+                                <span class="text-xl pulse-energy">🔥</span>
+                                <span class="text-on-surface-variant font-semibold text-xs md:text-sm">Current Streak</span>
                             </div>
-                            <span class="font-bold text-secondary text-lg">7 days</span>
+                            <span class="font-bold text-secondary text-base md:text-lg">7d</span>
                         </div>
-                        <div class="flex items-center justify-between p-3 rounded-lg bg-primary/10 border border-primary/15 hover:bg-primary/15 transition-all smooth-color-transition card-hover-lift">
-                            <span class="text-on-surface-variant font-semibold">Posts This Week</span>
-                            <span class="font-bold text-primary">{{ auth()->user()->posts()->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count() }}</span>
+                        <div class="flex items-center justify-between p-2.5 rounded-lg bg-primary/10 border border-primary/15 hover:bg-primary/15 transition-all smooth-color-transition card-hover-lift">
+                            <span class="text-on-surface-variant font-semibold text-xs md:text-sm">Posts This Week</span>
+                            <span class="font-bold text-primary text-base md:text-lg">{{ auth()->user()->posts()->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count() }}</span>
                         </div>
-                        <div class="flex items-center justify-between p-3 rounded-lg bg-tertiary/10 border border-tertiary/15 hover:bg-tertiary/15 transition-all smooth-color-transition card-hover-lift">
-                            <span class="text-on-surface-variant font-semibold">Total Posts</span>
-                            <span class="font-bold text-tertiary">{{ auth()->user()->posts()->count() }}</span>
+                        <div class="flex items-center justify-between p-2.5 rounded-lg bg-tertiary/10 border border-tertiary/15 hover:bg-tertiary/15 transition-all smooth-color-transition card-hover-lift">
+                            <span class="text-on-surface-variant font-semibold text-xs md:text-sm">Total Posts</span>
+                            <span class="font-bold text-tertiary text-base md:text-lg">{{ auth()->user()->posts()->count() }}</span>
                         </div>
-                        <a href="#" class="inline-flex items-center gap-1 text-primary hover:text-primary/80 font-bold text-xs mt-2 transition-colors hover:underline">
+                        <a href="{{ route('leaderboard') }}" class="focus-ring inline-flex items-center gap-1 text-primary hover:text-primary/80 font-bold text-xs mt-2 transition-colors hover:underline">
                             View All Badges →
                         </a>
                     </div>
@@ -220,29 +220,29 @@
                             <span class="text-lg">⚡</span> Top Streaks
                         </h3>
                     </div>
-                    <div class="p-3 space-y-2">
-                        <div class="flex items-center justify-between p-2 rounded-lg hover:bg-tertiary/5 transition-all smooth-color-transition card-hover-lift stagger-1">
-                            <div class="flex items-center gap-2">
-                                <span class="font-bold text-tertiary min-w-[24px] text-center">1</span>
-                                <span class="text-sm font-medium text-on-surface">You</span>
+                    <div class="p-2.5 space-y-1">
+                        <div class="flex items-center justify-between p-1.5 rounded-lg hover:bg-tertiary/5 transition-all smooth-color-transition card-hover-lift stagger-1">
+                            <div class="flex items-center gap-2 min-w-0 flex-1">
+                                <span class="font-bold text-tertiary min-w-[20px] text-center text-sm">1</span>
+                                <span class="text-xs md:text-sm font-medium text-on-surface truncate">You</span>
                             </div>
-                            <span class="font-bold text-tertiary text-sm">7 🔥</span>
+                            <span class="font-bold text-tertiary text-xs md:text-sm ml-1 flex-shrink-0">7🔥</span>
                         </div>
-                        <div class="flex items-center justify-between p-2 rounded-lg hover:bg-tertiary/5 transition-all smooth-color-transition card-hover-lift stagger-2">
-                            <div class="flex items-center gap-2">
-                                <span class="font-bold text-on-surface-variant min-w-[24px] text-center">2</span>
-                                <span class="text-sm font-medium text-on-surface-variant">Marcus</span>
+                        <div class="flex items-center justify-between p-1.5 rounded-lg hover:bg-tertiary/5 transition-all smooth-color-transition card-hover-lift stagger-2">
+                            <div class="flex items-center gap-2 min-w-0 flex-1">
+                                <span class="font-bold text-on-surface-variant min-w-[20px] text-center text-sm">2</span>
+                                <span class="text-xs md:text-sm font-medium text-on-surface-variant truncate">Marcus</span>
                             </div>
-                            <span class="font-bold text-on-surface-variant text-sm">12 🔥</span>
+                            <span class="font-bold text-on-surface-variant text-xs md:text-sm ml-1 flex-shrink-0">12🔥</span>
                         </div>
-                        <div class="flex items-center justify-between p-2 rounded-lg hover:bg-tertiary/5 transition-all smooth-color-transition card-hover-lift stagger-3">
-                            <div class="flex items-center gap-2">
-                                <span class="font-bold text-on-surface-variant min-w-[24px] text-center">3</span>
-                                <span class="text-sm font-medium text-on-surface-variant">Sarah</span>
+                        <div class="flex items-center justify-between p-1.5 rounded-lg hover:bg-tertiary/5 transition-all smooth-color-transition card-hover-lift stagger-3">
+                            <div class="flex items-center gap-2 min-w-0 flex-1">
+                                <span class="font-bold text-on-surface-variant min-w-[20px] text-center text-sm">3</span>
+                                <span class="text-xs md:text-sm font-medium text-on-surface-variant truncate">Sarah</span>
                             </div>
-                            <span class="font-bold text-on-surface-variant text-sm">5 🔥</span>
+                            <span class="font-bold text-on-surface-variant text-xs md:text-sm ml-1 flex-shrink-0">5🔥</span>
                         </div>
-                        <a href="#" class="inline-flex items-center gap-1 text-tertiary hover:text-tertiary/80 font-bold text-xs mt-2 transition-colors hover:underline">
+                        <a href="{{ route('leaderboard') }}" class="focus-ring inline-flex items-center gap-1 text-tertiary hover:text-tertiary/80 font-bold text-xs mt-2 transition-colors hover:underline">
                             Full Leaderboard →
                         </a>
                     </div>
@@ -255,22 +255,22 @@
                             <span class="text-lg">📊</span> Active Polls
                         </h3>
                     </div>
-                    <div class="p-3">
+                    <div class="p-2.5 space-y-1.5">
                         @forelse($activePolls as $poll)
-                        <a href="{{ route('polls.show', $poll) }}" class="block p-3 rounded-xl hover:bg-tertiary/5 dark:hover:bg-tertiary/10 transition-all duration-200">
-                            <div class="text-sm font-medium text-on-surface mb-1.5">{{ $poll->title }}</div>
-                            <div class="flex justify-between text-xs text-on-surface-variant">
+                        <a href="{{ route('polls.show', $poll) }}" class="block p-2 rounded-xl hover:bg-tertiary/5 dark:hover:bg-tertiary/10 transition-all duration-200">
+                            <div class="text-xs md:text-sm font-medium text-on-surface line-clamp-1">{{ $poll->title }}</div>
+                            <div class="flex justify-between text-xs text-on-surface-variant mt-1">
                                 <span class="inline-flex items-center gap-1">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                                    {{ $poll->total_votes }} votes
+                                    {{ $poll->total_votes }}
                                 </span>
                                 @if($poll->closes_at)
-                                <span>Closes {{ $poll->closes_at->diffForHumans() }}</span>
+                                <span class="truncate">{{ $poll->closes_at->diffForHumans() }}</span>
                                 @endif
                             </div>
                         </a>
                         @empty
-                        <p class="text-sm text-on-surface-variant p-3 text-center">No active polls.</p>
+                        <p class="text-xs md:text-sm text-on-surface-variant p-2 text-center">No polls.</p>
                         @endforelse
                     </div>
                 </div>
@@ -285,21 +285,21 @@
                             <span class="text-lg">🔥</span> Trending
                         </h3>
                     </div>
-                    <div class="p-3">
+                    <div class="p-2.5 space-y-1.5">
                         @forelse($trendingPosts as $post)
-                        <a href="{{ route('posts.show', $post) }}" class="block p-3 rounded-xl hover:bg-secondary/5 dark:hover:bg-secondary/10 transition-all duration-200">
-                            <div class="text-sm text-on-surface line-clamp-2 leading-relaxed">{{ Str::limit($post->body, 80) }}</div>
-                            <div class="flex items-center gap-2 mt-2 text-xs text-on-surface-variant">
-                                <span class="font-medium">{{ $post->user->name }}</span>
+                        <a href="{{ route('posts.show', $post) }}" class="block p-2 rounded-xl hover:bg-secondary/5 dark:hover:bg-secondary/10 transition-all duration-200">
+                            <div class="text-xs md:text-sm text-on-surface line-clamp-2 leading-snug">{{ Str::limit($post->body, 60) }}</div>
+                            <div class="flex items-center gap-1.5 mt-1.5 text-xs text-on-surface-variant">
+                                <span class="font-medium truncate">{{ Str::limit($post->user->name, 12) }}</span>
                                 <span class="text-outline-variant/40">·</span>
-                                <span class="inline-flex items-center gap-1 text-primary">
+                                <span class="inline-flex items-center gap-0.5 text-primary flex-shrink-0">
                                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                                     {{ $post->likes_count }}
                                 </span>
                             </div>
                         </a>
                         @empty
-                        <p class="text-sm text-on-surface-variant p-3 text-center">Nothing trending yet.</p>
+                        <p class="text-xs md:text-sm text-on-surface-variant p-2 text-center">Nothing trending.</p>
                         @endforelse
                     </div>
                 </div>
@@ -311,38 +311,35 @@
                             <span class="text-lg">⚽</span> Points Race
                         </h3>
                     </div>
-                    <div class="p-3 space-y-1">
-                        <div class="flex items-center justify-between p-2 rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 smooth-color-transition card-hover-lift achievement-unlock">
+                    <div class="p-2.5 space-y-1">
+                        <div class="flex items-center justify-between p-1.5 rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 smooth-color-transition card-hover-lift achievement-unlock">
                             <div class="flex items-center gap-2 flex-1 min-w-0">
-                                <span class="font-bold text-primary min-w-[24px]">🥇</span>
-                                <span class="text-sm font-medium text-on-surface truncate">You</span>
+                                <span class="font-bold text-base md:text-lg">🥇</span>
+                                <span class="text-xs md:text-sm font-medium text-on-surface truncate">You</span>
                             </div>
-                            <div class="flex items-center gap-2 ml-2">
-                                <span class="font-bold text-primary text-sm">{{ auth()->user()->points ?? 0 }}</span>
-                                <span class="text-xs text-on-surface-variant">pts</span>
+                            <div class="flex items-center gap-1 ml-1 flex-shrink-0">
+                                <span class="font-bold text-primary text-xs md:text-sm">{{ auth()->user()->points ?? 0 }}</span>
                             </div>
                         </div>
-                        <div class="flex items-center justify-between p-2 rounded-lg hover:bg-primary/5 transition-all smooth-color-transition card-hover-lift stagger-1">
+                        <div class="flex items-center justify-between p-1.5 rounded-lg hover:bg-primary/5 transition-all smooth-color-transition card-hover-lift stagger-1">
                             <div class="flex items-center gap-2 flex-1 min-w-0">
-                                <span class="font-bold text-on-surface-variant min-w-[24px]">🥈</span>
-                                <span class="text-sm font-medium text-on-surface-variant truncate">James</span>
+                                <span class="font-bold text-base md:text-lg">🥈</span>
+                                <span class="text-xs md:text-sm font-medium text-on-surface-variant truncate">James</span>
                             </div>
-                            <div class="flex items-center gap-2 ml-2">
-                                <span class="font-bold text-on-surface-variant text-sm">1,240</span>
-                                <span class="text-xs text-on-surface-variant">pts</span>
+                            <div class="flex items-center gap-1 ml-1 flex-shrink-0">
+                                <span class="font-bold text-on-surface-variant text-xs md:text-sm">1,240</span>
                             </div>
                         </div>
-                        <div class="flex items-center justify-between p-2 rounded-lg hover:bg-primary/5 transition-all smooth-color-transition card-hover-lift stagger-2">
+                        <div class="flex items-center justify-between p-1.5 rounded-lg hover:bg-primary/5 transition-all smooth-color-transition card-hover-lift stagger-2">
                             <div class="flex items-center gap-2 flex-1 min-w-0">
-                                <span class="font-bold text-on-surface-variant min-w-[24px]">🥉</span>
-                                <span class="text-sm font-medium text-on-surface-variant truncate">Alex</span>
+                                <span class="font-bold text-base md:text-lg">🥉</span>
+                                <span class="text-xs md:text-sm font-medium text-on-surface-variant truncate">Alex</span>
                             </div>
-                            <div class="flex items-center gap-2 ml-2">
-                                <span class="font-bold text-on-surface-variant text-sm">980</span>
-                                <span class="text-xs text-on-surface-variant">pts</span>
+                            <div class="flex items-center gap-1 ml-1 flex-shrink-0">
+                                <span class="font-bold text-on-surface-variant text-xs md:text-sm">980</span>
                             </div>
                         </div>
-                        <a href="#" class="inline-flex items-center gap-1 text-primary hover:text-primary/80 font-bold text-xs mt-2 transition-colors hover:underline">
+                        <a href="{{ route('leaderboard') }}" class="focus-ring inline-flex items-center gap-1 text-primary hover:text-primary/80 font-bold text-xs mt-2 transition-colors hover:underline">
                             Full Rankings →
                         </a>
                     </div>
@@ -357,10 +354,10 @@
                             <span class="text-lg">👥</span> Your Communities
                         </h3>
                     </div>
-                    <div class="p-3 space-y-2">
+                    <div class="p-2.5 space-y-1.5">
                         @foreach($userCommunities as $community)
-                        <a href="{{ route('communities.show', $community) }}" class="block p-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/15 transition-all duration-200">
-                            <div class="text-sm font-medium text-on-surface">{{ $community->name }}</div>
+                        <a href="{{ route('communities.show', $community) }}" class="block p-1.5 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/15 transition-all duration-200">
+                            <div class="text-xs md:text-sm font-medium text-on-surface truncate">{{ $community->name }}</div>
                             <div class="text-xs text-on-surface-variant">{{ $community->members_count ?? 0 }} members</div>
                         </a>
                         @endforeach

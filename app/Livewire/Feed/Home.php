@@ -13,6 +13,17 @@ class Home extends Component
 
     public ?int $matchId = null;
 
+    public array $postTypes = [
+        'banter' => ['icon' => '💬', 'label' => 'Banter'],
+        'match_reaction' => ['icon' => '⚽', 'label' => 'Match Reaction'],
+        'goal_reaction' => ['icon' => '🥅', 'label' => 'Goal Reaction'],
+        'tactical_opinion' => ['icon' => '📋', 'label' => 'Tactical Opinion'],
+        'player_comparison' => ['icon' => '⚔', 'label' => 'Player Comparison'],
+        'meme' => ['icon' => '😂', 'label' => 'Meme'],
+        'breaking_news' => ['icon' => '📰', 'label' => 'Breaking News'],
+        'matchday_discussion' => ['icon' => '🔥', 'label' => 'Matchday Discussion'],
+    ];
+
     public function mount(): void
     {
         // Default to banter type for football-first feed
@@ -99,20 +110,6 @@ class Home extends Component
             $post->likes()->create(['user_id' => auth()->id()]);
             $post->increment('likes_count');
         }
-    }
-
-    public function getPostTypes(): array
-    {
-        return [
-            'banter' => ['icon' => '💬', 'label' => 'Banter'],
-            'match_reaction' => ['icon' => '⚽', 'label' => 'Match Reaction'],
-            'goal_reaction' => ['icon' => '🥅', 'label' => 'Goal Reaction'],
-            'tactical_opinion' => ['icon' => '📋', 'label' => 'Tactical Opinion'],
-            'player_comparison' => ['icon' => '⚔', 'label' => 'Player Comparison'],
-            'meme' => ['icon' => '😂', 'label' => 'Meme'],
-            'breaking_news' => ['icon' => '📰', 'label' => 'Breaking News'],
-            'matchday_discussion' => ['icon' => '🔥', 'label' => 'Matchday Discussion'],
-        ];
     }
 
     public function getListeners(): array

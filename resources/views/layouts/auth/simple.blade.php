@@ -19,8 +19,8 @@
             }
         </style>
     </head>
-    <body class="bg-background text-on-background font-sans overflow-x-hidden">
-        <main class="flex min-h-screen w-full">
+    <body class="auth-page bg-background text-on-background font-sans overflow-x-hidden">
+        <main class="flex min-h-screen w-full flex-col lg:flex-row">
             {{-- Left Panel: Hero Content --}}
             <section class="relative hidden lg:flex lg:w-7/12 xl:w-8/12 flex-col justify-center items-start px-12 overflow-hidden">
                 <div class="absolute inset-0 z-0">
@@ -59,16 +59,16 @@
             </section>
 
             {{-- Right Panel: Form Panel --}}
-            <section class="w-full lg:w-5/12 xl:w-4/12 bg-surface-container-lowest flex flex-col justify-center items-center px-8 py-12 relative overflow-y-auto">
+            <section class="auth-page-panel w-full flex-1 lg:w-5/12 xl:w-4/12 bg-surface-container-lowest flex flex-col justify-start lg:justify-center items-center px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12 relative overflow-y-auto">
                 <div class="lg:hidden absolute top-8 left-8">
                     <span class="text-2xl font-bold text-[#bfff00] uppercase tracking-tighter font-display">SA</span>
                 </div>
 
-                <div class="w-full space-y-8">
+                <div class="w-full max-w-md space-y-6 sm:space-y-8 pt-12 lg:pt-0 pb-24 lg:pb-0">
                     {{ $slot }}
                 </div>
 
-                <footer class="absolute bottom-0 w-full py-4 px-8 flex justify-between items-center bg-[#05160e]">
+                <footer class="mt-8 w-full flex flex-col gap-3 border-t border-white/10 bg-[#05160e] px-4 py-4 sm:flex-row sm:items-center sm:justify-between lg:absolute lg:bottom-0 lg:mt-0 lg:px-8">
                     <span class="text-[10px] font-display text-zinc-500 uppercase tracking-widest">© {{ date('Y') }} Soccer Aficionado</span>
                     <div class="flex gap-4">
                         <a class="text-[10px] font-display text-zinc-500 uppercase tracking-widest hover:text-[#bfff00] transition-colors" href="#">Terms</a>

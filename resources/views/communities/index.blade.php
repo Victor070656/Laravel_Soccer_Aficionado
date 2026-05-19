@@ -12,7 +12,7 @@
                     </h1>
                     <p class="text-on-primary/70 text-sm sm:text-base">Find your tribe. Join fan communities and connect with fellow supporters.</p>
                 </div>
-                <button onclick="document.getElementById('create-form').classList.toggle('hidden')" class="inline-flex items-center gap-2 rounded-xl bg-white/20 backdrop-blur-sm hover:bg-white/30 px-5 py-2.5 text-sm font-semibold text-on-primary transition-all border border-white/20 hover:scale-105">
+                <button onclick="document.getElementById('create-form').classList.toggle('hidden')" class="focus-ring inline-flex items-center gap-2 rounded-xl bg-white/20 backdrop-blur-sm hover:bg-white/30 px-5 py-2.5 text-sm font-semibold text-on-primary transition-all border border-white/20 hover:scale-105">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                     Create Community
                 </button>
@@ -29,19 +29,19 @@
                 @csrf
                 <div class="sm:col-span-2">
                     <label class="block text-sm font-medium text-on-surface mb-1.5">Name</label>
-                    <input type="text" name="name" required class="w-full rounded-xl p-4 border-outline-variant/20 dark:border-outline-variant/30 dark:bg-surface-container-high dark:text-on-surface focus:border-primary focus:ring-primary/20 text-sm">
+                    <input type="text" name="name" required class="focus-ring w-full rounded-xl p-4 border-outline-variant/20 dark:border-outline-variant/30 dark:bg-surface-container-high dark:text-on-surface focus:border-primary focus:ring-primary/20 text-sm">
                 </div>
                 <div class="sm:col-span-2">
                     <label class="block text-sm font-medium text-on-surface mb-1.5">Description</label>
-                    <textarea name="description" rows="3" required class="w-full rounded-xl p-4 border-outline-variant/20 dark:border-outline-variant/30 dark:bg-surface-container-high dark:text-on-surface focus:border-primary focus:ring-primary/20 text-sm"></textarea>
+                    <textarea name="description" rows="3" required class="focus-ring w-full rounded-xl p-4 border-outline-variant/20 dark:border-outline-variant/30 dark:bg-surface-container-high dark:text-on-surface focus:border-primary focus:ring-primary/20 text-sm"></textarea>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-on-surface mb-1.5">Rules</label>
-                    <textarea name="rules" rows="3" class="w-full rounded-xl p-4 border-outline-variant/20 dark:border-outline-variant/30 dark:bg-surface-container-high dark:text-on-surface focus:border-primary focus:ring-primary/20 text-sm" placeholder="Community guidelines..."></textarea>
+                    <textarea name="rules" rows="3" class="focus-ring w-full rounded-xl p-4 border-outline-variant/20 dark:border-outline-variant/30 dark:bg-surface-container-high dark:text-on-surface focus:border-primary focus:ring-primary/20 text-sm" placeholder="Community guidelines..."></textarea>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-on-surface mb-1.5">Link to a Club (optional)</label>
-                    <select name="club_id" class="w-full rounded-xl p-4 border-outline-variant/20 dark:border-outline-variant/30 dark:bg-surface-container-high dark:text-on-surface focus:border-primary focus:ring-primary/20 text-sm">
+                    <select name="club_id" class="focus-ring w-full rounded-xl p-4 border-outline-variant/20 dark:border-outline-variant/30 dark:bg-surface-container-high dark:text-on-surface focus:border-primary focus:ring-primary/20 text-sm">
                         <option value="">No club</option>
                         @foreach(\App\Models\Club::orderBy('name')->get() as $club)
                         <option value="{{ $club->id }}">{{ $club->name }}</option>
@@ -53,7 +53,7 @@
                     </div>
                 </div>
                 <div class="sm:col-span-2 flex justify-end pt-2">
-                    <button type="submit" class="rounded-xl bg-gradient-to-r from-primary to-primary/80 px-8 py-2.5 text-sm font-semibold text-on-primary hover:from-primary/90 hover:to-primary/70 transition-all shadow-md shadow-primary/20 hover:scale-105">Create Community</button>
+                    <button type="submit" class="focus-ring btn-primary rounded-xl px-8 py-2.5 text-sm font-semibold text-on-primary hover:scale-105">Create Community</button>
                 </div>
             </form>
         </div>

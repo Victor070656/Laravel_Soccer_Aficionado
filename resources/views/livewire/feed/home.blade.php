@@ -42,10 +42,7 @@
                         <div class="flex flex-wrap gap-2 mb-4">
                             @foreach($this->postTypes as $type => $config)
                                 <button wire:click="$set('newPostType', '{{ $type }}')"
-                                        class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all
-                                            {{ $newPostType === $type
-                                                ? 'bg-primary-container text-on-primary-container scale-105'
-                                                : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container'"
+                                        class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all {{ $newPostType === $type ? 'bg-primary-container text-on-primary-container scale-105' : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container' }}"
                                         title="{{ $config['label'] }}">
                                     <span class="text-base">{{ $config['icon'] }}</span>
                                     <span class="hidden sm:inline">{{ $config['label'] }}</span>

@@ -8,19 +8,19 @@
 
         {{-- Filters --}}
         <form action="{{ route('admin.users.index') }}" method="GET" class="flex flex-wrap gap-3 p-4 rounded-2xl bg-surface-container dark:bg-surface-container border border-outline-variant/20 dark:border-outline-variant/30 glass-edge">
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search users..." class="rounded-lg border-outline-variant/20 dark:border-outline-variant/30 dark:bg-surface-container-high dark:text-on-surface text-sm">
-            <select name="role" class="rounded-lg border-outline-variant/20 dark:border-outline-variant/30 dark:bg-surface-container-high dark:text-on-surface text-sm">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search users..." class="focus-ring rounded-lg border-outline-variant/20 dark:border-outline-variant/30 dark:bg-surface-container-high dark:text-on-surface text-sm">
+            <select name="role" class="focus-ring rounded-lg border-outline-variant/20 dark:border-outline-variant/30 dark:bg-surface-container-high dark:text-on-surface text-sm">
                 <option value="">All Roles</option>
                 @foreach($roles ?? [] as $role)
                 <option value="{{ $role->slug }}" {{ request('role') === $role->slug ? 'selected' : '' }}>{{ $role->name }}</option>
                 @endforeach
             </select>
-            <select name="status" class="rounded-lg border-outline-variant/20 dark:border-outline-variant/30 dark:bg-surface-container-high dark:text-on-surface text-sm">
+            <select name="status" class="focus-ring rounded-lg border-outline-variant/20 dark:border-outline-variant/30 dark:bg-surface-container-high dark:text-on-surface text-sm">
                 <option value="">All Status</option>
                 <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
                 <option value="banned" {{ request('status') === 'banned' ? 'selected' : '' }}>Banned</option>
             </select>
-            <button type="submit" class="rounded-xl bg-gradient-to-r from-primary to-primary/80 px-5 py-2 text-sm font-semibold text-on-primary hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25 transition-all">Filter</button>
+            <button type="submit" class="focus-ring btn-primary rounded-xl px-5 py-2 text-sm font-semibold text-on-primary shadow-lg shadow-primary/25">Filter</button>
         </form>
 
         {{-- Users Table --}}
