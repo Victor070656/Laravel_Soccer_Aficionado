@@ -45,7 +45,7 @@
                         </span>
                     @endif
                 </div>
-                <span class="text-xs sm:text-sm font-bold uppercase tracking-wide truncate">Rooms</span>
+                <span class="text-xs sm:text-sm font-bold uppercase tracking-wide truncate">Live</span>
                 <span class="absolute bottom-0 h-1 rounded-full bg-primary transition-all duration-300 {{ request()->routeIs('matches.*') ? 'w-8 opacity-100' : 'w-0 opacity-0' }}"></span>
             </a>
 

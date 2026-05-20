@@ -33,6 +33,9 @@
                     <flux:sidebar.item icon="users" :href="route('communities.index')" :current="request()->routeIs('communities.*')" wire:navigate>
                         {{ __('Communities') }}
                     </flux:sidebar.item>
+                    <flux:sidebar.item icon="fire" :href="route('trending')" :current="request()->routeIs('trending')" wire:navigate>
+                        {{ __('Trending') }}
+                    </flux:sidebar.item>
                     <flux:sidebar.item icon="chart-bar" :href="route('polls.index')" :current="request()->routeIs('polls.*')" wire:navigate>
                         {{ __('Polls') }}
                     </flux:sidebar.item>

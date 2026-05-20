@@ -15,7 +15,7 @@ class Index extends Component
         $hashtagTrends = $this->getHashtagTrends();
 
         // Most discussed clubs
-        $clubTrends = Club::withCount(['posts', 'followers'])
+        $clubTrends = Club::withCount(['posts', 'fans as followers_count'])
             ->orderByDesc('posts_count')
             ->take(5)
             ->get();
@@ -93,25 +93,9 @@ class Index extends Component
             preg_match_all('/#(\w+)/', $body, $matches);
             if (! empty($matches[1])) {
                 foreach ($matches[1] as $tag) {
-                    $tag = strtolwer($tag);
+                    $tag = strtolower($tag);
                     $hashtags[$tag] = ($hashtags[$tag] ?? 0) + 1;
                 }
-            }
-        }
-
-        // Add default trending topics if not enough data
-        $defaults = [
-            '#ArtetaOut' => rand(120, 500),
-            '#HalaMadrid' => rand(300, 800),
-            '#ChelseaVsArsenal' => rand(80, 200),
-            '#Messi' => rand(400, 1000),
-            '#VAR' => rand(200, 600),
-        ];
-
-        foreach ($defaults as $tag => $count) {
-            $tagLower = strtolwer(substr($tag, 1));
-            if (! isset($hashtags[$tagLower])) {
-                $hashtags[$tagLower] = $count;
             }
         }
 

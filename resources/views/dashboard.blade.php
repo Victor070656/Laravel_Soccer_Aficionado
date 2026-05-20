@@ -33,28 +33,42 @@
 
         {{-- FAN HUB SECTION: Your Matches & Clubs --}}
         <div class="grid gap-6 md:grid-cols-2">
-            {{-- Your Primary Club Section --}}
+            {{-- Your Clubs Section --}}
             @if($favoriteClubs->isNotEmpty())
             <div class="card rounded-2xl border border-primary/25 bg-gradient-to-b from-primary/8 to-primary/4 p-6 shadow-sm glass-premium hover:glow-primary-sm transition-all">
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center gap-3">
                         <span class="text-3xl">💚</span>
                         <div>
-                            <h3 class="text-h6 font-bold text-on-surface uppercase tracking-wide">Your Club</h3>
-                            <p class="text-xs text-on-surface-variant font-medium">Primary team</p>
+                            <h3 class="text-h6 font-bold text-on-surface uppercase tracking-wide">Your Clubs</h3>
+                            <p class="text-xs text-on-surface-variant font-medium">All teams you follow</p>
                         </div>
                     </div>
+                    <span class="text-xs font-semibold text-on-surface-variant">{{ $favoriteClubs->count() }} clubs</span>
                 </div>
-                <div class="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-primary/15 to-primary/10 border border-primary/20 hover:from-primary/25 hover:to-primary/15 transition-all group cursor-pointer">
-                    @php $primaryClub = $favoriteClubs->first(); @endphp
-                    @if($primaryClub->logo_url)
-                    <img src="{{ $primaryClub->logo_url }}" alt="{{ $primaryClub->name }}" class="w-12 h-12 object-contain group-hover:scale-110 transition-transform">
-                    @endif
-                    <div class="flex-1">
-                        <div class="font-bold text-on-surface">{{ $primaryClub->name }}</div>
-                        <div class="text-xs text-on-surface-variant font-medium">{{ $primaryClub->country ?? 'Your favorite team' }}</div>
-                    </div>
-                    <a href="{{ $primaryClub->api_team_id ? route('clubs.show', $primaryClub->api_team_id) : '#' }}" class="text-primary hover:text-primary/80 transition-colors">→</a>
+                <div class="grid gap-3">
+                    @foreach($favoriteClubs as $club)
+                    @php $isPrimaryClub = (bool) ($club->pivot->is_primary ?? false); @endphp
+                    <a href="{{ $club->api_team_id ? route('clubs.show', $club->api_team_id) : '#' }}" class="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-primary/15 to-primary/10 border border-primary/20 hover:from-primary/25 hover:to-primary/15 transition-all group cursor-pointer">
+                        @if($club->logo_url)
+                        <img src="{{ $club->logo_url }}" alt="{{ $club->name }}" class="w-12 h-12 object-contain group-hover:scale-110 transition-transform">
+                        @else
+                        <div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center font-bold text-on-surface">
+                            {{ strtoupper(substr($club->name, 0, 2)) }}
+                        </div>
+                        @endif
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <div class="font-bold text-on-surface truncate">{{ $club->name }}</div>
+                                @if($isPrimaryClub)
+                                <span class="inline-flex items-center rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">Primary</span>
+                                @endif
+                            </div>
+                            <div class="text-xs text-on-surface-variant font-medium truncate">{{ $club->country ?? 'Your favorite team' }}</div>
+                        </div>
+                        <span class="text-primary hover:text-primary/80 transition-colors">→</span>
+                    </a>
+                    @endforeach
                 </div>
             </div>
 

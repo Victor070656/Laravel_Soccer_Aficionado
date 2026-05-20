@@ -50,7 +50,7 @@
                                         </span>
                                     </div>
                                     @if($user->username)
-                                        <div class="text-label-bold text-primary-container">@{{ $user->username }}</div>
+                                        <div class="text-label-bold text-primary-container">{{ $user->username }}</div>
                                     @endif
                                 </div>
 

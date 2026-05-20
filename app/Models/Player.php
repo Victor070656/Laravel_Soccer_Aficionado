@@ -55,6 +55,14 @@ class Player extends Model
         return $this->hasMany(MatchEvent::class, 'secondary_player_id')->where('type', 'goal');
     }
 
+    public function posts(): HasMany
+    {
+        // Note: This is a placeholder relationship. Trending players are actually based
+        // on mentions extracted from post bodies during trending calculation.
+        // Real post counting would require a mentions pivot table or full-text search.
+        return $this->hasMany(Post::class, 'id', 'id')->whereNull('id');
+    }
+
     public function getPhotoUrlAttribute(): ?string
     {
         return $this->photo ? asset('storage/'.$this->photo) : null;

@@ -14,36 +14,16 @@ class CommunityController extends Controller
         protected NotificationService $notifications,
     ) {}
 
-    public function index(Request $request)
+    public function index()
     {
-        $query = Community::with('club')->where('is_active', true)->withCount('members');
-
-        if ($request->filled('search')) {
-            $query->where('name', 'like', "%{$request->search}%");
-        }
-
-        $communities = $query->orderByDesc('members_count')->paginate(20);
-
-        return view('communities.index', compact('communities'));
+        return view('communities.index');
     }
 
     public function show(Community $community)
     {
         $this->authorize('view', $community);
 
-        $community->load(['club', 'creator']);
-        $community->loadCount('members');
-
-        $posts = $community->posts()
-            ->with(['user'])
-            ->withCount(['likes', 'comments', 'shares'])
-            ->approved()
-            ->latest()
-            ->paginate(20);
-
-        $isMember = auth()->check() && auth()->user()->isMemberOf($community);
-
-        return view('communities.show', compact('community', 'posts', 'isMember'));
+        return view('communities.show', compact('community'));
     }
 
     public function store(Request $request)

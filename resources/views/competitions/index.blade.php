@@ -1,97 +1,61 @@
-<x-layouts::app :title="__('Competitions')">
-    <div class="max-w-7xl mx-auto space-y-8 p-2 sm:p-4">
-        {{-- Header --}}
-        <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-amber-600 via-yellow-600 to-orange-600 p-6 sm:p-8 text-white shadow-xl">
-            <div class="absolute inset-0 opacity-10" style="background-image: url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600&q=30'); background-size: cover; background-position: center;"></div>
-            <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
-            <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/3 -translate-x-1/4"></div>
-            <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div>
-                    <h1 class="text-2xl sm:text-3xl font-bold mb-2 flex items-center gap-3">
-                        <span class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center text-xl">🏆</span>
-                        Competitions
-                    </h1>
-                    <p class="text-amber-100 text-sm sm:text-base">Explore top leagues and tournaments from around the world.</p>
+<x-layouts::app :title="__('Leagues')">
+    <div class="min-h-screen bg-surface py-6">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
+            <div class="glass-card rounded-xl p-6 relative overflow-hidden">
+                <div class="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-primary-container/10 blur-3xl"></div>
+                <div class="relative z-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 class="text-headline-lg text-on-surface flex items-center gap-3">
+                            <span class="w-12 h-12 rounded-xl bg-primary-container/20 flex items-center justify-center text-2xl">🏆</span>
+                            Leagues
+                        </h1>
+                        <p class="mt-2 text-body-md text-on-surface-variant">Explore top leagues and tournaments from around the world.</p>
+                    </div>
+                    <span class="inline-flex items-center gap-2 rounded-xl bg-surface-container-high px-4 py-2 text-sm font-medium text-on-surface-variant">
+                        📅 Season {{ $seasonDisplay }}
+                    </span>
                 </div>
-                <span class="inline-flex items-center gap-2 rounded-xl bg-white/15 backdrop-blur-sm px-4 py-2 text-sm font-medium border border-white/20">
-                    📅 Season {{ $seasonDisplay }}
-                </span>
             </div>
-        </div>
 
-        @unless($apiConfigured)
-        <div class="rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 p-5 flex items-start gap-3">
-            <span class="text-2xl">⚠️</span>
-            <div>
-                <h3 class="font-bold text-amber-800 dark:text-amber-400 text-sm">API Key Not Configured</h3>
-                <p class="text-sm text-amber-700 dark:text-amber-400/80 mt-0.5">Add <code class="bg-amber-100 dark:bg-amber-900/40 px-1.5 py-0.5 rounded text-xs font-mono">FOOTBALL_API_KEY</code> to your <code class="bg-amber-100 dark:bg-amber-900/40 px-1.5 py-0.5 rounded text-xs font-mono">.env</code> file to see competition data.</p>
-            </div>
-        </div>
-        @endunless
+            @unless($apiConfigured)
+                <div class="glass-card rounded-xl p-5">
+                    <p class="text-sm text-on-surface-variant">API key not configured. Add <code class="rounded bg-surface-container-high px-1.5 py-0.5">FOOTBALL_API_KEY</code> to your .env file to see league data.</p>
+                </div>
+            @endunless
 
-        {{-- Banner Ad --}}
-        <x-ad-unit placement="banner" />
-
-        {{-- Competition Cards --}}
-        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            @forelse($competitions as $competition)
-            <a href="{{ route('competitions.show', $competition->id) }}" class="group block rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 shadow-sm hover:shadow-lg hover:shadow-amber-500/10 transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-                <div class="p-5">
-                    <div class="flex items-center gap-3 mb-3">
-                        @if($competition->logo)
-                        <div class="w-12 h-12 rounded-xl bg-zinc-50 dark:bg-zinc-700/50 flex items-center justify-center p-1.5 group-hover:scale-110 transition-transform duration-300">
-                            <img loading="lazy" decoding="async" src="{{ $competition->logo }}" alt="{{ $competition->name }}" class="w-8 h-8 object-contain">
-                        </div>
-                        @else
-                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-yellow-100 dark:from-amber-900/30 dark:to-yellow-900/30 flex items-center justify-center text-amber-600 dark:text-amber-400 font-bold text-sm group-hover:scale-110 transition-transform duration-300">
-                            {{ strtoupper(substr($competition->name, 0, 2)) }}
-                        </div>
-                        @endif
-                        <div class="flex-1 min-w-0">
-                            <div class="font-bold text-zinc-900 dark:text-white group-hover:text-amber-600 transition text-sm">{{ $competition->name }}</div>
-                            <div class="flex items-center gap-1.5 text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">
-                                @if($competition->country_flag ?? null)
-                                <img loading="lazy" decoding="async" src="{{ $competition->country_flag }}" alt="" class="h-3 w-4 object-contain">
-                                @endif
-                                {{ ucfirst($competition->type) }} · {{ $competition->country ?? 'International' }}
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                @forelse($competitions as $competition)
+                    <a href="{{ route('competitions.show', $competition->id) }}" class="glass-card rounded-xl p-5 hover:bg-surface-container/50 transition-all hover:scale-[1.02] group">
+                        <div class="flex items-center gap-3">
+                            @if($competition->logo ?? null)
+                                <div class="h-12 w-12 rounded-xl bg-surface-container-high flex items-center justify-center overflow-hidden">
+                                    <img loading="lazy" decoding="async" src="{{ $competition->logo }}" alt="{{ $competition->name }}" class="h-8 w-8 object-contain">
+                                </div>
+                            @else
+                                <div class="h-12 w-12 rounded-xl bg-primary-container/15 flex items-center justify-center text-xs font-black text-primary-container">
+                                    {{ strtoupper(substr($competition->name, 0, 2)) }}
+                                </div>
+                            @endif
+                            <div class="min-w-0 flex-1">
+                                <h3 class="text-label-bold text-on-surface group-hover:text-primary-container transition-colors truncate">{{ $competition->name }}</h3>
+                                <p class="mt-1 text-label-sm text-on-surface-variant">{{ ucfirst($competition->type) }} · {{ $competition->country ?? 'International' }}</p>
                             </div>
                         </div>
+                        <div class="mt-4 flex items-center justify-between border-t border-outline-variant/20 pt-3 text-xs text-on-surface-variant">
+                            <span>Season: {{ $competition->season }}</span>
+                            @if($competition->season_start && $competition->season_end)
+                                <span>{{ $competition->season_start }} → {{ $competition->season_end }}</span>
+                            @endif
+                        </div>
+                    </a>
+                @empty
+                    <div class="col-span-full glass-card rounded-xl p-8 text-center">
+                        <div class="text-4xl mb-4">🏆</div>
+                        <h2 class="text-headline-md text-on-surface mb-2">{{ $apiConfigured ? 'No leagues found' : 'API not configured' }}</h2>
+                        <p class="text-body-md text-on-surface-variant">{{ $apiConfigured ? 'No leagues are available right now.' : 'Configure your API key to load league data.' }}</p>
                     </div>
-                    <div class="flex items-center justify-between pt-3 border-t border-zinc-100 dark:border-zinc-700/40">
-                        <span class="text-xs text-zinc-400 dark:text-zinc-500">Season: {{ $competition->season }}</span>
-                        @if($competition->season_start && $competition->season_end)
-                        <span class="text-xs text-zinc-400 dark:text-zinc-500">{{ $competition->season_start }} → {{ $competition->season_end }}</span>
-                        @endif
-                    </div>
-                </div>
-            </a>
-            @empty
-            <div class="col-span-full">
-                <div class="rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-700 p-12 text-center">
-                    <div class="w-20 h-20 mx-auto mb-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                        @if($apiConfigured)
-                        <span class="text-4xl">🏆</span>
-                        @else
-                        <span class="text-4xl">🔌</span>
-                        @endif
-                    </div>
-                    <h2 class="text-xl font-bold text-zinc-700 dark:text-zinc-300 mb-2">
-                        @if($apiConfigured)
-                        No Competitions Found
-                        @else
-                        API Not Configured
-                        @endif
-                    </h2>
-                    <p class="text-sm text-zinc-400 dark:text-zinc-500 max-w-md mx-auto">
-                        @if($apiConfigured)
-                        No competitions are available at the moment.
-                        @else
-                        Configure your API key to see competition data.
-                        @endif
-                    </p>
-                </div>
+                @endforelse
             </div>
-            @endforelse
         </div>
     </div>
 </x-layouts::app>

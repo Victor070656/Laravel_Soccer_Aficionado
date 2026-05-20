@@ -10,9 +10,9 @@ class Show extends Component
 {
     public Community $community;
 
-    public function mount(int $id): void
+    public function mount(Community $community): void
     {
-        $this->community = Community::with(['club', 'members', 'posts'])->findOrFail($id);
+        $this->community = $community->load(['club', 'members', 'posts']);
     }
 
     public function render()

@@ -87,6 +87,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Social
     Route::post('/users/{user}/follow', [ProfileController::class, 'follow'])->name('users.follow');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     // Notifications
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');

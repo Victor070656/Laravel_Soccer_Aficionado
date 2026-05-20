@@ -60,14 +60,8 @@ class Home extends Component
             ->take(3)
             ->get();
 
-        // Get trending hashtags (simplified - based on post content)
-        $trendingTopics = [
-            ['tag' => '#ArtetaOut', 'count' => rand(120, 500)],
-            ['tag' => '#HalaMadrid', 'count' => rand(300, 800)],
-            ['tag' => '#ChelseaVsArsenal', 'count' => rand(80, 200)],
-            ['tag' => '#Messi', 'count' => rand(400, 1000)],
-            ['tag' => '#V AR', 'count' => rand(200, 600)],
-        ];
+        // Get trending hashtags from real posts
+        $trendingTopics = $this->getTrendingHashtags();
 
         return view('livewire.feed.home', [
             'feed' => $feed,
@@ -75,6 +69,37 @@ class Home extends Component
             'trendingTopics' => $trendingTopics,
             'user' => $user,
         ]);
+    }
+
+    /**
+     * Extract trending hashtags from recent posts
+     */
+    private function getTrendingHashtags(): array
+    {
+        $recentPosts = \App\Models\Post::approved()
+            ->where('created_at', '>=', now()->subDays(3))
+            ->pluck('body');
+
+        $hashtags = [];
+
+        foreach ($recentPosts as $body) {
+            preg_match_all('/#(\w+)/', $body, $matches);
+            if (! empty($matches[1])) {
+                foreach ($matches[1] as $tag) {
+                    $tag = strtolower($tag);
+                    $hashtags[$tag] = ($hashtags[$tag] ?? 0) + 1;
+                }
+            }
+        }
+
+        arsort($hashtags);
+
+        return collect($hashtags)->take(5)->map(function ($count, $tag) {
+            return [
+                'tag' => '#'.ucfirst($tag),
+                'count' => $count,
+            ];
+        })->values()->toArray();
     }
 
     public function postAction()
