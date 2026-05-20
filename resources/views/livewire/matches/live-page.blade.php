@@ -107,7 +107,7 @@
                         <span class="text-4xl">⚽</span>
                     </div>
                     <h2 class="text-xl font-bold text-zinc-700 dark:text-zinc-300 mb-2">No Live Matches Right Now</h2>
-                    <p class="text-sm text-zinc-400 dark:text-zinc-500 max-w-md mx-auto">There are no matches being played at the moment. Check back later for live action!</p>
+                    <p class="text-sm text-zinc-400 dark:text-zinc-500 mx-auto">There are no matches being played at the moment. Check back later for live action!</p>
                     <a href="{{ route('matches.index') }}" class="inline-flex items-center gap-2 mt-6 rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 px-6 py-2.5 text-sm font-semibold text-white hover:from-green-500 hover:to-emerald-400 transition-all shadow-md shadow-green-600/20 hover:scale-105">
                         Browse All Matches →
                     </a>

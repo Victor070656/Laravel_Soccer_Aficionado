@@ -372,12 +372,12 @@ new class extends Component {
                                     @click="copy()"
                                     class="px-3 transition-colors border-l cursor-pointer border-stone-200 dark:border-stone-600"
                                 >
-                                    <flux:icon.document-duplicate x-show="!copied" variant="outline"></flux:icon>
+                                    <flux:icon.document-duplicate x-show="!copied" variant="outline" />
                                     <flux:icon.check
                                         x-show="copied"
                                         variant="solid"
                                         class="text-green-500"
-                                    ></flux:icon>
+                                    />
                                 </button>
                             @endempty
                         </div>
