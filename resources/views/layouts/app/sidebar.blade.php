@@ -15,7 +15,7 @@
                     <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </flux:sidebar.item>
-                    <flux:sidebar.item icon="newspaper" :href="route('posts.index')" :current="request()->routeIs('posts.*')" wire:navigate>
+                    <flux:sidebar.item icon="newspaper" :href="route('feed')" :current="request()->routeIs('feed')" wire:navigate>
                         {{ __('Feed') }}
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="trophy" :href="route('matches.index')" :current="request()->routeIs('matches.*')" wire:navigate>

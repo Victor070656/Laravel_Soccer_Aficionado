@@ -65,16 +65,14 @@
             </div>
         </div>
 
-        {{-- Share --}}
-        <div class="rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 shadow-sm overflow-hidden">
-            <form action="{{ route('posts.share', $post) }}" method="POST" class="p-5">
-                @csrf
-                <div class="flex items-center gap-3">
-                    <span class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 text-sm">🔗</span>
-                    <input type="text" name="comment" placeholder="Add a comment and share..." class="flex-1 rounded-xl p-4 border-zinc-200 dark:border-zinc-600 dark:bg-zinc-900/50 dark:text-white focus:border-green-500 focus:ring-green-500/20 text-sm">
-                    <button type="submit" class="rounded-xl border border-zinc-200 dark:border-zinc-600 px-5 py-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition">Share</button>
-                </div>
-            </form>
+        <x-share-modal :post="$post" />
+        <div class="rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 shadow-sm overflow-hidden p-5">
+            <flux:modal.trigger name="share-post-{{ $post->id }}">
+                <button type="button"
+                        class="w-full rounded-xl border border-zinc-200 dark:border-zinc-600 px-5 py-4 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition flex items-center justify-center gap-2">
+                    <span class="text-xl">🔗</span> Share Post
+                </button>
+            </flux:modal.trigger>
         </div>
 
         {{-- Comment Form --}}

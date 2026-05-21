@@ -60,7 +60,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/trending', [\App\Http\Controllers\TrendingController::class, 'index'])->name('trending');
 
     // Posts
-    Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
+    Route::redirect('/posts', '/feed')->name('posts.redirect');
     Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
     Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
     Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');

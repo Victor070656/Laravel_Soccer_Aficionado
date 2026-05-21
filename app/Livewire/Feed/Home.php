@@ -11,6 +11,8 @@ class Home extends Component
 
     public string $newPostType = 'banter';
 
+    public string $sharingPostUrl = '';
+
     public ?int $matchId = null;
 
     public array $postTypes = [
@@ -134,6 +136,27 @@ class Home extends Component
         if ($post && ! auth()->user()->hasLiked($post)) {
             $post->likes()->create(['user_id' => auth()->id()]);
             $post->increment('likes_count');
+        }
+    }
+
+    public function sharePost(int $postId)
+    {
+        if (! auth()->check()) {
+            return;
+        }
+
+        $post = Post::find($postId);
+        if ($post) {
+            $this->sharingPostUrl = route('posts.show', $post);
+
+            $post->shares()->create(['user_id' => auth()->id()]);
+            $post->increment('shares_count');
+
+            // award points
+            $gamification = app(\App\Services\GamificationService::class);
+            $gamification->awardPoints(auth()->user(), 'share_created', $post);
+
+            $this->modal('share-post')->show();
         }
     }
 

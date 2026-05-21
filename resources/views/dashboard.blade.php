@@ -98,7 +98,7 @@
                         <span class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center text-primary text-lg glow-primary">📰</span>
                         Community Feed
                     </h2>
-                    <a href="{{ route('posts.index') }}" class="focus-ring text-sm text-primary hover:text-primary/80 font-semibold hover:underline hover:gap-2 inline-flex items-center transition-all">View All <span class="ml-1">→</span></a>
+                    <a href="{{ route('feed') }}" class="focus-ring text-sm text-primary hover:text-primary/80 font-semibold hover:underline hover:gap-2 inline-flex items-center transition-all">View All <span class="ml-1">→</span></a>
                 </div>
 
                 {{-- Create Post --}}

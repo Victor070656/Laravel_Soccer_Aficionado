@@ -21,10 +21,7 @@ class Index extends Component
             ->get();
 
         // Trending players (based on mentions in posts)
-        $playerTrends = \App\Models\Player::withCount('posts')
-            ->orderByDesc('posts_count')
-            ->take(5)
-            ->get();
+        $playerTrends = $this->getPlayerTrends();
 
         // Viral fan debates (posts with high engagement)
         $viralDebates = Post::with(['user', 'community'])
@@ -108,6 +105,57 @@ class Index extends Component
                 'trend' => $count > 300 ? 'hot' : ($count > 100 ? 'rising' : 'normal'),
             ];
         })->values();
+    }
+
+    /**
+     * Extract player mentions from recent posts
+     */
+    protected function getPlayerTrends(): Collection
+    {
+        $recentPosts = Post::approved()
+            ->where('created_at', '>=', now()->subDays(3))
+            ->pluck('body');
+
+        if ($recentPosts->isEmpty()) {
+            return collect();
+        }
+
+        // Only search for players that have been mentioned or just get a subset
+        // In a real app, this would use a proper search index.
+        $players = \App\Models\Player::with('club')->get();
+        $playerCounts = [];
+
+        foreach ($recentPosts as $body) {
+            $lowerBody = strtolower($body);
+            foreach ($players as $player) {
+                if (str_contains($lowerBody, strtolower($player->name))) {
+                    $playerCounts[$player->id] = ($playerCounts[$player->id] ?? 0) + 1;
+                }
+            }
+        }
+
+        if (empty($playerCounts)) {
+            // Fallback: just return top players by "posts_count" if we had real relationship,
+            // or just some active players.
+            return \App\Models\Player::with('club')->take(5)->get()->map(function ($p) {
+                $p->posts_count = 0;
+
+                return $p;
+            });
+        }
+
+        arsort($playerCounts);
+        $topPlayerIds = array_keys(array_slice($playerCounts, 0, 5, true));
+
+        return \App\Models\Player::with('club')
+            ->whereIn('id', $topPlayerIds)
+            ->get()
+            ->map(function ($player) use ($playerCounts) {
+                $player->posts_count = $playerCounts[$player->id];
+
+                return $player;
+            })
+            ->sortByDesc('posts_count');
     }
 
     public function getListeners(): array

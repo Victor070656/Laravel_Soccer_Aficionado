@@ -53,11 +53,11 @@
                     </h3>
                     <div class="space-y-1">
                         @forelse($hashtagTrends as $trend)
-                            <a href="#" class="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container/30 transition-all group">
+                            <a href="{{ route('search', ['q' => $trend['tag']]) }}" class="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container/30 transition-all group">
                                 <div class="flex-1">
                                     <div class="flex items-center gap-2">
                                         <span class="text-label-bold text-primary-container group-hover:text-primary-container/80">
-                                            #{{ $trend['tag'] }}
+                                            {{ $trend['tag'] }}
                                         </span>
                                         @if($trend['trend'] === 'hot')
                                             <span class="badge-live !py-0 !px-2">HOT</span>
@@ -189,7 +189,7 @@
                     </h3>
                     <div class="space-y-2">
                         @foreach($playerTrends as $index => $player)
-                            <a href="#" class="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-container/30 transition-all">
+                            <a href="{{ route('search', ['q' => $player->name]) }}" class="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-container/30 transition-all">
                                 <span class="text-label-bold text-on-surface-variant w-6 text-center">{{ $index + 1 }}</span>
                                 @if($player->photo_url)
                                     <img src="{{ $player->photo_url }}" alt="" class="h-8 w-8 rounded-lg object-cover">

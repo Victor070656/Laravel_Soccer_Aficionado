@@ -98,9 +98,13 @@
                     <a href="{{ route('posts.show', $post) }}" class="focus-ring reaction-button inline-flex items-center gap-1.5 text-xs font-bold text-on-surface-variant hover:text-primary px-3 py-2 rounded-lg hover:bg-tertiary/15 transition-all duration-200 hover:glow-primary hover:scale-105">
                         <span class="text-base">💬</span> {{ $post->comments_count }}
                     </a>
-                    <span class="inline-flex items-center gap-1.5 text-xs font-bold text-on-surface-variant px-3 py-2">
-                        <span class="text-base">🔗</span> {{ $post->shares_count }}
-                    </span>
+                    <x-share-modal :post="$post" />
+                    <flux:modal.trigger name="share-post-{{ $post->id }}">
+                        <button type="button"
+                                class="focus-ring reaction-button inline-flex items-center gap-1.5 text-xs font-bold text-on-surface-variant hover:text-primary px-3 py-2 rounded-lg hover:bg-tertiary/15 transition-all duration-200 hover:glow-primary hover:scale-105">
+                            <span class="text-base">🔗</span> {{ $post->shares_count }}
+                        </button>
+                    </flux:modal.trigger>
                 </div>
             </div>
 
