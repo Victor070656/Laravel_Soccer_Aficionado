@@ -8,7 +8,7 @@
             <a href="{{ route('feed') }}" wire:navigate
                 class="group relative flex flex-col items-center justify-center flex-1 gap-1 rounded-3xl px-3 py-2 sm:py-3 transition-all duration-300 min-h-[3.5rem] sm:min-h-[4rem]
                     {{ request()->routeIs('feed') ? 'bg-primary/20 text-primary shadow-[0_0_0_2px_rgba(74,255,153,0.25)]' : 'text-on-surface-variant hover:bg-white/8 hover:text-on-surface' }}">
-                <flux:icon icon="home"
+                <flux:icon.home
                     class="h-6 w-6 sm:h-7 sm:w-7 transition-transform group-hover:scale-110 {{ request()->routeIs('feed') ? 'text-primary' : '' }}" />
                 <span class="text-xs sm:text-sm font-bold uppercase tracking-wide truncate">Feed</span>
                 <span
@@ -19,7 +19,7 @@
             <a href="{{ route('trending') }}" wire:navigate
                 class="group relative flex flex-col items-center justify-center flex-1 gap-1 rounded-3xl px-3 py-2 sm:py-3 transition-all duration-300 min-h-[3.5rem] sm:min-h-[4rem]
                     {{ request()->routeIs('trending') ? 'bg-primary/20 text-primary shadow-[0_0_0_2px_rgba(74,255,153,0.25)]' : 'text-on-surface-variant hover:bg-white/8 hover:text-on-surface' }}">
-                <flux:icon icon="fire"
+                <flux:icon.fire
                     class="h-6 w-6 sm:h-7 sm:w-7 transition-transform group-hover:scale-110 {{ request()->routeIs('trending') ? 'text-primary' : '' }}" />
                 <span class="text-xs sm:text-sm font-bold uppercase tracking-wide truncate">Trending</span>
                 <span
@@ -30,7 +30,7 @@
             <a href="{{ route('communities.index') }}" wire:navigate
                 class="group relative flex flex-col items-center justify-center flex-1 gap-1 rounded-3xl px-3 py-2 sm:py-3 transition-all duration-300 min-h-[3.5rem] sm:min-h-[4rem]
                     {{ request()->routeIs('communities.*') ? 'bg-primary/20 text-primary shadow-[0_0_0_2px_rgba(74,255,153,0.25)]' : 'text-on-surface-variant hover:bg-white/8 hover:text-on-surface' }}">
-                <flux:icon icon="user-group"
+                <flux:icon.user-group
                     class="h-6 w-6 sm:h-7 sm:w-7 transition-transform group-hover:scale-110 {{ request()->routeIs('communities.*') ? 'text-primary' : '' }}" />
                 <span class="text-xs sm:text-sm font-bold uppercase tracking-wide truncate">Groups</span>
                 <span
@@ -42,7 +42,7 @@
                 class="group relative flex flex-col items-center justify-center flex-1 gap-1 rounded-3xl px-3 py-2 sm:py-3 transition-all duration-300 min-h-[3.5rem] sm:min-h-[4rem]
                     {{ request()->routeIs('matches.*') ? 'bg-primary/20 text-primary shadow-[0_0_0_2px_rgba(74,255,153,0.25)]' : 'text-on-surface-variant hover:bg-white/8 hover:text-on-surface' }}">
                 <div class="relative">
-                    <flux:icon icon="bolt"
+                    <flux:icon.bolt
                         class="h-6 w-6 sm:h-7 sm:w-7 transition-transform group-hover:scale-110 {{ request()->routeIs('matches.*') ? 'text-primary' : '' }}" />
                     @if (($liveMatchCount ?? 0) > 0)
                         <span
@@ -65,7 +65,7 @@
                     <img src="{{ auth()->user()->avatar_url }}" alt="Profile"
                         class="h-6 w-6 sm:h-7 sm:w-7 rounded-lg object-cover ring-2 ring-transparent transition-transform group-hover:scale-110 {{ request()->routeIs('profiles.*') ? 'ring-primary' : '' }}">
                 @else
-                    <flux:icon icon="user"
+                    <flux:icon.user
                         class="h-6 w-6 sm:h-7 sm:w-7 transition-transform group-hover:scale-110 {{ request()->routeIs('profiles.*') ? 'text-primary' : '' }}" />
                 @endif
                 <span class="text-xs sm:text-sm font-bold uppercase tracking-wide truncate">Profile</span>
