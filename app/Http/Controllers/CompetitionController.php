@@ -56,8 +56,18 @@ class CompetitionController extends Controller
         $rawStandings = $this->api->getStandings($id, $selectedSeason);
         $standings = collect();
         if (! empty($rawStandings)) {
-            $firstGroup = $rawStandings[0] ?? [];
-            $standings = collect($firstGroup)
+            // Some leagues might return a flat list or nested structure.
+            // Normalize to a single list of standings rows.
+            $flattened = [];
+            foreach ($rawStandings as $group) {
+                if (is_array($group)) {
+                    foreach ($group as $row) {
+                        $flattened[] = $row;
+                    }
+                }
+            }
+
+            $standings = collect($flattened)
                 ->map(fn (array $row) => (object) FootballApiService::normaliseStandingRow($row));
         }
 

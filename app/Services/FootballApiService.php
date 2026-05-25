@@ -45,26 +45,16 @@ class FootballApiService
         94 => 4344,  // Portuguese Primeira Liga
         88 => 4337,  // Dutch Eredivisie
         253 => 4346, // American Major League Soccer
-        2 => 4401,   // UEFA Champions League
-        3 => 4480,   // UEFA Europa League
+        2 => 4480,   // UEFA Champions League (Corrected)
+        3 => 4481,   // UEFA Europa League (Corrected)
+        40 => 4329,  // English Championship
+        41 => 4330,  // Scottish Premiership
+        144 => 4338, // Belgian First Division A
+        203 => 4339, // Turkish Super Lig
+        79 => 4336,  // German 2. Bundesliga
+        141 => 4399, // Spanish Segunda Division
     ];
 
-    /**
-     * League metadata keyed by TheSportsDB ID.
-     * Avoids calling lookupleague.php just to get the name for search_all_teams.
-     */
-    protected const LEAGUE_META = [
-        4328 => ['name' => 'English Premier League', 'country' => 'England'],
-        4335 => ['name' => 'Spanish La Liga', 'country' => 'Spain'],
-        4332 => ['name' => 'Italian Serie A', 'country' => 'Italy'],
-        4331 => ['name' => 'German Bundesliga', 'country' => 'Germany'],
-        4334 => ['name' => 'French Ligue 1', 'country' => 'France'],
-        4344 => ['name' => 'Portuguese Primeira Liga', 'country' => 'Portugal'],
-        4337 => ['name' => 'Dutch Eredivisie', 'country' => 'Netherlands'],
-        4346 => ['name' => 'Major League Soccer', 'country' => 'USA'],
-        4401 => ['name' => 'UEFA Champions League', 'country' => 'Europe'],
-        4480 => ['name' => 'UEFA Europa League', 'country' => 'Europe'],
-    ];
 
     public function __construct()
     {
@@ -73,7 +63,7 @@ class FootballApiService
         $this->apiKey = $config['key'] ?? '123'; // TheSportsDB free key
         $this->baseUrl = rtrim($config['base_url'] ?? 'https://www.thesportsdb.com/api/v1/json', '/');
         $this->cacheTtl = $config['cache_ttl'] ?? [];
-        $this->leagues = $config['leagues'] ?? [39, 140, 135, 78, 61, 94, 88, 253, 2, 3];
+        $this->leagues = $config['leagues'] ?? [39, 140, 135, 78, 61, 94, 88, 253, 2, 3, 40, 41, 144, 203, 79, 141];
         $this->season = $config['season'] ?? '2025-2026';
     }
 
@@ -225,6 +215,14 @@ class FootballApiService
     protected function resolveLeagueId(int $configId): int
     {
         return self::LEAGUE_MAP[$configId] ?? $configId;
+    }
+
+    /**
+     * Get the badge URL for a league.
+     */
+    protected function getLeagueBadge(int $leagueId): ?string
+    {
+        return config("leagues_meta.{$leagueId}.logo");
     }
 
     // ── Round Helpers ──────────────────────────────────────
@@ -833,7 +831,7 @@ class FootballApiService
 
             foreach ($this->leagues as $configId) {
                 $tsdbId = $this->resolveLeagueId($configId);
-                $meta = self::LEAGUE_META[$tsdbId] ?? null;
+                $meta = config("leagues_meta.{$tsdbId}");
 
                 if ($meta) {
                     $leagues[] = [
@@ -854,7 +852,7 @@ class FootballApiService
     /**
      * Get full details for all configured leagues (competitions listing).
      *
-     * Uses LEAGUE_META for instant display; enriches from API when available.
+     * Uses configured metadata for instant display; enriches from API when available.
      * Avoids 10 lookupleague.php calls on every competitions page.
      */
     public function getLeaguesFull(): array
@@ -867,16 +865,25 @@ class FootballApiService
             // This is a single API call that returns many leagues
             $leagues = $this->getAllSoccerLeagues();
 
+            // Enrich leagues with configured metadata (especially for badges)
+            foreach ($leagues as &$league) {
+                $meta = config("leagues_meta.{$league['id']}");
+                if ($meta && empty($league['logo'])) {
+                    $league['logo'] = $meta['logo'] ?? null;
+                }
+            }
+            unset($league);
+
             if (count($leagues) >= 5) {
                 return $leagues;
             }
 
             // Fallback to configured/hardcoded leagues
-            // We use LEAGUE_META for INSTANT display to avoid N API calls
+            // We use configured metadata for INSTANT display to avoid N API calls
             $leagues = [];
             foreach ($this->leagues as $configId) {
                 $tsdbId = $this->resolveLeagueId($configId);
-                $meta = self::LEAGUE_META[$tsdbId] ?? null;
+                $meta = config("leagues_meta.{$tsdbId}");
 
                 if (! $meta) {
                     continue;
@@ -886,7 +893,7 @@ class FootballApiService
                     'id' => $tsdbId,
                     'name' => $meta['name'],
                     'type' => 'league',
-                    'logo' => null,
+                    'logo' => $meta['logo'] ?? null,
                     'logo_wide' => null,
                     'country' => $meta['country'],
                     'country_code' => null,
@@ -1035,8 +1042,8 @@ class FootballApiService
                 ];
             }
 
-            // API failed or league not found — fall back to LEAGUE_META
-            $meta = self::LEAGUE_META[$leagueId] ?? null;
+            // API failed or league not found — fall back to configured metadata
+            $meta = config("leagues_meta.{$leagueId}");
             if (! $meta) {
                 return null;
             }
@@ -1167,7 +1174,7 @@ class FootballApiService
         }
 
         // Use constants to avoid a lookupleague API call.
-        $meta = self::LEAGUE_META[$leagueId] ?? null;
+        $meta = config("leagues_meta.{$leagueId}");
         $leagueName = $meta['name'] ?? null;
         $country = $meta['country'] ?? null;
 

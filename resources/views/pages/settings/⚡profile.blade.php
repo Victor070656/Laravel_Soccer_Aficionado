@@ -41,7 +41,12 @@ new class extends Component {
         $this->timezone = $user->timezone ?? '';
         $this->football_personality = $user->football_personality ?? '';
         $this->favorite_coach = $user->favorite_coach ?? '';
+
         $this->currentAvatar = $user->avatar;
+        // Strip /storage/ prefix if it exists from legacy implementation
+        if (str_starts_with($this->currentAvatar ?? '', '/storage/')) {
+            $this->currentAvatar = substr($this->currentAvatar, 9);
+        }
     }
 
     /**
@@ -63,7 +68,11 @@ new class extends Component {
 
         if ($this->avatar) {
             if ($user->avatar) {
-                Storage::disk('public')->delete($user->avatar);
+                $oldPath = $user->avatar;
+                if (str_starts_with($oldPath, '/storage/')) {
+                    $oldPath = substr($oldPath, 9);
+                }
+                Storage::disk('public')->delete($oldPath);
             }
             $validated['avatar'] = $this->avatar->store('avatars', 'public');
         } else {
@@ -139,6 +148,12 @@ new class extends Component {
                     <flux:icon icon="user-circle" variant="mini" class="text-green-600" />
                     <flux:heading size="sm" class="font-black uppercase tracking-widest text-zinc-500">
                         {{ __('Public Identity') }}</flux:heading>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <flux:input wire:model="name" :label="__('Display Name')" required autocomplete="name" />
+                    <flux:input wire:model="username" :label="__('Username')" required
+                        placeholder="e.g. goal_getter99" />
                 </div>
 
                 <div class="flex-shrink-0">

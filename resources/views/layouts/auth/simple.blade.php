@@ -64,7 +64,7 @@
                     <span class="text-2xl font-bold text-[#bfff00] uppercase tracking-tighter font-display">SA</span>
                 </div>
 
-                <div class="w-full max-w-md space-y-6 sm:space-y-8 pt-12 lg:pt-0 pb-24 lg:pb-0">
+                <div class="w-full space-y-6 sm:space-y-8 pt-12 lg:pt-0 pb-24 lg:pb-0">
                     {{ $slot }}
                 </div>
 

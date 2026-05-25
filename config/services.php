@@ -50,7 +50,7 @@ return [
             'standings' => (int) env('FOOTBALL_API_CACHE_STANDINGS', 3600), // 1 hour for standings
         ],
         // Config league IDs are mapped to TheSportsDB IDs inside FootballApiService
-        'leagues' => array_map('intval', explode(',', env('FOOTBALL_API_LEAGUES', '39,140,135,78,61,94,88,253,2,3'))),
+        'leagues' => array_map('intval', explode(',', env('FOOTBALL_API_LEAGUES', '39,140,135,78,61,94,88,253,2,3,40,41,144,203,79,141'))),
         // Season string e.g. '2025-2026' for TheSportsDB
         'season' => env('FOOTBALL_API_SEASON', '2025-2026'),
     ],
