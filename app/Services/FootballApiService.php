@@ -865,11 +865,13 @@ class FootballApiService
             // This is a single API call that returns many leagues
             $leagues = $this->getAllSoccerLeagues();
 
-            // Enrich leagues with configured metadata (especially for badges)
+            // Enrich leagues with API data when available
             foreach ($leagues as &$league) {
-                $meta = config("leagues_meta.{$league['id']}");
-                if ($meta && empty($league['logo'])) {
-                    $league['logo'] = $meta['logo'] ?? null;
+                if (empty($league['logo'])) {
+                    $detailed = $this->getLeague($league['id']);
+                    if ($detailed && !empty($detailed['logo'])) {
+                        $league['logo'] = $detailed['logo'];
+                    }
                 }
             }
             unset($league);
