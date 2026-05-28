@@ -6,8 +6,10 @@ use App\Concerns\AppendsPostFlags;
 use App\Concerns\ExtractsMentions;
 use App\Models\Comment;
 use App\Models\Post;
+use App\Models\Reaction;
 use App\Services\GamificationService;
 use App\Services\NotificationService;
+use App\Services\ReactionService;
 use Illuminate\Http\Request;
 
 class PostApiController extends BaseApiController
@@ -17,12 +19,14 @@ class PostApiController extends BaseApiController
     public function __construct(
         protected GamificationService $gamification,
         protected NotificationService $notifications,
-    ) {}
+        protected ReactionService $reactions,
+    ) {
+    }
 
     public function index(Request $request)
     {
         $posts = Post::with(['user', 'community'])
-            ->withCount(['likes', 'comments', 'shares'])
+            ->withCount(['reactions as likes_count', 'comments', 'shares'])
             ->approved()
             ->latest()
             ->paginate(20);
@@ -35,7 +39,7 @@ class PostApiController extends BaseApiController
     public function feed(Request $request)
     {
         $posts = Post::with(['user', 'community'])
-            ->withCount(['likes', 'comments', 'shares'])
+            ->withCount(['reactions as likes_count', 'comments', 'shares'])
             ->feed($request->user())
             ->paginate(20);
 
@@ -49,9 +53,9 @@ class PostApiController extends BaseApiController
         $post->load([
             'user',
             'community',
-            'comments' => fn ($q) => $q->with(['user', 'replies.user'])->where('is_approved', true)->latest(),
+            'comments' => fn($q) => $q->with(['user', 'replies.user'])->where('is_approved', true)->latest(),
         ]);
-        $post->loadCount(['likes', 'comments', 'shares']);
+        $post->loadCount(['reactions as likes_count', 'comments', 'shares']);
 
         $this->appendPostFlags($post);
 
@@ -76,8 +80,8 @@ class PostApiController extends BaseApiController
         $post = $request->user()->posts()->create([
             'body' => $validated['body'],
             'community_id' => $validated['community_id'] ?? null,
-            'type' => ! empty($mediaPaths) ? 'image' : 'text',
-            'media' => ! empty($mediaPaths) ? $mediaPaths : null,
+            'type' => !empty($mediaPaths) ? 'image' : 'text',
+            'media' => !empty($mediaPaths) ? $mediaPaths : null,
         ]);
 
         $this->extractAndSaveMentions($validated['body'], $post);
@@ -92,7 +96,7 @@ class PostApiController extends BaseApiController
 
     public function destroy(Request $request, Post $post)
     {
-        if ($post->user_id !== $request->user()->id && ! $request->user()->isAdmin()) {
+        if ($post->user_id !== $request->user()->id && !$request->user()->isAdmin()) {
             return $this->error('Unauthorized.', 403);
         }
 
@@ -103,23 +107,14 @@ class PostApiController extends BaseApiController
 
     public function like(Request $request, Post $post)
     {
-        $user = $request->user();
+        $summary = $this->reactions->toggle(
+            $request->user(),
+            'post',
+            $post->id,
+            $request->string('emoji', Reaction::DEFAULT_EMOJI)->toString(),
+        );
 
-        if ($user->hasLiked($post)) {
-            $post->likes()->where('user_id', $user->id)->delete();
-            $post->decrement('likes_count');
-
-            return $this->success(null, 'Like removed.');
-        }
-
-        $post->likes()->create(['user_id' => $user->id]);
-        $post->increment('likes_count');
-
-        $post->loadMissing('user');
-        $this->gamification->awardPoints($post->user, 'like_received', $post);
-        $this->notifications->notifyLike($user, $post);
-
-        return $this->success(null, 'Post liked.');
+        return $this->success($summary, 'Reaction updated.');
     }
 
     public function comment(Request $request, Post $post)
@@ -148,7 +143,7 @@ class PostApiController extends BaseApiController
 
     public function update(Request $request, Post $post)
     {
-        if ($post->user_id !== $request->user()->id && ! $request->user()->isAdmin()) {
+        if ($post->user_id !== $request->user()->id && !$request->user()->isAdmin()) {
             return $this->error('Unauthorized.', 403);
         }
 
@@ -163,7 +158,7 @@ class PostApiController extends BaseApiController
         $this->extractAndSaveMentions($validated['body'], $post);
 
         $post->load(['user', 'community']);
-        $post->loadCount(['likes', 'comments', 'shares']);
+        $post->loadCount(['reactions as likes_count', 'comments', 'shares']);
 
         return $this->success($post, 'Post updated.');
     }
@@ -188,11 +183,11 @@ class PostApiController extends BaseApiController
 
     public function pin(Request $request, Post $post)
     {
-        if (! $request->user()->isAdmin()) {
+        if (!$request->user()->isAdmin()) {
             return $this->error('Unauthorized.', 403);
         }
 
-        $post->update(['is_pinned' => ! $post->is_pinned]);
+        $post->update(['is_pinned' => !$post->is_pinned]);
 
         $status = $post->is_pinned ? 'pinned' : 'unpinned';
 
@@ -201,7 +196,7 @@ class PostApiController extends BaseApiController
 
     public function deleteComment(Request $request, Comment $comment)
     {
-        if ($comment->user_id !== $request->user()->id && ! $request->user()->isAdmin()) {
+        if ($comment->user_id !== $request->user()->id && !$request->user()->isAdmin()) {
             return $this->error('Unauthorized.', 403);
         }
 

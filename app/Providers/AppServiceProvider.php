@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Livewire\Livewire;
+use App\Livewire\Posts\Composer as PostComposer;
+use App\Livewire\Reactions\Bar as ReactionBar;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,6 +29,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+
+        Livewire::component('posts.composer', PostComposer::class);
+        Livewire::component('reactions.bar', ReactionBar::class);
 
         View::composer('components.bottom-nav', function ($view) {
             $api = app(FootballApiService::class);
@@ -45,7 +51,8 @@ class AppServiceProvider extends ServiceProvider
             app()->isProduction(),
         );
 
-        Password::defaults(fn (): ?Password => app()->isProduction()
+        Password::defaults(
+            fn(): ?Password => app()->isProduction()
             ? Password::min(12)
                 ->mixedCase()
                 ->letters()

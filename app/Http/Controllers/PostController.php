@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Posts\CreatePost;
 use App\Concerns\ExtractsMentions;
 use App\Models\Comment;
 use App\Models\Post;
+use App\Models\Reaction;
 use App\Services\GamificationService;
 use App\Services\NotificationService;
+use App\Services\ReactionService;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -16,7 +19,9 @@ class PostController extends Controller
     public function __construct(
         protected GamificationService $gamification,
         protected NotificationService $notifications,
-    ) {}
+        protected ReactionService $reactions,
+    ) {
+    }
 
     public function index(Request $request)
     {
@@ -36,7 +41,7 @@ class PostController extends Controller
         $post->load([
             'user',
             'community',
-            'comments' => fn ($q) => $q->with(['user', 'replies.user'])->where('is_approved', true)->latest(),
+            'comments' => fn($q) => $q->with(['user', 'replies.user'])->where('is_approved', true)->latest(),
         ]);
 
         return view('posts.show', compact('post'));
@@ -46,30 +51,9 @@ class PostController extends Controller
     {
         $this->authorize('create', Post::class);
 
-        $validated = $request->validate([
-            'body' => 'required|string|max:5000',
-            'community_id' => 'nullable|exists:communities,id',
-            'media.*' => 'nullable|file|mimes:jpg,jpeg,png,gif,mp4,webm|max:10240',
-        ]);
+        $validated = $request->validate(CreatePost::rules());
 
-        $mediaPaths = [];
-        if ($request->hasFile('media')) {
-            foreach ($request->file('media') as $file) {
-                $mediaPaths[] = $file->store('posts', 'public');
-            }
-        }
-
-        $post = $request->user()->posts()->create([
-            'body' => $validated['body'],
-            'community_id' => $validated['community_id'] ?? null,
-            'type' => ! empty($mediaPaths) ? 'image' : 'text',
-            'media' => ! empty($mediaPaths) ? $mediaPaths : null,
-        ]);
-
-        $this->extractAndSaveMentions($validated['body'], $post);
-
-        $this->gamification->awardPoints($request->user(), 'post_created', $post);
-        $this->gamification->recordActivity($request->user(), 'post_created', $post);
+        $post = app(CreatePost::class)->execute($request->user(), $validated);
 
         return redirect()->route('posts.show', $post)->with('success', 'Post created successfully!');
     }
@@ -109,23 +93,14 @@ class PostController extends Controller
 
     public function like(Request $request, Post $post)
     {
-        $user = $request->user();
+        $summary = $this->reactions->toggle(
+            $request->user(),
+            'post',
+            $post->id,
+            $request->string('emoji', Reaction::DEFAULT_EMOJI)->toString(),
+        );
 
-        if ($user->hasLiked($post)) {
-            $post->likes()->where('user_id', $user->id)->delete();
-            $post->decrement('likes_count');
-
-            return back()->with('success', 'Like removed.');
-        }
-
-        $post->likes()->create(['user_id' => $user->id]);
-        $post->increment('likes_count');
-
-        $post->loadMissing('user');
-        $this->gamification->awardPoints($post->user, 'like_received', $post);
-        $this->notifications->notifyLike($user, $post);
-
-        return back()->with('success', 'Post liked!');
+        return back()->with('success', ($summary['currentReaction'] ?? null) === null ? 'Reaction removed.' : 'Reaction updated.');
     }
 
     public function comment(Request $request, Post $post)
@@ -174,7 +149,7 @@ class PostController extends Controller
     {
         $this->authorize('pin', $post);
 
-        $post->update(['is_pinned' => ! $post->is_pinned]);
+        $post->update(['is_pinned' => !$post->is_pinned]);
 
         $status = $post->is_pinned ? 'pinned' : 'unpinned';
 

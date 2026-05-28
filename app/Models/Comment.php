@@ -49,9 +49,14 @@ class Comment extends Model
         return $this->hasMany(Comment::class, 'parent_id');
     }
 
-    public function likes(): MorphMany
+    public function likes(): HasMany
     {
-        return $this->morphMany(Like::class, 'likeable');
+        return $this->reactions();
+    }
+
+    public function reactions(): HasMany
+    {
+        return $this->hasMany(Reaction::class, 'target_id')->where('target_type', 'comment');
     }
 
     public function mentions(): MorphMany

@@ -2,9 +2,10 @@
 
 namespace App\Livewire\Matches;
 
-use App\Models\MatchAction;
 use App\Models\MatchComment;
+use App\Models\Reaction;
 use App\Services\FootballApiService;
+use App\Services\ReactionService;
 use Livewire\Component;
 
 class Room extends Component
@@ -20,20 +21,20 @@ class Room extends Component
     public function mount(int $id): void
     {
         $this->matchId = $id;
-        $this->availableEmojis = MatchAction::getAvailableEmojis();
+        $this->availableEmojis = Reaction::emojiOptions();
     }
 
     public function render(FootballApiService $api)
     {
         $raw = $api->getFixture($this->matchId);
 
-        if (! $raw) {
+        if (!$raw) {
             abort(404, 'Match not found.');
         }
 
         $match = (object) FootballApiService::normaliseFixture($raw);
         $events = collect($api->getFixtureEvents($this->matchId))
-            ->map(fn (array $e) => (object) FootballApiService::normaliseEvent($e));
+            ->map(fn(array $e) => (object) FootballApiService::normaliseEvent($e));
 
         // Local comments and reactions
         $comments = MatchComment::where('match_id', $this->matchId)
@@ -42,18 +43,20 @@ class Room extends Component
             ->limit(50)
             ->get();
 
-        $reactions = MatchAction::where('match_id', $this->matchId)
+        $reactions = Reaction::query()
+            ->forTarget('match', $this->matchId)
             ->with('user')
             ->latest()
             ->limit(20)
             ->get();
 
         // Emoji strom tracker (for animation)
-        $this->recentEmojiStorm = MatchAction::where('match_id', $this->matchId)
+        $this->recentEmojiStorm = Reaction::query()
+            ->forTarget('match', $this->matchId)
             ->where('created_at', '>=', now()->subSeconds(5))
             ->get()
             ->groupBy('emoji')
-            ->map(fn ($group) => $group->count())
+            ->map(fn($group) => $group->count())
             ->sortDesc()
             ->take(3)
             ->toArray();
@@ -62,7 +65,7 @@ class Room extends Component
         $heatCount = MatchComment::where('match_id', $this->matchId)
             ->where('created_at', '>=', now()->subSeconds(60))
             ->count()
-            + MatchAction::where('match_id', $this->matchId)
+            + Reaction::query()->forTarget('match', $this->matchId)
                 ->where('created_at', '>=', now()->subSeconds(60))
                 ->count();
 
@@ -105,7 +108,7 @@ class Room extends Component
             'newComment' => 'required|string|max:280',
         ]);
 
-        if (! auth()->check()) {
+        if (!auth()->check()) {
             return;
         }
 
@@ -121,17 +124,13 @@ class Room extends Component
 
     public function react(string $emoji)
     {
-        if (! auth()->check()) {
+        if (!auth()->check()) {
             return;
         }
 
-        MatchAction::create([
-            'match_id' => $this->matchId,
-            'user_id' => auth()->id(),
-            'emoji' => $emoji,
-        ]);
+        app(ReactionService::class)->toggle(auth()->user(), 'match', $this->matchId, $emoji);
 
-        $this->dispatch('reaction-added');
+        $this->dispatch('reaction-updated');
     }
 
     public function getListeners(): array

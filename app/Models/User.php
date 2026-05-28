@@ -77,7 +77,7 @@ class User extends Authenticatable
     protected static function booted(): void
     {
         static::creating(function (User $user) {
-            if (! $user->username) {
+            if (!$user->username) {
                 $user->username = static::generateUniqueUsername($user->name);
             }
         });
@@ -91,11 +91,11 @@ class User extends Authenticatable
         $username = Str::slug($name);
 
         if (empty($username)) {
-            $username = 'user-'.Str::random(8);
+            $username = 'user-' . Str::random(8);
         }
 
         if (User::where('username', $username)->exists()) {
-            $username .= '-'.Str::random(5);
+            $username .= '-' . Str::random(5);
         }
 
         // Ensure it stays unique even after appending random chars
@@ -137,7 +137,12 @@ class User extends Authenticatable
 
     public function likes(): HasMany
     {
-        return $this->hasMany(Like::class);
+        return $this->reactions();
+    }
+
+    public function reactions(): HasMany
+    {
+        return $this->hasMany(Reaction::class);
     }
 
     public function communities(): BelongsToMany
@@ -209,10 +214,36 @@ class User extends Authenticatable
 
     public function hasLiked($likeable): bool
     {
-        return $this->likes()
-            ->where('likeable_type', get_class($likeable))
-            ->where('likeable_id', $likeable->id)
-            ->exists();
+        return $this->hasReacted($likeable, Reaction::DEFAULT_EMOJI);
+    }
+
+    public function hasReacted(mixed $target, ?string $emoji = null): bool
+    {
+        $query = $this->reactions()
+            ->where('target_type', Reaction::targetTypeFor($target))
+            ->where('target_id', Reaction::targetIdFor($target));
+
+        if ($emoji) {
+            $query->where('emoji', $emoji);
+        }
+
+        return $query->exists();
+    }
+
+    public function reactionFor(mixed $target): ?string
+    {
+        return $this->reactions()
+            ->where('target_type', Reaction::targetTypeFor($target))
+            ->where('target_id', Reaction::targetIdFor($target))
+            ->value('emoji');
+    }
+
+    public function reactionTo(mixed $target): ?Reaction
+    {
+        return $this->reactions()
+            ->where('target_type', Reaction::targetTypeFor($target))
+            ->where('target_id', Reaction::targetIdFor($target))
+            ->first();
     }
 
     public function hasVotedOn(Poll $poll): bool
@@ -239,7 +270,7 @@ class User extends Authenticatable
 
     public function getAvatarUrlAttribute(): ?string
     {
-        if (! $this->avatar) {
+        if (!$this->avatar) {
             return null;
         }
 
@@ -248,7 +279,7 @@ class User extends Authenticatable
             $path = substr($path, 9);
         }
 
-        return asset('storage/'.$path);
+        return asset('storage/' . $path);
     }
 
     /**
@@ -259,7 +290,7 @@ class User extends Authenticatable
         return Str::of($this->name)
             ->explode(' ')
             ->take(2)
-            ->map(fn ($word) => Str::substr($word, 0, 1))
+            ->map(fn($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
 

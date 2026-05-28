@@ -14,7 +14,8 @@ class DashboardApiController extends BaseApiController
 
     public function __construct(
         protected FootballApiService $api,
-    ) {}
+    ) {
+    }
 
     public function __invoke(Request $request)
     {
@@ -22,18 +23,18 @@ class DashboardApiController extends BaseApiController
         $user->load('favoriteClubs');
 
         $feed = Post::with(['user', 'community'])
-            ->withCount(['likes', 'comments', 'shares'])
+            ->withCount(['reactions as likes_count', 'comments', 'shares'])
             ->approved()
             ->feed($user)
             ->paginate(20);
 
         $liveMatches = array_map(
-            fn (array $raw) => FootballApiService::normaliseFixture($raw),
+            fn(array $raw) => FootballApiService::normaliseFixture($raw),
             $this->api->getLiveFixtures(),
         );
 
         $upcomingMatches = array_map(
-            fn (array $raw) => FootballApiService::normaliseFixture($raw),
+            fn(array $raw) => FootballApiService::normaliseFixture($raw),
             $this->api->getUpcomingFixtures(5),
         );
 
@@ -49,13 +50,13 @@ class DashboardApiController extends BaseApiController
             $vote = $poll->votes()->where('user_id', $user->id)->first();
             $poll->user_vote = $vote?->poll_option_id ?? null;
             $poll->created_by = $poll->user;
-            $poll->options->each(fn ($opt) => $opt->setRelation('poll', $poll));
+            $poll->options->each(fn($opt) => $opt->setRelation('poll', $poll));
 
             return $poll;
         });
 
         $trendingPosts = Post::with(['user', 'community'])
-            ->withCount(['likes', 'comments', 'shares'])
+            ->withCount(['reactions as likes_count', 'comments', 'shares'])
             ->trending()
             ->take(5)
             ->get();

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Posts\CreatePost;
 use App\Models\Poll;
 use App\Models\Post;
 use App\Services\FootballApiService;
@@ -11,7 +12,8 @@ class DashboardController extends Controller
 {
     public function __construct(
         protected FootballApiService $api,
-    ) {}
+    ) {
+    }
 
     public function __invoke(Request $request)
     {
@@ -43,6 +45,6 @@ class DashboardController extends Controller
             'activePolls',
             'trendingPosts',
             'favoriteClubs'
-        ));
+        ))->with('postTypes', CreatePost::types());
     }
 }

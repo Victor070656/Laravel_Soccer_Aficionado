@@ -19,12 +19,8 @@ trait AppendsPostFlags
         $user ??= auth('sanctum')->user();
 
         $addFlags = function (Post $post) use ($user) {
-            $post->is_liked = $user
-                ? $user->likes()
-                    ->where('likeable_type', Post::class)
-                    ->where('likeable_id', $post->id)
-                    ->exists()
-                : false;
+            $post->reaction = $user ? $user->reactionFor($post) : null;
+            $post->is_liked = $post->reaction !== null;
             $post->is_owner = $user ? $post->user_id === $user->id : false;
 
             return $post;
