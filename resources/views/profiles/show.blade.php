@@ -190,7 +190,7 @@
 
                                 @if($post->media)
                                     <div class="mt-4 rounded-2xl overflow-hidden border border-outline-variant/20">
-                                        <img loading="lazy" decoding="async" src="{{ asset('storage/' . $post->media[0]) }}" alt="" class="w-full h-auto max-h-96 object-cover hover:scale-105 transition-transform duration-700">
+                                        <img loading="lazy" decoding="async" src="{{ data_get($post->media, '0.url') }}" alt="" class="w-full h-auto max-h-96 object-cover hover:scale-105 transition-transform duration-700">
                                     </div>
                                 @endif
 
