@@ -67,6 +67,12 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Main: Discussions -->
             <div class="lg:col-span-2 space-y-4">
+                @if($isMember)
+                    <div class="mb-6">
+                        <livewire:posts.composer :community-id="$community->id" mode="community" />
+                    </div>
+                @endif
+
                 <h2 class="text-headline-md text-on-surface flex items-center gap-2">
                     <span>💬</span> Discussions
                 </h2>
@@ -107,6 +113,22 @@
 
             <!-- Sidebar -->
             <div class="space-y-5">
+                @if($isModerator)
+                    <div class="glass-card rounded-xl p-4 border border-primary-container/20">
+                        <h3 class="text-label-bold text-on-surface mb-3 flex items-center gap-2">
+                            <span>🛡️</span> Moderator Tools
+                        </h3>
+                        <div class="space-y-2 text-sm">
+                            <button class="w-full px-4 py-2 rounded-lg bg-surface-container-high text-on-surface font-medium hover:bg-surface-container transition-colors text-left flex items-center gap-2">
+                                <span>✏️</span> Edit Community
+                            </button>
+                            <button class="w-full px-4 py-2 rounded-lg bg-surface-container-high text-on-surface font-medium hover:bg-surface-container transition-colors text-left flex items-center gap-2">
+                                <span>👥</span> Manage Members
+                            </button>
+                        </div>
+                    </div>
+                @endif
+
                 <!-- Top Members -->
                 <div class="glass-card rounded-xl p-4">
                     <h3 class="text-label-bold text-on-surface mb-3 flex items-center gap-2">

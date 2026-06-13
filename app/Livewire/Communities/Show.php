@@ -12,7 +12,7 @@ class Show extends Component
 
     public function mount(Community $community): void
     {
-        $this->community = $community->load(['club', 'members', 'posts']);
+        $this->community = $community->load(['club', 'members', 'posts'])->loadCount(['members', 'posts']);
     }
 
     public function render()
@@ -44,17 +44,35 @@ class Show extends Component
             return;
         }
 
-        if ($this->community->members()->where('user_id', auth()->id())->exists()) {
-            $this->community->members()->detach(auth()->id());
+        $user = auth()->user();
+
+        if ($user->isMemberOf($this->community)) {
+            $this->community->members()->detach($user->id);
+            $this->community->decrement('members_count');
         } else {
-            $this->community->members()->attach(auth()->id(), ['role' => 'member']);
+            $this->community->members()->attach($user->id, ['role' => 'member']);
+            $this->community->increment('members_count');
+
+            // award points
+            $gamification = app(\App\Services\GamificationService::class);
+            $gamification->awardPoints($user, 'community_joined', $this->community);
+            $gamification->recordActivity($user, 'community_joined', $this->community);
         }
+
+        $this->community->refresh();
+        $this->community->loadCount(['members', 'posts']);
+    }
+
+    public function handlePostCreated()
+    {
+        $this->community->loadCount('posts');
     }
 
     public function getListeners(): array
     {
         return [
             'echo:community.{community.id},CommunityUpdated' => '$refresh',
+            'post-created' => 'handlePostCreated',
         ];
     }
 }

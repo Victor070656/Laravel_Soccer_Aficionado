@@ -70,6 +70,11 @@
                         <button wire:click="setLocationFilter('all')" class="px-4 py-2 rounded-lg text-sm font-medium transition-all {{ $locationFilter === 'all' ? 'bg-primary-container text-on-primary-container scale-105' : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container' }}">
                             🌍 All Communities
                         </button>
+                        @auth
+                            <button wire:click="setLocationFilter('my')" class="px-4 py-2 rounded-lg text-sm font-medium transition-all {{ $locationFilter === 'my' ? 'bg-primary-container text-on-primary-container scale-105' : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container' }}">
+                                ❤️ Joined
+                            </button>
+                        @endauth
                         <button wire:click="setLocationFilter('global')" class="px-4 py-2 rounded-lg text-sm font-medium transition-all {{ $locationFilter === 'global' ? 'bg-primary-container text-on-primary-container scale-105' : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container' }}">
                             🌐 Global
                         </button>

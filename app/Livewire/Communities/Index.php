@@ -14,7 +14,7 @@ class Index extends Component
     use AuthorizesRequests;
     use WithFileUploads;
 
-    public string $locationFilter = 'all'; // all, global, continent, country, state
+    public string $locationFilter = 'all'; // all, my, global, continent, country, state
 
     public string $selectedCountry = '';
 
@@ -37,6 +37,7 @@ class Index extends Component
         $communities = Community::with(['club', 'members', 'posts'])
             ->where('is_active', true)
             ->when($this->search, fn ($q) => $q->where('name', 'LIKE', "%{$this->search}%"))
+            ->when($this->locationFilter === 'my' && auth()->check(), fn ($q) => $q->whereHas('members', fn($mq) => $mq->where('user_id', auth()->id())))
             ->when($this->locationFilter === 'global', fn ($q) => $q->whereNull('country'))
             ->when($this->locationFilter === 'country', fn ($q) => $q->whereNotNull('country')->whereNull('state'))
             ->when($this->locationFilter === 'state', fn ($q) => $q->whereNotNull('state'))
